@@ -253,6 +253,8 @@ MonoBehaviour:
     type: 2}
   KeyTemplate: {fileID: 114142699408684760, guid: a3fefa3f4e6e3b943a90186ee6fcf14f,
     type: 2}
+  MazeTemplate: {fileID: 114252283633867222, guid: c4b4acaea0ffb22418753925f26c86f7,
+    type: 2}
 --- !u!114 &11489324
 MonoBehaviour:
   m_ObjectHideFlags: 1

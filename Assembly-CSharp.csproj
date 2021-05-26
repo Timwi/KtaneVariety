@@ -51,9 +51,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Items\Wire\Key.cs" />
-     <Compile Include="Assets\Items\Wire\KeyFactory.cs" />
-     <Compile Include="Assets\Items\Wire\KeyPrefab.cs" />
+     <Compile Include="Assets\Items\Key\Key.cs" />
+     <Compile Include="Assets\Items\Key\KeyFactory.cs" />
+     <Compile Include="Assets\Items\Key\KeyPrefab.cs" />
+     <Compile Include="Assets\Items\Maze\Maze.cs" />
+     <Compile Include="Assets\Items\Maze\MazeFactory.cs" />
+     <Compile Include="Assets\Items\Maze\MazePrefab.cs" />
      <Compile Include="Assets\Items\Wire\Wire.cs" />
      <Compile Include="Assets\Items\Wire\WireColor.cs" />
      <Compile Include="Assets\Items\Wire\WireFactory.cs" />

@@ -19,6 +19,7 @@ public class VarietyModule : MonoBehaviour
 
     public WirePrefab WireTemplate;
     public KeyPrefab KeyTemplate;
+    public MazePrefab MazeTemplate;
 
     private static int _moduleIdCounter = 1;
     internal int _moduleId;
@@ -47,11 +48,11 @@ public class VarietyModule : MonoBehaviour
     {
         _moduleId = _moduleIdCounter++;
 
-
         var factories = new List<ItemFactoryInfo>
         {
             new ItemFactoryInfo(1, new WireFactory()),
-            new ItemFactoryInfo(2, new KeyFactory())
+            new ItemFactoryInfo(2, new KeyFactory()),
+            new ItemFactoryInfo(2, new MazeFactory())
         };
 
         var takens = new HashSet<object>();
