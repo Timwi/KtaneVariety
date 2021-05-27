@@ -54,6 +54,7 @@
      <Compile Include="Assets\Editor\Scripts\AssetBundler.cs" />
      <Compile Include="Assets\Editor\Scripts\EdgeworkConfigurationEditor.cs" />
      <Compile Include="Assets\Editor\Scripts\KMModuleEditor.cs" />
+     <Compile Include="Assets\Editor\Scripts\Missions\DMGMissionLoader.cs" />
      <Compile Include="Assets\Editor\Scripts\Missions\KMMissionEditor.cs" />
      <Compile Include="Assets\Editor\Scripts\Missions\KMMissionTableOfContentsEditor.cs" />
      <Compile Include="Assets\Editor\Scripts\Missions\TableOfContentsSectionList.cs" />
@@ -367,6 +368,12 @@
  </Reference>
  <Reference Include="UnityEngine.StandardEvents">
  <HintPath>C:/Users/Timwi/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.standardevents@1.0.10/UnityEngine.StandardEvents.dll</HintPath>
+ </Reference>
+ <Reference Include="KeepCoding-EditorOnly">
+ <HintPath>D:/c/KTANE/Variety/Assets/Plugins/KeepCoding-EditorOnly.dll</HintPath>
+ </Reference>
+ <Reference Include="KtaneUtils">
+ <HintPath>D:/c/KTANE/Variety/Assets/Plugins/Managed/KtaneUtils.dll</HintPath>
  </Reference>
   </ItemGroup>
   <ItemGroup>
