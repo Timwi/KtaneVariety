@@ -51,6 +51,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Items\Dummy\Dummy.cs" />
+     <Compile Include="Assets\Items\Dummy\DummyFactory.cs" />
+     <Compile Include="Assets\Items\Dummy\DummyPrefab.cs" />
      <Compile Include="Assets\Items\Key\Key.cs" />
      <Compile Include="Assets\Items\Key\KeyFactory.cs" />
      <Compile Include="Assets\Items\Key\KeyPrefab.cs" />
@@ -68,15 +71,12 @@
      <Compile Include="Assets\KMScripts\KMBossModule.cs" />
      <Compile Include="Assets\KMScripts\KMColorblindMode.cs" />
      <Compile Include="Assets\KMScripts\KMRuleSeedable.cs" />
-     <Compile Include="Assets\KMScripts\KtaneModule.cs" />
-     <Compile Include="Assets\KMScripts\ModConfig.cs" />
-     <Compile Include="Assets\KMScripts\ModdedAPI.cs" />
      <Compile Include="Assets\KMScripts\PrivateWhenPlayingAttribute.cs" />
      <Compile Include="Assets\KMScripts\ReadOnlyWhenPlayingAttribute.cs" />
-     <Compile Include="Assets\KMScripts\ReflectionHelper.cs" />
      <Compile Include="Assets\ModuleStuff\Item.cs" />
      <Compile Include="Assets\ModuleStuff\ItemFactory.cs" />
      <Compile Include="Assets\ModuleStuff\ItemSelectable.cs" />
+     <Compile Include="Assets\ModuleStuff\ItemStatus.cs" />
      <Compile Include="Assets\ModuleStuff\Pt.cs" />
      <Compile Include="Assets\ModuleStuff\Ut.cs" />
      <Compile Include="Assets\ModuleStuff\VarietyModule.cs" />
@@ -291,12 +291,6 @@
  </Reference>
  <Reference Include="UnityEngine.StandardEvents">
  <HintPath>C:/Users/Timwi/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.standardevents@1.0.10/UnityEngine.StandardEvents.dll</HintPath>
- </Reference>
- <Reference Include="KeepCoding-EditorOnly">
- <HintPath>D:/c/KTANE/Variety/Assets/Plugins/KeepCoding-EditorOnly.dll</HintPath>
- </Reference>
- <Reference Include="KtaneUtils">
- <HintPath>D:/c/KTANE/Variety/Assets/Plugins/Managed/KtaneUtils.dll</HintPath>
  </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

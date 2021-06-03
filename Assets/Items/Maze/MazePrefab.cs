@@ -7,4 +7,8 @@ public class MazePrefab : MonoBehaviour
     public Mesh[] FrameMeshes;
     public Mesh[] BackMeshes;
     public KMSelectable[] Buttons;  // Up, Right, Down, Left
+    public GameObject Dot;
+    public GameObject Position;
+    public MeshRenderer PositionRenderer;
+    public Texture[] PositionTextures;  // Shape[3] + 3*Color[3]
 }

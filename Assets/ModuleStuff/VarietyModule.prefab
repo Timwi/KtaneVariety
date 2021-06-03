@@ -249,6 +249,8 @@ MonoBehaviour:
   Module: {fileID: 11429752}
   ModuleSelectable: {fileID: 11420650}
   Audio: {fileID: 11496072}
+  DummyTemplate: {fileID: 114483455830641592, guid: cdbba4b243f515e42898d98e0905bbee,
+    type: 2}
   WireTemplate: {fileID: 114516307220473506, guid: 736461cf7679a5848a5fbb03652fd28a,
     type: 2}
   KeyTemplate: {fileID: 114142699408684760, guid: a3fefa3f4e6e3b943a90186ee6fcf14f,

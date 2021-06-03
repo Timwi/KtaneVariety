@@ -369,12 +369,6 @@
  <Reference Include="UnityEngine.StandardEvents">
  <HintPath>C:/Users/Timwi/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.standardevents@1.0.10/UnityEngine.StandardEvents.dll</HintPath>
  </Reference>
- <Reference Include="KeepCoding-EditorOnly">
- <HintPath>D:/c/KTANE/Variety/Assets/Plugins/KeepCoding-EditorOnly.dll</HintPath>
- </Reference>
- <Reference Include="KtaneUtils">
- <HintPath>D:/c/KTANE/Variety/Assets/Plugins/Managed/KtaneUtils.dll</HintPath>
- </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Assembly-CSharp.csproj">

@@ -8,16 +8,16 @@ namespace Variety
 {
     public class Wire : Item
     {
-        public Wire(WireColor color, int[] cells) : base(cells)
+        public Wire(VarietyModule module, WireColor color, int[] cells) : base(module, cells)
         {
             Color = color;
         }
 
         public WireColor Color { get; private set; }
 
-        public override IEnumerable<ItemSelectable> SetUp(VarietyModule module)
+        public override IEnumerable<ItemSelectable> SetUp()
         {
-            var prefab = UnityEngine.Object.Instantiate(module.WireTemplate, module.transform);
+            var prefab = UnityEngine.Object.Instantiate(Module.WireTemplate, Module.transform);
             var seed = Rnd.Range(0, int.MaxValue);
 
             var x1 = GetX(Cells[0]);
@@ -27,7 +27,9 @@ namespace Variety
             var length = Math.Sqrt(Math.Pow(x2 - x1, 2) + Math.Pow(y2 - y1, 2));
             var numSegments = Math.Max(2, (int) Math.Floor(length / .02));
             prefab.WireMeshFilter.sharedMesh = WireMeshGenerator.GenerateWire(length, numSegments, WireMeshGenerator.WirePiece.Uncut, highlight: false, seed: seed);
-            prefab.WireHighlightMeshFilter.sharedMesh = WireMeshGenerator.GenerateWire(length, numSegments, WireMeshGenerator.WirePiece.Uncut, highlight: true, seed: seed);
+            var hl = WireMeshGenerator.GenerateWire(length, numSegments, WireMeshGenerator.WirePiece.Uncut, highlight: true, seed: seed);
+            prefab.WireHighlightMeshFilter.sharedMesh = hl;
+            prefab.WireCollider.sharedMesh = hl;
             prefab.WireMeshRenderer.sharedMaterial = prefab.WireMaterials[(int) Color];
 
             prefab.Base1.transform.localPosition = new Vector3(x1, 0.015f, y1);
@@ -42,5 +44,8 @@ namespace Variety
         {
             return string.Format("{0} wire from {1} to {2}", Color, coords(Cells[0]), coords(Cells[1]));
         }
+
+        public override int NumStates { get { return 1; } }
+        protected override bool CheckStateImmediately { get { return true; } }
     }
 }

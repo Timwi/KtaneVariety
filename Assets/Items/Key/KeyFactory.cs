@@ -7,7 +7,7 @@ namespace Variety
 {
     public class KeyFactory : ItemFactory
     {
-        public override Item Generate(HashSet<object> taken)
+        public override Item Generate(VarietyModule module, HashSet<object> taken)
         {
             if (taken.Contains(this))
                 return null;
@@ -25,7 +25,7 @@ namespace Variety
             taken.Add(cell + W + 1);
             taken.Add(this);
 
-            return new Key(cell);
+            return new Key(module, cell);
         }
     }
 }

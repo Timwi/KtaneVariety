@@ -17,12 +17,15 @@ public class VarietyModule : MonoBehaviour
     public KMSelectable ModuleSelectable;
     public KMAudio Audio;
 
+    public DummyPrefab DummyTemplate;
     public WirePrefab WireTemplate;
     public KeyPrefab KeyTemplate;
     public MazePrefab MazeTemplate;
 
     private static int _moduleIdCounter = 1;
-    internal int _moduleId;
+    private int _moduleId;
+    private Item[] _items;
+    private int _state;
 
     public const int W = 13;                // Number of slots in X direction
     public const int H = 10;                // Number of slots in Y direction
@@ -50,6 +53,7 @@ public class VarietyModule : MonoBehaviour
 
         var factories = new List<ItemFactoryInfo>
         {
+            new ItemFactoryInfo(0, new DummyFactory()),
             new ItemFactoryInfo(1, new WireFactory()),
             new ItemFactoryInfo(2, new KeyFactory()),
             new ItemFactoryInfo(2, new MazeFactory())
@@ -61,14 +65,14 @@ public class VarietyModule : MonoBehaviour
         {
             var cumulativeWeight = Ut.NewArray(factories.Count, i => factories.Take(i + 1).Sum(fi => fi.Weight));
             var rnd = Rnd.Range(0, cumulativeWeight.Last());
-            var fIx = cumulativeWeight.IndexOf(w => rnd < w);
-            var item = factories[fIx].Factory.Generate(takens);
+            var fIx = cumulativeWeight.Last() == 0 ? 0 : cumulativeWeight.IndexOf(w => rnd < w);
+            var item = factories[fIx].Factory.Generate(this, takens);
             if (item == null)
                 factories.RemoveAt(fIx);
             else
             {
                 Debug.LogFormat(@"[Variety #{0}] Placed {1}", _moduleId, item);
-                foreach (var inf in item.SetUp(this))
+                foreach (var inf in item.SetUp())
                 {
                     inf.Selectable.Parent = ModuleSelectable;
                     for (var i = 0; i < inf.Cells.Length; i++)

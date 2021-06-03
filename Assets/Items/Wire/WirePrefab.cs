@@ -11,4 +11,5 @@ public class WirePrefab : MonoBehaviour
     public MeshFilter WireMeshFilter;
     public MeshFilter WireHighlightMeshFilter;
     public MeshRenderer WireMeshRenderer;
+    public MeshCollider WireCollider;
 }
