@@ -38,6 +38,8 @@ namespace Variety
             return new Wire(module, color, new[] { Math.Min(cell1, cell2), Math.Max(cell1, cell2) });
         }
 
+        public override IEnumerable<object> Flavors { get { return Enum.GetValues(typeof(WireColor)).Cast<object>(); } }
+
         private static bool DoIntersect(int wire1s, int wire1e, int wire2s, int wire2e)
         {
             var w1sx = wire1s % W;

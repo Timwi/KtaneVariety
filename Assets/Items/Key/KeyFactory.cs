@@ -27,5 +27,7 @@ namespace Variety
 
             return new Key(module, cell);
         }
+
+        public override IEnumerable<object> Flavors { get { yield return "Key"; } }
     }
 }

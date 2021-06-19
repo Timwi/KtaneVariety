@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-
+using UnityEngine;
 using Rnd = UnityEngine.Random;
 
 namespace Variety
@@ -11,8 +11,17 @@ namespace Variety
         private const int MaxWidth = 3;
         private const int MinHeight = 3;
         private const int MaxHeight = 3;
-
+        private const int NumWidths = MaxWidth - MinWidth + 1;
+        private const int NumHeights = MaxHeight - MinHeight + 1;
         private const int NumShapes = 3 * 3;
+
+        private readonly MazeLayout[] _mazes = new MazeLayout[NumWidths * NumHeights * NumShapes];
+
+        public MazeFactory(MonoRandom rnd)
+        {
+            for (var i = 0; i < _mazes.Length; i++)
+                _mazes[i] = MazeLayout.Generate(i / NumShapes / NumHeights + MinWidth, (i / NumShapes) % NumHeights + MinHeight, rnd);
+        }
 
         public override Item Generate(VarietyModule module, HashSet<object> taken)
         {
@@ -39,7 +48,18 @@ namespace Variety
                     taken.Add(config.x + dx + W * (config.y + dy));
             taken.Add(string.Format("Maze:{0}:{1}", config.width, config.height));
 
-            return new Maze(module, config.x, config.y, config.width, config.height, Rnd.Range(0, config.width * config.height), Rnd.Range(0, NumShapes));
+            var shape = Rnd.Range(0, NumShapes);
+            return new Maze(module, config.x, config.y, config.width, config.height, Rnd.Range(0, config.width * config.height), shape, _mazes[shape + NumShapes * ((config.height - MinHeight) * NumHeights + (config.width - MinWidth))]);
+        }
+
+        public override IEnumerable<object> Flavors
+        {
+            get
+            {
+                for (var w = MinWidth; w <= MaxWidth; w++)
+                    for (var h = MinHeight; h <= MaxHeight; h++)
+                        yield return string.Format("Maze:{0}:{1}", w, h);
+            }
         }
     }
 }

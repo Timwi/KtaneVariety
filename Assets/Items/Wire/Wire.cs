@@ -15,6 +15,11 @@ namespace Variety
 
         public WireColor Color { get; private set; }
 
+        private bool _isCut = false;
+        private bool _isStuck = false;
+        public override bool IsStuck { get { return _isStuck; } }
+        public override void Checked() { _isStuck = _isCut; }
+
         public override IEnumerable<ItemSelectable> SetUp()
         {
             var prefab = UnityEngine.Object.Instantiate(Module.WireTemplate, Module.transform);
@@ -38,6 +43,20 @@ namespace Variety
             prefab.Wire.transform.localEulerAngles = new Vector3(0, Mathf.Atan2(y1 - y2, x2 - x1) / Mathf.PI * 180, 0);
 
             yield return new ItemSelectable(prefab.Wire, Cells);
+
+            prefab.Wire.OnInteract = delegate
+            {
+                prefab.WireMeshFilter.sharedMesh = WireMeshGenerator.GenerateWire(length, numSegments, WireMeshGenerator.WirePiece.Cut, highlight: false, seed: seed);
+                prefab.WireCopperMeshFilter.sharedMesh = WireMeshGenerator.GenerateWire(length, numSegments, WireMeshGenerator.WirePiece.Copper, highlight: false, seed: seed);
+                var highlightMesh = WireMeshGenerator.GenerateWire(length, numSegments, WireMeshGenerator.WirePiece.Cut, highlight: true, seed: seed);
+                prefab.WireHighlightMeshFilter.sharedMesh = highlightMesh;
+                var child = prefab.WireHighlightMeshFilter.transform.Find("Highlight(Clone)");
+                var filter = child == null ? null : child.GetComponent<MeshFilter>();
+                if (filter != null)
+                    filter.sharedMesh = highlightMesh;
+                State = 1;
+                return false;
+            };
         }
 
         public override string ToString()
@@ -45,7 +64,8 @@ namespace Variety
             return string.Format("{0} wire from {1} to {2}", Color, coords(Cells[0]), coords(Cells[1]));
         }
 
-        public override int NumStates { get { return 1; } }
-        protected override bool CheckStateImmediately { get { return true; } }
+        public override int NumStates { get { return 2; } }
+        public override object Flavor { get { return Color; } }
+        public override string DescribeState(int state, bool isSolution) { return state == 0 ? isSolution ? "don’t cut" : "uncut" : "cut"; }
     }
 }

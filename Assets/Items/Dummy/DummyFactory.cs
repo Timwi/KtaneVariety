@@ -17,5 +17,7 @@ namespace Variety
             taken.Add(cell);
             return new Dummy(module, cell);
         }
+
+        public override IEnumerable<object> Flavors { get { return Enumerable.Empty<object>(); } }
     }
 }

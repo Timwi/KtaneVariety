@@ -10,6 +10,7 @@ namespace Variety
         {
             TopLeftCell = cell;
             Turned = false;
+            State = -1;
         }
 
         public int TopLeftCell { get; private set; }
@@ -27,27 +28,24 @@ namespace Variety
 
         private bool TurnKey()
         {
-            if (Turned)
-                return false;
-
-            State = (int) Module.Bomb.GetTime() % 10;
-            Turned = true;
-            Module.StartCoroutine(KeyTurnAnimation());
+            Turned = !Turned;
+            State = Turned ? (int) Module.Bomb.GetTime() % 10 : -1;
+            Module.StartCoroutine(KeyTurnAnimation(Turned));
             return false;
         }
 
-        private IEnumerator KeyTurnAnimation()
+        private IEnumerator KeyTurnAnimation(bool forwards)
         {
             var elapsed = 0f;
             var duration = .16f;
 
             while (elapsed < duration)
             {
-                _core.transform.localEulerAngles = new Vector3(0, Mathf.Lerp(0, 60, elapsed / duration), 0);
+                _core.transform.localEulerAngles = new Vector3(0, Mathf.Lerp(forwards ? 0 : 60, forwards ? 60 : 0, elapsed / duration), 0);
                 yield return null;
                 elapsed += Time.deltaTime;
             }
-            _core.transform.localEulerAngles = new Vector3(0, 60, 0);
+            _core.transform.localEulerAngles = new Vector3(forwards ? 0 : 60, forwards ? 60 : 0, 0);
         }
 
         public override string ToString()
@@ -56,6 +54,7 @@ namespace Variety
         }
 
         public override int NumStates { get { return 10; } }
-        protected override bool CheckStateImmediately { get { return true; } }
+        public override object Flavor { get { return "Key"; } }
+        public override string DescribeState(int state, bool isSolution) { return state == -1 ? "unturned" : string.Format(isSolution ? "turn when timer last digit is {0}" : "turned when timer last digit was {0}", state); }
     }
 }

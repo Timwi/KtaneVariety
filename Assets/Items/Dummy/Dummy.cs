@@ -25,7 +25,8 @@ namespace Variety
             return string.Format("Dummy at {0}", coords(Cell));
         }
 
-        public override int NumStates { get { return 0; } }
-        protected override bool CheckStateImmediately { get { return true; } }
+        public override int NumStates { get { return 1; } }
+        public override object Flavor { get { return null; } }
+        public override string DescribeState(int state, bool isSolution) { return isSolution ? "do nothing" : "nothing"; }
     }
 }

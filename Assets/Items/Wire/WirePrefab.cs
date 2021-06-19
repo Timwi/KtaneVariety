@@ -10,6 +10,7 @@ public class WirePrefab : MonoBehaviour
     public KMSelectable Wire;
     public MeshFilter WireMeshFilter;
     public MeshFilter WireHighlightMeshFilter;
+    public MeshFilter WireCopperMeshFilter;
     public MeshRenderer WireMeshRenderer;
     public MeshCollider WireCollider;
 }
