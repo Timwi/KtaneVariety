@@ -42,7 +42,7 @@ namespace Variety
             prefab.Wire.transform.localPosition = new Vector3(x1, 0.035f, y1);
             prefab.Wire.transform.localEulerAngles = new Vector3(0, Mathf.Atan2(y1 - y2, x2 - x1) / Mathf.PI * 180, 0);
 
-            yield return new ItemSelectable(prefab.Wire, Cells);
+            yield return new ItemSelectable(prefab.Wire, Cells[0]);
 
             prefab.Wire.OnInteract = delegate
             {

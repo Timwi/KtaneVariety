@@ -259,6 +259,8 @@ MonoBehaviour:
     type: 2}
   MazeTemplate: {fileID: 114252283633867222, guid: c4b4acaea0ffb22418753925f26c86f7,
     type: 2}
+  SliderTemplate: {fileID: 114105864819355236, guid: 93c8298bdfbbdab48a21955c00330277,
+    type: 2}
 --- !u!114 &11489324
 MonoBehaviour:
   m_ObjectHideFlags: 1

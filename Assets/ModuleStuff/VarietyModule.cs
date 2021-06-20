@@ -22,6 +22,7 @@ public class VarietyModule : MonoBehaviour
     public WirePrefab WireTemplate;
     public KeyPrefab KeyTemplate;
     public MazePrefab MazeTemplate;
+    public SliderPrefab SliderTemplate;
 
     private static int _moduleIdCounter = 1;
     private int _moduleId;
@@ -62,6 +63,7 @@ public class VarietyModule : MonoBehaviour
             new ItemFactoryInfo(0, new DummyFactory()),
             new ItemFactoryInfo(1, new WireFactory()),
             new ItemFactoryInfo(2, new KeyFactory()),
+            new ItemFactoryInfo(2, new SliderFactory()),
             new ItemFactoryInfo(3, new MazeFactory(ruleSeedRnd))
         };
 
@@ -84,8 +86,7 @@ public class VarietyModule : MonoBehaviour
                 foreach (var inf in item.SetUp())
                 {
                     inf.Selectable.Parent = ModuleSelectable;
-                    for (var i = 0; i < inf.Cells.Length; i++)
-                        children[inf.Cells[i]] = inf.Selectable;
+                    children[inf.Cell] = inf.Selectable;
                 }
                 factories[fIx] = new ItemFactoryInfo(Math.Max(1, factories[fIx].Weight - 1), factories[fIx].Factory);
                 items.Add(item);

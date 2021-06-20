@@ -22,7 +22,7 @@ namespace Variety
             var prefab = Object.Instantiate(Module.KeyTemplate, Module.transform);
             _core = prefab.Core;
             prefab.transform.localPosition = new Vector3(GetX(TopLeftCell) + VarietyModule.CellWidth / 2, 0, GetY(TopLeftCell) - VarietyModule.CellHeight / 2);
-            yield return new ItemSelectable(prefab.Key, Cells);
+            yield return new ItemSelectable(prefab.Key, Cells[0]);
             prefab.Key.OnInteract = TurnKey;
         }
 

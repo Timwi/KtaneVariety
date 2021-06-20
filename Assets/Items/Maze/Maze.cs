@@ -56,10 +56,10 @@ namespace Variety
             prefab.Position.transform.localPosition = Pos(State);
             prefab.PositionRenderer.material.mainTexture = prefab.PositionTextures[Shape];
 
-            yield return new ItemSelectable(prefab.Buttons[0], new[] { X + Width / 2 + W * Y });
-            yield return new ItemSelectable(prefab.Buttons[1], new[] { X + Width - 1 + W * (Y + Height / 2) });
-            yield return new ItemSelectable(prefab.Buttons[2], new[] { X + Width / 2 + W * (Y + Height - 1) });
-            yield return new ItemSelectable(prefab.Buttons[3], new[] { X + W * (Y + Height / 2) });
+            yield return new ItemSelectable(prefab.Buttons[0], X + Width / 2 + W * Y);
+            yield return new ItemSelectable(prefab.Buttons[1], X + Width - 1 + W * (Y + Height / 2));
+            yield return new ItemSelectable(prefab.Buttons[2], X + Width / 2 + W * (Y + Height - 1));
+            yield return new ItemSelectable(prefab.Buttons[3], X + W * (Y + Height / 2));
 
             for (var i = 0; i < 4; i++)
                 prefab.Buttons[i].OnInteract = ButtonPress(i, prefab.Position, dots);
