@@ -89,7 +89,7 @@ namespace Variety
 
             var cutOffEarly = rnd.Next(2) == 0;
             var angleForward = rnd.Next(2) == 0;
-            var rotAngle = (rnd.NextDouble() * 20 + 10) * (angleForward ? -1 : 1);
+            var rotAngle = (rnd.NextDouble() * 5 + 2.5) * (angleForward ? -1 : 1);
             var rotAxisStart = new Pt(0, 0, 0);
             var rotAxisEnd = new Pt(rnd.NextDouble() * .01, 1, rnd.NextDouble() * .01);
             Func<Pt, Pt> rot = p => p.Rotate(rotAxisStart, rotAxisEnd, rotAngle);
@@ -99,7 +99,7 @@ namespace Variety
             var bcTube = partialWire(beforeCut);
 
             var cutOffPoint = (cutOffEarly ? numSegments - 2 : numSegments - 1) / 2;
-            rotAngle = (rnd.NextDouble() * 20 + 10) * (angleForward ? -1 : 1);
+            rotAngle = (rnd.NextDouble() * 5 + 2.5) * (angleForward ? -1 : 1);
             rotAxisStart = new Pt(length, 0, 0);
             rotAxisEnd = new Pt(length + rnd.NextDouble() * .01, 1, rnd.NextDouble() * .01);
             var afterCut =

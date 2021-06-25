@@ -29,17 +29,18 @@ namespace Variety
 
         private Vector3 Pos(int cell, bool dot = false)
         {
-            const float f = .6f;
-            return new Vector3(VarietyModule.CellWidth * ((cell % Width) - (Width - 1) * .5f) * f, dot ? .01502f : .01503f, VarietyModule.CellHeight * ((Height - 1) * .5f - (cell / Width)) * f);
+            return new Vector3((cell % Width) - (Width - 1) * .5f, dot ? .002f : .003f, (Height - 1) * .5f - (cell / Width));
         }
 
         public override IEnumerable<ItemSelectable> SetUp()
         {
             var prefab = Object.Instantiate(Module.MazeTemplate, Module.transform);
 
-            var cx = -VarietyModule.Width / 2 + (X + (Width - 1) * .5f) * VarietyModule.CellWidth;
-            var cy = VarietyModule.Height / 2 - (Y + (Height - 1) * .5f) * VarietyModule.CellHeight + VarietyModule.YOffset;
-            prefab.transform.localPosition = new Vector3(cx, 0, cy);
+            var cx = -VarietyModule.Width / 2 + (X + Width * .5f) * VarietyModule.CellWidth;
+            var cy = VarietyModule.Height / 2 - (Y + Height * .5f) * VarietyModule.CellHeight + VarietyModule.YOffset;
+            prefab.transform.localPosition = new Vector3(cx, .015f, cy);
+            prefab.transform.localRotation = Quaternion.identity;
+            prefab.transform.localScale = new Vector3(VarietyModule.CellWidth * .75f, VarietyModule.CellWidth * .75f, VarietyModule.CellWidth * .75f);
 
             var dots = new GameObject[Width * Height];
             for (var dx = 0; dx < Width; dx++)
@@ -48,13 +49,29 @@ namespace Variety
                     var dot = dx == 0 && dy == 0 ? prefab.Dot : Object.Instantiate(prefab.Dot, prefab.transform);
                     dot.transform.localPosition = Pos(dx + Width * dy, dot: true);
                     dot.transform.localEulerAngles = new Vector3(90, 0, 0);
-                    dot.transform.localScale = new Vector3(.0025f, .0025f, .0025f);
+                    dot.transform.localScale = new Vector3(.3f, .3f, .3f);
                     dot.SetActive(dx + Width * dy != State);
                     dots[dx + Width * dy] = dot;
                 }
 
             prefab.Position.transform.localPosition = Pos(State);
+            prefab.Position.transform.localScale = new Vector3(1, 1, 1);
             prefab.PositionRenderer.material.mainTexture = prefab.PositionTextures[Shape];
+
+            var frameMeshName = string.Format("Frame{0}x{1}", Width, Height);
+            prefab.Frame.sharedMesh = prefab.FrameMeshes.First(m => m.name == frameMeshName);
+            var backMeshName = string.Format("Back{0}x{1}", Width, Height);
+            prefab.Back.sharedMesh = prefab.BackMeshes.First(m => m.name == backMeshName);
+
+            prefab.ButtonPos[0].localPosition = new Vector3(0, 0, -.5f - .5f * Height);
+            prefab.ButtonPos[1].localPosition = new Vector3(0, 0, -.5f - .5f * Width);
+            prefab.ButtonPos[2].localPosition = new Vector3(0, 0, -.5f - .5f * Height);
+            prefab.ButtonPos[3].localPosition = new Vector3(0, 0, -.5f - .5f * Width);
+
+            prefab.ButtonColliders[0].center = new Vector3(0, 0, -.25f - .5f * Height);
+            prefab.ButtonColliders[1].center = new Vector3(0, 0, -.25f - .5f * Width);
+            prefab.ButtonColliders[2].center = new Vector3(0, 0, -.25f - .5f * Height);
+            prefab.ButtonColliders[3].center = new Vector3(0, 0, -.25f - .5f * Width);
 
             yield return new ItemSelectable(prefab.Buttons[0], X + Width / 2 + W * Y);
             yield return new ItemSelectable(prefab.Buttons[1], X + Width - 1 + W * (Y + Height / 2));

@@ -12,7 +12,7 @@ namespace Variety
             if (taken.Contains(this))
                 return null;
 
-            var availableCells = Enumerable.Range(0, W * H).Where(i => i % W < W - 1 && i / W < H - 1 && !taken.Contains(i) && !taken.Contains(i + 1) && !taken.Contains(i + W) && !taken.Contains(i + W + 1)).ToArray();
+            var availableCells = Enumerable.Range(0, W * H).Where(i => isRectAvailable(taken, i % W, i / W, 2, 2)).ToArray();
             if (availableCells.Length == 0)
                 return null;
 

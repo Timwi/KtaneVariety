@@ -45,7 +45,7 @@ namespace Variety
                 yield return null;
                 elapsed += Time.deltaTime;
             }
-            _core.transform.localEulerAngles = new Vector3(forwards ? 0 : 60, forwards ? 60 : 0, 0);
+            _core.transform.localEulerAngles = new Vector3(0, forwards ? 60 : 0, 0);
         }
 
         public override string ToString()

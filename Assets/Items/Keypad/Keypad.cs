@@ -32,8 +32,7 @@ namespace Variety
         private KeypadPrefab _prefab;
 
         public Keypad(VarietyModule module, KeypadSize size, int topLeftCell)
-            : base(module, Enumerable.Range(0, 4 * Widths[size] * Heights[size])
-                  .Select(subcell => topLeftCell % W + subcell % (2 * Widths[size]) + W * (topLeftCell / W + subcell / (2 * Widths[size]))).ToArray())
+            : base(module, CellRect(topLeftCell, 2 * Widths[size], 2 * Heights[size]))
         {
             Size = size;
             State = -1;
@@ -53,11 +52,10 @@ namespace Variety
             _prefab.transform.localScale = new Vector3(1, 1, 1);
             _leds = new MeshRenderer[w * h];
 
-            _prefab.Backing.localScale = new Vector3(d * w, d * h);
+            _prefab.Backing.localScale = new Vector3(d * w + .001f, d * h + .001f);
 
             for (var keyIx = 0; keyIx < w * h; keyIx++)
             {
-                var slotIx = keyIx % w * 2 + Cells[0] % W + W * (keyIx / w * 2 + Cells[0] / W);
                 var key = keyIx == 0 ? _prefab.KeyTemplate : Object.Instantiate(_prefab.KeyTemplate, _prefab.transform);
                 key.name = string.Format("Key {0}", keyIx + 1);
                 key.transform.localPosition = new Vector3(d * (keyIx % w - (w - 1) * .5f), 0, d * ((h - 1 - keyIx / w) - (h - 1) * .5f));
@@ -97,7 +95,6 @@ namespace Variety
                         list.RemoveAt(lIx);
                     }
                     State = newState;
-                    Debug.LogFormat("New state: {0}, seq: {1}, rev: {2}", newState, _presses.Join(", "), getSequence(newState).Join(", "));
                 }
                 else
                     State = -1;
@@ -125,6 +122,7 @@ namespace Variety
             {
                 var nx = state % list.Count;
                 answer[ix++] = list[nx];
+                state /= list.Count;
                 list.RemoveAt(nx);
             }
             return answer;

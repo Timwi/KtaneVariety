@@ -14,7 +14,10 @@ namespace Variety
         public SliderOrientation Orientation { get; private set; }
         public int NumTicks { get; private set; }
 
-        public Slider(VarietyModule module, int x, int y, SliderOrientation orientation, int[] cells) : base(module, cells)
+        public static int SW(SliderOrientation orientation) { return orientation == SliderOrientation.Horizontal ? LongSlots : ShortSlots; }
+        public static int SH(SliderOrientation orientation) { return orientation == SliderOrientation.Horizontal ? ShortSlots : LongSlots; }
+
+        public Slider(VarietyModule module, int x, int y, SliderOrientation orientation) : base(module, CellRect(x + W * y, SW(orientation), SH(orientation)))
         {
             X = x;
             Y = y;
@@ -25,9 +28,6 @@ namespace Variety
         public override IEnumerable<ItemSelectable> SetUp()
         {
             var prefab = Object.Instantiate(Module.SliderTemplate, Module.transform);
-
-            var sw = Orientation == SliderOrientation.Horizontal ? LongSlots : ShortSlots;
-            var sh = Orientation == SliderOrientation.Horizontal ? ShortSlots : LongSlots;
 
             if (Orientation == SliderOrientation.Horizontal)
             {
@@ -72,7 +72,7 @@ namespace Variety
                 return false;
             };
 
-            yield return new ItemSelectable(prefab.Knob, X + sw / 2 + W * (Y + sh / 2));
+            yield return new ItemSelectable(prefab.Knob, X + SW(Orientation) / 2 + W * (Y + SH(Orientation) / 2));
         }
 
         private IEnumerator MoveKnob(float startX, float endX, Transform knob)

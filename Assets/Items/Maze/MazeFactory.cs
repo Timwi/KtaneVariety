@@ -8,9 +8,9 @@ namespace Variety
     public class MazeFactory : ItemFactory
     {
         private const int MinWidth = 3;
-        private const int MaxWidth = 3;
+        private const int MaxWidth = 4;
         private const int MinHeight = 3;
-        private const int MaxHeight = 3;
+        private const int MaxHeight = 4;
         private const int NumWidths = MaxWidth - MinWidth + 1;
         private const int NumHeights = MaxHeight - MinHeight + 1;
         private const int NumShapes = 3 * 3;
@@ -29,13 +29,9 @@ namespace Variety
                 from width in Enumerable.Range(MinWidth, MaxWidth - MinWidth + 1)
                 from height in Enumerable.Range(MinHeight, MaxHeight - MinHeight + 1)
                 where !taken.Contains(string.Format("Maze:{0}:{1}", width, height))
-                from x in Enumerable.Range(0, W - width + 1)
-                from y in Enumerable.Range(0, H - height + 1)
-                where (
-                    from dx in Enumerable.Range(0, width)
-                    from dy in Enumerable.Range(0, height)
-                    select taken.Contains(x + dx + W * (y + dy))).All(b => !b)
-                select new { x, y, width, height }).ToArray();
+                from cell in Enumerable.Range(0, W * H)
+                where isRectAvailable(taken, cell, width + 1, height + 1)
+                select new { Cell = cell, Width = width, Height = height }).ToArray();
 
             if (availableConfigs.Length == 0)
                 return null;
@@ -43,13 +39,11 @@ namespace Variety
             var configIx = Rnd.Range(0, availableConfigs.Length);
             var config = availableConfigs[configIx];
 
-            for (var dx = 0; dx < config.width; dx++)
-                for (var dy = 0; dy < config.height; dy++)
-                    taken.Add(config.x + dx + W * (config.y + dy));
-            taken.Add(string.Format("Maze:{0}:{1}", config.width, config.height));
+            claimRect(taken, config.Cell, config.Width + 1, config.Height + 1);
+            taken.Add(string.Format("Maze:{0}:{1}", config.Width, config.Height));
 
             var shape = Rnd.Range(0, NumShapes);
-            return new Maze(module, config.x, config.y, config.width, config.height, Rnd.Range(0, config.width * config.height), shape, _mazes[shape + NumShapes * ((config.height - MinHeight) * NumHeights + (config.width - MinWidth))]);
+            return new Maze(module, config.Cell % W, config.Cell / W, config.Width, config.Height, Rnd.Range(0, config.Width * config.Height), shape, _mazes[shape + NumShapes * ((config.Height - MinHeight) * NumHeights + (config.Width - MinWidth))]);
         }
 
         public override IEnumerable<object> Flavors

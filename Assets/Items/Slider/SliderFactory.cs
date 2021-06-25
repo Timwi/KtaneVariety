@@ -11,23 +11,18 @@ namespace Variety
             if (orientations.Length == 0)
                 return null;
 
-            var positions = orientations.SelectMany(or =>
-            {
-                var sw = or == SliderOrientation.Horizontal ? Slider.LongSlots : Slider.ShortSlots;
-                var sh = or == SliderOrientation.Horizontal ? Slider.ShortSlots : Slider.LongSlots;
-                var cells = Enumerable.Range(0, sw * sh).Select(v => v % sw + W * (v / sw)).ToArray();
-                return Enumerable.Range(0, W * H)
-                    .Where(c => c % W <= W - sw && c / W <= H - sh && cells.All(v => !taken.Contains(v + c)))
-                    .Select(c => new { X = c % W, Y = c / W, Orientation = or, Cells = cells.Select(v => v + c).ToArray() });
-            }).ToArray();
+            var positions = orientations
+                .SelectMany(or => Enumerable.Range(0, W * H)
+                    .Where(c => isRectAvailable(taken, c, Slider.SW(or), Slider.SH(or)))
+                    .Select(c => new { X = c % W, Y = c / W, Orientation = or }))
+                .ToArray();
             if (positions.Length == 0)
                 return null;
 
             var position = positions.PickRandom();
-            foreach (var cell in position.Cells)
-                taken.Add(cell);
+            claimRect(taken, position.X, position.Y, Slider.SW(position.Orientation), Slider.SH(position.Orientation));
             taken.Add(position.Orientation);
-            return new Slider(module, position.X, position.Y, position.Orientation, position.Cells);
+            return new Slider(module, position.X, position.Y, position.Orientation);
         }
 
         public override IEnumerable<object> Flavors

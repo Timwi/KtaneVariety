@@ -65,8 +65,8 @@ public class VarietyModule : MonoBehaviour
             new ItemFactoryInfo(1, new WireFactory()),
             new ItemFactoryInfo(2, new KeyFactory()),
             new ItemFactoryInfo(2, new SliderFactory()),
-            new ItemFactoryInfo(3, new KeypadFactory()),
-            new ItemFactoryInfo(3, new MazeFactory(ruleSeedRnd))
+            new ItemFactoryInfo(2, new KeypadFactory()),
+            new ItemFactoryInfo(5, new MazeFactory(ruleSeedRnd))
         };
 
         _flavorOrder = ruleSeedRnd.ShuffleFisherYates(factories.SelectMany(inf => inf.Factory.Flavors).ToArray());
@@ -84,7 +84,6 @@ public class VarietyModule : MonoBehaviour
                 factories.RemoveAt(fIx);
             else
             {
-                Debug.LogFormat(@"[Variety #{0}] Placed {1}", _moduleId, item);
                 foreach (var inf in item.SetUp())
                 {
                     inf.Selectable.Parent = ModuleSelectable;
@@ -124,8 +123,8 @@ public class VarietyModule : MonoBehaviour
             {
                 if (!_items[i].IsStuck && _items[i].State != _expectedStates[i])
                 {
-                    Debug.LogFormat(@"[Variety #{0}] You received a strike because you changed “{1}” to “{2}” before changing “{3}” to “{4}”.",
-                        _moduleId, _items[itemIx], _items[itemIx].DescribeState(newState), _items[i], _items[i].DescribeState(_expectedStates[i]));
+                    Debug.LogFormat(@"[Variety #{0}] You received a strike because you changed “{1}” to “{2}” before changing “{3}” to “{4}” (is: “{5}”).",
+                        _moduleId, _items[itemIx], _items[itemIx].DescribeState(newState), _items[i], _items[i].DescribeState(_expectedStates[i]), _items[i].DescribeState(_items[i].State));
                     _items[i].Checked();
                     Module.HandleStrike();
                     return;

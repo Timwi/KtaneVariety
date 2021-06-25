@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Variety
 {
@@ -40,5 +41,7 @@ namespace Variety
 
         protected static float GetX(int ix) { return -VarietyModule.Width / 2 + (ix % W) * VarietyModule.CellWidth; }
         protected static float GetY(int ix) { return VarietyModule.Height / 2 - (ix / W) * VarietyModule.CellHeight + VarietyModule.YOffset; }
+
+        protected static int[] CellRect(int cell, int width, int height) { return Enumerable.Range(0, width * height).Select(i => i % width + cell % W + W * (i / width + cell / W)).ToArray(); }
     }
 }

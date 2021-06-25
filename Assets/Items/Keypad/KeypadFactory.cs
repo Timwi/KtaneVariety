@@ -13,18 +13,14 @@ namespace Variety
             var availableSlots = Keypad.Widths.Keys
                 .Where(key => !taken.Contains(key))
                 .SelectMany(key => Enumerable.Range(0, W * H)
-                    .Where(cell => cell % W + 2 * Keypad.Widths[key] <= W && cell / W + 2 * Keypad.Heights[key] <= H)
-                    .Where(topleft => Enumerable.Range(0, 4 * Keypad.Widths[key] * Keypad.Heights[key])
-                        .All(subcell => !taken.Contains(subcell % (2 * Keypad.Widths[key]) + topleft % W + W * (subcell / (2 * Keypad.Widths[key]) + topleft / W))))
+                    .Where(topleft => isRectAvailable(taken, topleft, 2 * Keypad.Widths[key], 2 * Keypad.Heights[key]))
                     .Select(topleft => new { TopLeft = topleft, Size = key }))
                 .ToArray();
             if (availableSlots.Length == 0)
                 return null;
 
             var slot = availableSlots[Rnd.Range(0, availableSlots.Length)];
-            for (var x = 0; x < 2 * Keypad.Widths[slot.Size]; x++)
-                for (var y = 0; y < 2 * Keypad.Heights[slot.Size]; y++)
-                    taken.Add(slot.TopLeft + x + W * y);
+            claimRect(taken, slot.TopLeft, 2 * Keypad.Widths[slot.Size], 2 * Keypad.Heights[slot.Size]);
             taken.Add(slot.Size);
 
             return new Keypad(module, slot.Size, slot.TopLeft);

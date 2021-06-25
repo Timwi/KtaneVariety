@@ -17,13 +17,13 @@ namespace Variety
 
             var existingWires = taken.OfType<string>().Where(s => s.StartsWith("Wire:")).Select(s => s.Split(':')).Select(arr => new { Cell1 = int.Parse(arr[1]), Cell2 = int.Parse(arr[2]) }).ToArray();
 
-            var availableCells = Enumerable.Range(0, W * H).Where(cell => !taken.Contains(cell) && !existingWires.Any(ew => LiesOn(cell, ew.Cell1, ew.Cell2))).ToArray();
+            var availableCells = Enumerable.Range(0, W * H).Where(cell => !taken.Contains(cell) && !existingWires.Any(ew => liesOn(cell, ew.Cell1, ew.Cell2))).ToArray();
 
             var availableWires = new List<int>();
             for (var startIx = 0; startIx < availableCells.Length; startIx++)
                 for (var endIx = startIx + 1; endIx < availableCells.Length; endIx++)
                     if ((Math.Abs(availableCells[startIx] % W - availableCells[endIx] % W) > 1 || Math.Abs(availableCells[startIx] / W - availableCells[endIx] / W) > 1)
-                        && !existingWires.Any(ew => DoIntersect(ew.Cell1, ew.Cell2, availableCells[startIx], availableCells[endIx]))
+                        && !existingWires.Any(ew => doIntersect(ew.Cell1, ew.Cell2, availableCells[startIx], availableCells[endIx]))
                         && Enumerable.Range(0, W * H).All(cell => distance(availableCells[startIx] % W, availableCells[startIx] / W, availableCells[endIx] % W, availableCells[endIx] / W, cell % W, cell / W) >= _allowedDistance || !taken.Contains(cell)))
                         availableWires.Add(availableCells[endIx] * W * H + availableCells[startIx]);
 
@@ -46,7 +46,7 @@ namespace Variety
 
         public override IEnumerable<object> Flavors { get { return Enum.GetValues(typeof(WireColor)).Cast<object>(); } }
 
-        private static bool DoIntersect(int wire1s, int wire1e, int wire2s, int wire2e)
+        private static bool doIntersect(int wire1s, int wire1e, int wire2s, int wire2e)
         {
             var w1sx = wire1s % W;
             var w1sy = wire1s / W;
@@ -70,7 +70,7 @@ namespace Variety
                 : l1 <= 0 && l1 >= det && l2 <= 0 && l2 >= det);
         }
 
-        private static bool LiesOn(int point, int start, int end)
+        private static bool liesOn(int point, int start, int end)
         {
             var x = point % W;
             var y = point / W;
@@ -82,7 +82,7 @@ namespace Variety
             if (sx == ex)
                 return x == sx && y >= sy && y <= ey;
             if (sx > ex)
-                return LiesOn(point, end, start);
+                return liesOn(point, end, start);
             return x >= sx && x <= ex && (x - sx) * (ey - sy) == (ex - sx) * (y - sy);
         }
 

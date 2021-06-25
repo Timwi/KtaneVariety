@@ -15,10 +15,9 @@ namespace Variety
 
         public WireColor Color { get; private set; }
 
-        private bool _isCut = false;
         private bool _isStuck = false;
         public override bool IsStuck { get { return _isStuck; } }
-        public override void Checked() { _isStuck = _isCut; }
+        public override void Checked() { _isStuck = State == 1; }
 
         public override IEnumerable<ItemSelectable> SetUp()
         {
