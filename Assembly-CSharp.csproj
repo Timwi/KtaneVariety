@@ -57,6 +57,10 @@
      <Compile Include="Assets\Items\Key\Key.cs" />
      <Compile Include="Assets\Items\Key\KeyFactory.cs" />
      <Compile Include="Assets\Items\Key\KeyPrefab.cs" />
+     <Compile Include="Assets\Items\Keypad\Keypad.cs" />
+     <Compile Include="Assets\Items\Keypad\KeypadFactory.cs" />
+     <Compile Include="Assets\Items\Keypad\KeypadPrefab.cs" />
+     <Compile Include="Assets\Items\Keypad\KeypadSize.cs" />
      <Compile Include="Assets\Items\Maze\Maze.cs" />
      <Compile Include="Assets\Items\Maze\MazeFactory.cs" />
      <Compile Include="Assets\Items\Maze\MazeLayout.cs" />

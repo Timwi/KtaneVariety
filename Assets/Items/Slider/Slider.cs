@@ -50,7 +50,7 @@ namespace Variety
             for (var tick = 0; tick < NumTicks; tick++)
             {
                 var obj = tick == 0 ? prefab.TickTemplate : Object.Instantiate(prefab.TickTemplate, prefab.transform);
-                obj.transform.localPosition = new Vector3(XPosition(tick), .0151f, .005f);
+                obj.transform.localPosition = new Vector3(XPosition(tick), .0151f, .0075f);
                 obj.transform.localRotation = Quaternion.Euler(90, 0, 0);
                 obj.transform.localScale = new Vector3(.001f, .005f, 1);
             }

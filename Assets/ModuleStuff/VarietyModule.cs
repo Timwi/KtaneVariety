@@ -23,6 +23,7 @@ public class VarietyModule : MonoBehaviour
     public KeyPrefab KeyTemplate;
     public MazePrefab MazeTemplate;
     public SliderPrefab SliderTemplate;
+    public KeypadPrefab KeypadTemplate;
 
     private static int _moduleIdCounter = 1;
     private int _moduleId;
@@ -64,6 +65,7 @@ public class VarietyModule : MonoBehaviour
             new ItemFactoryInfo(1, new WireFactory()),
             new ItemFactoryInfo(2, new KeyFactory()),
             new ItemFactoryInfo(2, new SliderFactory()),
+            new ItemFactoryInfo(3, new KeypadFactory()),
             new ItemFactoryInfo(3, new MazeFactory(ruleSeedRnd))
         };
 

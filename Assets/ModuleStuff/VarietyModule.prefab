@@ -261,6 +261,8 @@ MonoBehaviour:
     type: 2}
   SliderTemplate: {fileID: 114105864819355236, guid: 93c8298bdfbbdab48a21955c00330277,
     type: 2}
+  KeypadTemplate: {fileID: 114569308335049856, guid: 62241a94459821341a3000a0cc4b3b20,
+    type: 2}
 --- !u!114 &11489324
 MonoBehaviour:
   m_ObjectHideFlags: 1

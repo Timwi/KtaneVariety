@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using Rnd = UnityEngine.Random;
 
 namespace Variety
 {
     public class WireFactory : ItemFactory
     {
+        private const double _allowedDistance = .5;
+
         public override Item Generate(VarietyModule module, HashSet<object> taken)
         {
             var availableColors = ((WireColor[]) Enum.GetValues(typeof(WireColor))).Where(c => !taken.Contains(c)).ToArray();
@@ -21,7 +22,9 @@ namespace Variety
             var availableWires = new List<int>();
             for (var startIx = 0; startIx < availableCells.Length; startIx++)
                 for (var endIx = startIx + 1; endIx < availableCells.Length; endIx++)
-                    if (!existingWires.Any(ew => DoIntersect(ew.Cell1, ew.Cell2, availableCells[startIx], availableCells[endIx])))
+                    if ((Math.Abs(availableCells[startIx] % W - availableCells[endIx] % W) > 1 || Math.Abs(availableCells[startIx] / W - availableCells[endIx] / W) > 1)
+                        && !existingWires.Any(ew => DoIntersect(ew.Cell1, ew.Cell2, availableCells[startIx], availableCells[endIx]))
+                        && Enumerable.Range(0, W * H).All(cell => distance(availableCells[startIx] % W, availableCells[startIx] / W, availableCells[endIx] % W, availableCells[endIx] / W, cell % W, cell / W) >= _allowedDistance || !taken.Contains(cell)))
                         availableWires.Add(availableCells[endIx] * W * H + availableCells[startIx]);
 
             if (availableWires.Count == 0)
@@ -35,6 +38,9 @@ namespace Variety
             taken.Add(cell2);
             taken.Add(color);
             taken.Add(string.Format("Wire:{0}:{1}", cell1, cell2));
+            for (var cell = 0; cell < W * H; cell++)
+                if (distance(cell1 % W, cell1 / W, cell2 % W, cell2 / W, cell % W, cell / W) < _allowedDistance)
+                    taken.Add(cell);
             return new Wire(module, color, new[] { Math.Min(cell1, cell2), Math.Max(cell1, cell2) });
         }
 
@@ -78,6 +84,24 @@ namespace Variety
             if (sx > ex)
                 return LiesOn(point, end, start);
             return x >= sx && x <= ex && (x - sx) * (ey - sy) == (ex - sx) * (y - sy);
+        }
+
+        private static double lambdaOfPointDroppedPerpendicularly(int lx1, int ly1, int lx2, int ly2, int px, int py)
+        {
+            double dirX = lx2 - lx1;
+            double dirY = ly2 - ly1;
+            return (dirX * (px - lx1) + dirY * (py - ly1)) / (dirX * dirX + dirY * dirY);
+        }
+
+        private static double distance(int lx1, int ly1, int lx2, int ly2, int px, int py)
+        {
+            var lambda = lambdaOfPointDroppedPerpendicularly(lx1, ly1, lx2, ly2, px, py);
+            var dx = lx1 + lambda * (lx2 - lx1);
+            var dy = ly1 + lambda * (ly2 - ly1);
+            return
+                lambda <= 0 ? Math.Sqrt(Math.Pow(px - lx1, 2) + Math.Pow(py - ly1, 2)) :
+                lambda >= 1 ? Math.Sqrt(Math.Pow(px - lx2, 2) + Math.Pow(py - ly2, 2)) :
+                Math.Sqrt(Math.Pow(px - dx, 2) + Math.Pow(py - dy, 2));
         }
     }
 }
