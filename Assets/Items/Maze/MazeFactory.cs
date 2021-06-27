@@ -43,7 +43,8 @@ namespace Variety
             taken.Add(string.Format("Maze:{0}:{1}", config.Width, config.Height));
 
             var shape = Rnd.Range(0, NumShapes);
-            return new Maze(module, config.Cell % W, config.Cell / W, config.Width, config.Height, Rnd.Range(0, config.Width * config.Height), shape, _mazes[shape + NumShapes * ((config.Height - MinHeight) * NumHeights + (config.Width - MinWidth))]);
+            return new Maze(module, config.Cell % W, config.Cell / W, config.Width, config.Height, Rnd.Range(0, config.Width * config.Height), shape,
+                _mazes[shape + NumShapes * (config.Height - MinHeight + NumHeights * (config.Width - MinWidth))]);
         }
 
         public override IEnumerable<object> Flavors

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace Variety
 {
@@ -44,7 +45,8 @@ namespace Variety
 
             while (todo.Count > 0)
             {
-                var sq = active[rnd.Next(0, active.Count)];
+                var activeIx = rnd.Next(0, active.Count);
+                var sq = active[activeIx];
                 var adjs = new List<int>();
                 if (sq % w > 0 && todo.Contains(sq - 1))
                     adjs.Add(sq - 1);
@@ -57,7 +59,7 @@ namespace Variety
 
                 if (adjs.Count == 0)
                 {
-                    active.Remove(sq);
+                    active.RemoveAt(activeIx);
                     continue;
                 }
                 else
