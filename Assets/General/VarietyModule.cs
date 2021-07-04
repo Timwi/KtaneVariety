@@ -27,6 +27,7 @@ public class VarietyModule : MonoBehaviour
     public KeypadPrefab KeypadTemplate;
     public KnobPrefab KnobTemplate;
     public DigitDisplayPrefab DigitDisplayTemplate;
+    public SwitchPrefab SwitchTemplate;
 
     private static int _moduleIdCounter = 1;
     private int _moduleId;
@@ -66,19 +67,26 @@ public class VarietyModule : MonoBehaviour
 
         var factories = new List<ItemFactoryInfo>
         {
-            //new ItemFactoryInfo(0, new DummyFactory()),
+            new ItemFactoryInfo(0, new DummyFactory()),
             new ItemFactoryInfo(1, new WireFactory()),
             new ItemFactoryInfo(2, new KeyFactory()),
             new ItemFactoryInfo(2, new SliderFactory()),
             new ItemFactoryInfo(2, new KnobFactory()),
             new ItemFactoryInfo(2, new DigitDisplayFactory()),
+            new ItemFactoryInfo(2, new SwitchFactory()),
             new ItemFactoryInfo(3, new KeypadFactory()),
             new ItemFactoryInfo(3, new MazeFactory(ruleSeedRnd))
         };
         _flavorOrder = ruleSeedRnd.ShuffleFisherYates(factories.SelectMany(inf => inf.Factory.Flavors).ToArray());
 
         // Decide what’s going to be on the module
+        var iterations = 0;
         tryAgain:
+        iterations++;
+        Debug.LogFormat(@"<Variety #{0}> Iteration {1}", _moduleId, iterations);
+        if (iterations > 100)
+            throw new InvalidOperationException();
+
         var remainingFactories = factories.ToList();
         var takens = new HashSet<object>();
         var items = new List<Item>();
@@ -122,7 +130,7 @@ public class VarietyModule : MonoBehaviour
             mult *= (ulong) _items[i].NumStates;
             //Debug.LogFormat(@"<Variety #{0}> states = {1}, mult = {2}", _moduleId, _items[i].NumStates, mult);
         }
-        if (state.ToString().Length > 15)
+        if (state.ToString().Length > 17)
             goto tryAgain;
 
         Debug.LogFormat(@"[Variety #{0}] State: {1}", _moduleId, state);

@@ -81,6 +81,10 @@
      <Compile Include="Assets\Items\Slider\SliderFactory.cs" />
      <Compile Include="Assets\Items\Slider\SliderOrientation.cs" />
      <Compile Include="Assets\Items\Slider\SliderPrefab.cs" />
+     <Compile Include="Assets\Items\Switch\Switch.cs" />
+     <Compile Include="Assets\Items\Switch\SwitchColor.cs" />
+     <Compile Include="Assets\Items\Switch\SwitchFactory.cs" />
+     <Compile Include="Assets\Items\Switch\SwitchPrefab.cs" />
      <Compile Include="Assets\Items\Wire\Wire.cs" />
      <Compile Include="Assets\Items\Wire\WireColor.cs" />
      <Compile Include="Assets\Items\Wire\WireFactory.cs" />

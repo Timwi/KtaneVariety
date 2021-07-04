@@ -58,11 +58,7 @@ namespace Variety
             };
         }
 
-        public override string ToString()
-        {
-            return string.Format("{0} wire from {1} to {2}", Color, coords(Cells[0]), coords(Cells[1]));
-        }
-
+        public override string ToString() { return string.Format("{0} wire from {1} to {2}", Color, coords(Cells[0]), coords(Cells[1])); }
         public override bool CanProvideStage { get { return false; } }
         public override int NumStates { get { return 2; } }
         public override object Flavor { get { return Color; } }
