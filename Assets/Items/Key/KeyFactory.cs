@@ -16,13 +16,8 @@ namespace Variety
             if (availableCells.Length == 0)
                 return null;
 
-            var cellIx = Rnd.Range(0, availableCells.Length);
-            var cell = availableCells[cellIx];
-
-            taken.Add(cell);
-            taken.Add(cell + 1);
-            taken.Add(cell + W);
-            taken.Add(cell + W + 1);
+            var cell = availableCells[Rnd.Range(0, availableCells.Length)];
+            claimRect(taken, cell, 2, 2);
             taken.Add(this);
 
             return new Key(module, cell);

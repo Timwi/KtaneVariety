@@ -63,8 +63,18 @@ namespace Variety
             return string.Format("{0} wire from {1} to {2}", Color, coords(Cells[0]), coords(Cells[1]));
         }
 
+        public override bool CanProvideStage { get { return false; } }
         public override int NumStates { get { return 2; } }
         public override object Flavor { get { return Color; } }
-        public override string DescribeState(int state, bool isSolution) { return state == 0 ? isSolution ? "don’t cut" : "uncut" : "cut"; }
+        public override string DescribeSolutionState(int state) { return string.Format(state == 0 ? "don’t cut the {0} wire" : "cut the {0} wire", Color.ToString().ToLowerInvariant()); }
+        public override string DescribeWhatUserDid() { return string.Format("you cut the {0} wire", Color.ToString().ToLowerInvariant()); }
+        public override string DescribeWhatUserShouldHaveDone(int desiredState)
+        {
+            return string.Format(
+                State == 0 && desiredState == 1 ? "you should have cut the {0} wire" :
+                State == 1 && desiredState == 0 ? "you should not have cut the {0} wire" :
+                "[ERROR]",
+                Color.ToString().ToLowerInvariant());
+        }
     }
 }

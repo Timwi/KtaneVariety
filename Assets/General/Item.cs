@@ -14,9 +14,14 @@ namespace Variety
         public abstract override string ToString();
         public abstract int NumStates { get; }
         public abstract object Flavor { get; }
-        public abstract string DescribeState(int state, bool isSolution = false);
+        public virtual bool CanProvideStage { get { return true; } }
+        public abstract string DescribeSolutionState(int state);
+        public abstract string DescribeWhatUserDid();
+        public abstract string DescribeWhatUserShouldHaveDone(int desiredState);
         public virtual void Checked() { }
         public virtual bool IsStuck { get { return false; } }
+        public virtual bool DecideStates(int numPriorNonWireItems) { return true; }
+        public virtual void ReceiveItemChange(int stageItemIndex) { }
 
         private int _state;
         public int State
@@ -43,5 +48,7 @@ namespace Variety
         protected static float GetY(int ix) { return VarietyModule.Height / 2 - (ix / W) * VarietyModule.CellHeight + VarietyModule.YOffset; }
 
         protected static int[] CellRect(int cell, int width, int height) { return Enumerable.Range(0, width * height).Select(i => i % width + cell % W + W * (i / width + cell / W)).ToArray(); }
+        protected static float GetXOfCellRect(int cell, int width) { return -VarietyModule.Width / 2 + (cell % W + (width - 1) * .5f) * VarietyModule.CellWidth; }
+        protected static float GetYOfCellRect(int cell, int height) { return VarietyModule.Height / 2 - (cell / W + (height - 1) * .5f) * VarietyModule.CellHeight + VarietyModule.YOffset; }
     }
 }

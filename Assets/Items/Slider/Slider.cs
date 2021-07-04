@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using UnityEngine;
 
 namespace Variety
@@ -77,7 +78,7 @@ namespace Variety
 
         private IEnumerator MoveKnob(float startX, float endX, Transform knob)
         {
-            var duration = .1f;
+            var duration = .2f;
             var elapsed = 0f;
 
             while (elapsed < duration)
@@ -94,9 +95,12 @@ namespace Variety
             return Mathf.Lerp(-0.028f, 0.028f, state * 1f / (NumTicks - 1));
         }
 
-        public override string ToString() { return string.Format("{0} slider at {1}", Orientation.ToString(), coords(Cells[0])); }
+        public override string ToString() { return string.Format("{0} slider with {1} ticks at {2}", Orientation, NumTicks, coords(Cells[0])); }
         public override int NumStates { get { return NumTicks; } }
         public override object Flavor { get { return Orientation; } }
-        public override string DescribeState(int state, bool isSolution = false) { return string.Format(isSolution ? "set to {0}" : "{0}", state + 1); }
+
+        public override string DescribeSolutionState(int state) { return string.Format("set the {0} slider (which has {1} ticks) to {2}", Orientation.ToString().ToLowerInvariant(), NumTicks, state); }
+        public override string DescribeWhatUserDid() { return string.Format("you changed the {0} slider", Orientation.ToString().ToLowerInvariant()); }
+        public override string DescribeWhatUserShouldHaveDone(int desiredState) { return string.Format("you should have set the {0} slider to {1} (instead of {2})", Orientation.ToString().ToLowerInvariant(), desiredState, State); }
     }
 }

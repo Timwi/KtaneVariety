@@ -109,6 +109,8 @@ namespace Variety
                 if (nx < 0 || nx >= Width || ny < 0 || ny >= Height || !_maze.CanGo(State, btn))
                 {
                     Module.Module.HandleStrike();
+                    Debug.LogFormat(@"[Variety #{0}] In the {1}×{2} maze, you tried to go from {3}{4} to {5}{6} but there’s a wall there.",
+                        Module.ModuleID, Width, Height, (char) ('A' + x), y + 1, (char) ('A' + nx), ny + 1);
                     return false;
                 }
 
@@ -121,8 +123,13 @@ namespace Variety
             };
         }
 
+        private static readonly string[] _symbolColors = { "red", "yellow", "blue" };
+        private static readonly string[] _symbolNames = { "plus", "star", "triangle" };
+
         public override string ToString() { return string.Format("{0}×{1} maze at {2}", Width, Height, coords(Cells[0])); }
         public override object Flavor { get { return string.Format("Maze:{0}:{1}", Width, Height); } }
-        public override string DescribeState(int state, bool isSolution) { return string.Format(isSolution ? "go to {0}{1}" : "{0}{1}", (char) (state % Width + 'A'), state / Width + 1); }
+        public override string DescribeSolutionState(int state) { return string.Format("go to {0}{1} in the {2}×{3} maze (which has a {4} {5})", (char) (state % Width + 'A'), state / Width + 1, Width, Height, _symbolColors[Shape % 3], _symbolNames[Shape / 3]); }
+        public override string DescribeWhatUserDid() { return string.Format("you moved in the {0}×{1} maze", Width, Height); }
+        public override string DescribeWhatUserShouldHaveDone(int desiredState) { return string.Format("you should have moved to {0}{1} in the {2}×{3} maze (instead of {4}{5})", (char) (desiredState % Width + 'A'), desiredState / Width + 1, Width, Height, (char) (State % Width + 'A'), State / Width + 1); }
     }
 }

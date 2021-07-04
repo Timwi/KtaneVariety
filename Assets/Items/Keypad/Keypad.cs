@@ -108,10 +108,9 @@ namespace Variety
 
         private int factorial(int n) { return n < 2 ? 1 : n * factorial(n - 1); }
 
-        public override string DescribeState(int state, bool isSolution = false)
-        {
-            return state == -1 ? "unfinished" : string.Format(isSolution ? "press keys in the order {0}" : "{0}", getSequence(state).Select(i => i + 1).Join(", "));
-        }
+        public override string DescribeSolutionState(int state) { return string.Format("press the keys on the {0}×{1} keypad in the order {2}", Widths[Size], Heights[Size], getSequence(state).Join(", ")); }
+        public override string DescribeWhatUserDid() { return string.Format("you pressed keys on the {0}×{1} keypad", Widths[Size], Heights[Size]); }
+        public override string DescribeWhatUserShouldHaveDone(int desiredState) { return string.Format("you should have pressed the keys on the {0}×{1} keypad in the order {2} ({3})", Widths[Size], Heights[Size], getSequence(desiredState).Join(", "), State == -1 ? "you left it unfinished" : string.Format("instead of {0}", getSequence(State).Join(", "))); }
 
         private int[] getSequence(int state)
         {

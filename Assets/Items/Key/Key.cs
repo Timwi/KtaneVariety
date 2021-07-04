@@ -55,6 +55,8 @@ namespace Variety
 
         public override int NumStates { get { return 10; } }
         public override object Flavor { get { return "Key"; } }
-        public override string DescribeState(int state, bool isSolution) { return state == -1 ? "unturned" : string.Format(isSolution ? "turn when timer last digit is {0}" : "turned when timer last digit was {0}", state); }
+        public override string DescribeSolutionState(int state) { return string.Format("turn the key when the last digit of the timer is {0}", state); }
+        public override string DescribeWhatUserDid() { return "you turned the key"; }
+        public override string DescribeWhatUserShouldHaveDone(int desiredState) { return string.Format("you should have turned the key when the last digit on the timer was {0} ({1})", desiredState, State == -1 ? "you left it unturned" : string.Format("instead of {0}", State)); }
     }
 }
