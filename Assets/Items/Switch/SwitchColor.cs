@@ -3,9 +3,9 @@
     public enum SwitchColor
     {
         // These must match the order in SwitchPrefab.SwitchMaterials (Material[])
-        Blue,
-        Red,
-        Yellow,
-        White
+        BlueSwitch,
+        RedSwitch,
+        YellowSwitch,
+        WhiteSwitch
     }
 }

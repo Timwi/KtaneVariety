@@ -50,7 +50,7 @@ namespace Variety
         public override IEnumerable<ItemSelectable> SetUp()
         {
             var prefab = Object.Instantiate(Module.KnobTemplate, Module.transform);
-            prefab.transform.localPosition = new Vector3(GetXOfCellRect(TopLeftCell, 4), .015f, GetYOfCellRect(TopLeftCell, 4));
+            prefab.transform.localPosition = new Vector3(GetXOfCellRect(TopLeftCell, 3), .015f, GetYOfCellRect(TopLeftCell, 3));
             prefab.transform.localRotation = Quaternion.identity;
             prefab.transform.localScale = new Vector3(1, 1, 1);
 

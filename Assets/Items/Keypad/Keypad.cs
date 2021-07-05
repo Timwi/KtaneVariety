@@ -49,7 +49,7 @@ namespace Variety
             _prefab = Object.Instantiate(Module.KeypadTemplate, Module.transform);
             _prefab.transform.localPosition = new Vector3(GetX(Cells[0]) + VarietyModule.CellWidth * (2 * w - 1) * .5f, .015f, GetY(Cells[0]) - VarietyModule.CellHeight * (2 * h - 1) * .5f);
             _prefab.transform.localRotation = Quaternion.identity;
-            _prefab.transform.localScale = new Vector3(1, 1, 1);
+            _prefab.transform.localScale = new Vector3(1.3f, 1.3f, 1.3f);
             _leds = new MeshRenderer[w * h];
 
             _prefab.Backing.localScale = new Vector3(d * w + .001f, d * h + .001f);

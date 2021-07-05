@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using KModkit;
 using Rnd = UnityEngine.Random;
 
 namespace Variety
@@ -8,6 +9,20 @@ namespace Variety
     public class WireFactory : ItemFactory
     {
         private const double _allowedDistance = .5;
+        private Func<KMBombInfo, bool>[] _edgeworkConditions;
+
+        public WireFactory(MonoRandom ruleSeedRnd)
+        {
+            _edgeworkConditions = new Func<KMBombInfo, bool>[]
+            {
+                bomb => bomb.GetOnIndicators().Count() > bomb.GetOffIndicators().Count(),
+                bomb => bomb.GetBatteryCount(Battery.D) > bomb.GetBatteryCount(Battery.AA)+bomb.GetBatteryCount(Battery.AAx3)+bomb.GetBatteryCount(Battery.AAx4),
+                bomb => bomb.GetPorts().Count(p => p=="Parallel"||p=="Serial") > bomb.GetPorts().Count(p => p!="Parallel"&&p!="Serial"),
+                bomb => bomb.GetSerialNumberLetters().Count() > bomb.GetSerialNumberNumbers ().Count(),
+                bomb => bomb.GetBatteryHolderCount() > bomb.GetPortPlateCount()
+            };
+            ruleSeedRnd.ShuffleFisherYates(_edgeworkConditions);
+        }
 
         public override Item Generate(VarietyModule module, HashSet<object> taken)
         {
@@ -41,7 +56,7 @@ namespace Variety
             for (var cell = 0; cell < W * H; cell++)
                 if (distance(cell1 % W, cell1 / W, cell2 % W, cell2 / W, cell % W, cell / W) < _allowedDistance)
                     taken.Add(cell);
-            return new Wire(module, color, new[] { Math.Min(cell1, cell2), Math.Max(cell1, cell2) });
+            return new Wire(module, color, new[] { Math.Min(cell1, cell2), Math.Max(cell1, cell2) }, _edgeworkConditions[(int) color](module.Bomb));
         }
 
         public override IEnumerable<object> Flavors { get { return Enum.GetValues(typeof(WireColor)).Cast<object>(); } }

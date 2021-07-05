@@ -45,7 +45,7 @@ namespace Variety
             _prefab = UnityEngine.Object.Instantiate(Module.DigitDisplayTemplate, Module.transform);
             _prefab.transform.localPosition = new Vector3(GetXOfCellRect(TopLeftCell, 2), .015f, GetYOfCellRect(TopLeftCell, 3));
             _prefab.transform.localRotation = Quaternion.identity;
-            _prefab.transform.localScale = new Vector3(.8f, .8f, .8f);
+            _prefab.transform.localScale = new Vector3(1f, 1f, 1f);
             _prefab.UpButton.OnInteract = ButtonPressHandler(1);
             _prefab.DownButton.OnInteract = ButtonPressHandler(9);
 

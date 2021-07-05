@@ -7,7 +7,7 @@ namespace Variety
 {
     public class Slider : Item
     {
-        public const int LongSlots = 6;
+        public const int LongSlots = 5;
         public const int ShortSlots = 2;
 
         public int X { get; private set; }
@@ -44,6 +44,7 @@ namespace Variety
                 prefab.transform.localPosition = new Vector3(x, 0, y);
                 prefab.transform.localRotation = Quaternion.Euler(0, 90, 0);
             }
+            prefab.transform.localScale = new Vector3(1.2f, 1.2f, 1.2f);
 
             State = Random.Range(0, NumTicks);
             prefab.Knob.transform.localPosition = new Vector3(XPosition(State), .021f, 0);

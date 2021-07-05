@@ -9,8 +9,8 @@ namespace Variety
 {
     public class WireMeshGenerator
     {
-        public const double _wireRadius = .0016;
-        public const double _wireRadiusHighlight = .0032;
+        public const double _wireRadius = .0032;
+        public const double _wireRadiusHighlight = .0064;
 
         const double _wireMaxSegmentDeviation = .001;
         const double _wireMinBézierDeviation = .002;

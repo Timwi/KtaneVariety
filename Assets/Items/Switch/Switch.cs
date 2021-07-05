@@ -30,7 +30,8 @@ namespace Variety
         public override IEnumerable<ItemSelectable> SetUp()
         {
             var prefab = Object.Instantiate(Module.SwitchTemplate, Module.transform);
-            prefab.transform.localPosition = new Vector3(GetXOfCellRect(Cells[0], 1), .015f, GetYOfCellRect(Cells[0], 4));
+            prefab.transform.localPosition = new Vector3(GetXOfCellRect(Cells[0], 1), .015f, GetYOfCellRect(Cells[0], 3));
+            prefab.transform.localScale = new Vector3(1.1f, 1.1f, 1.1f);
             prefab.Selectable.OnInteract = ToggleSwitch(prefab.Selectable.transform);
             prefab.MeshRenderer.sharedMaterial = prefab.SwitchMaterials[(int) Color];
             yield return new ItemSelectable(prefab.Selectable, Cells[0]);
@@ -70,12 +71,14 @@ namespace Variety
             switchObj.transform.localRotation = newRotation;
         }
 
-        public override string ToString() { return string.Format("{0} switch with {1} positions at {2}", Color, NumPositions, coords(Cells[0])); }
+        private static readonly string[] _colorNames = { "blue", "red", "yellow", "white" };
+
+        public override string ToString() { return string.Format("{0} switch with {1} positions at {2}", _colorNames[(int) Color], NumPositions, coords(Cells[0])); }
         public override bool CanProvideStage { get { return true; } }
         public override int NumStates { get { return NumPositions; } }
         public override object Flavor { get { return Color; } }
-        public override string DescribeSolutionState(int state) { return string.Format("set the {0} switch (which has {1} positions) to {2}", Color.ToString().ToLowerInvariant(), NumPositions, _positionNames[NumPositions - 2][state]); }
-        public override string DescribeWhatUserDid() { return string.Format("you toggled the {0} switch", Color.ToString().ToLowerInvariant()); }
-        public override string DescribeWhatUserShouldHaveDone(int desiredState) { return string.Format("you should have toggled the {0} switch to {1} (instead of {2})", Color.ToString().ToLowerInvariant(), _positionNames[NumPositions - 2][desiredState], _positionNames[NumPositions - 2][State]); }
+        public override string DescribeSolutionState(int state) { return string.Format("set the {0} switch (which has {1} positions) to {2}", _colorNames[(int) Color], NumPositions, _positionNames[NumPositions - 2][state]); }
+        public override string DescribeWhatUserDid() { return string.Format("you toggled the {0} switch", _colorNames[(int) Color]); }
+        public override string DescribeWhatUserShouldHaveDone(int desiredState) { return string.Format("you should have toggled the {0} switch to {1} (instead of {2})", _colorNames[(int) Color], _positionNames[NumPositions - 2][desiredState], _positionNames[NumPositions - 2][State]); }
     }
 }

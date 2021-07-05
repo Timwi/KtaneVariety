@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -36,8 +37,8 @@ public class VarietyModule : MonoBehaviour
 
     public int ModuleID { get { return _moduleId; } }
 
-    public const int W = 13;                // Number of slots in X direction
-    public const int H = 10;                // Number of slots in Y direction
+    public const int W = 10;                // Number of slots in X direction
+    public const int H = 7;                // Number of slots in Y direction
     public const float Width = .15f;      // Width of the field on the module
     public const float Height = .1125f; // Height of the field on the module
     public const float YOffset = -.02f;  // Vertical positioning of the field
@@ -67,8 +68,8 @@ public class VarietyModule : MonoBehaviour
 
         var factories = new List<ItemFactoryInfo>
         {
-            new ItemFactoryInfo(0, new DummyFactory()),
-            new ItemFactoryInfo(1, new WireFactory()),
+            //new ItemFactoryInfo(0, new DummyFactory()),
+            new ItemFactoryInfo(1, new WireFactory(ruleSeedRnd)),
             new ItemFactoryInfo(2, new KeyFactory()),
             new ItemFactoryInfo(2, new SliderFactory()),
             new ItemFactoryInfo(2, new KnobFactory()),
@@ -77,15 +78,14 @@ public class VarietyModule : MonoBehaviour
             new ItemFactoryInfo(3, new KeypadFactory()),
             new ItemFactoryInfo(3, new MazeFactory(ruleSeedRnd))
         };
-        _flavorOrder = ruleSeedRnd.ShuffleFisherYates(factories.SelectMany(inf => inf.Factory.Flavors).ToArray());
+        _flavorOrder = factories.SelectMany(inf => inf.Factory.Flavors).ToArray();
+        ruleSeedRnd.ShuffleFisherYates(_flavorOrder);
+        Debug.LogFormat("<Variety #{0}> Flavour order:\n{1}", _moduleId, _flavorOrder.Join("\n"));
 
         // Decide what’s going to be on the module
         var iterations = 0;
         tryAgain:
         iterations++;
-        Debug.LogFormat(@"<Variety #{0}> Iteration {1}", _moduleId, iterations);
-        if (iterations > 100)
-            throw new InvalidOperationException();
 
         var remainingFactories = factories.ToList();
         var takens = new HashSet<object>();
@@ -100,7 +100,7 @@ public class VarietyModule : MonoBehaviour
                 remainingFactories.RemoveAt(fIx);
             else
             {
-                remainingFactories[fIx] = new ItemFactoryInfo(Math.Max(1, remainingFactories[fIx].Weight - 1), remainingFactories[fIx].Factory);
+                remainingFactories[fIx] = new ItemFactoryInfo(/*Math.Max(1, remainingFactories[fIx].Weight - 1)*/1, remainingFactories[fIx].Factory);
                 items.Add(item);
             }
         }
@@ -130,27 +130,44 @@ public class VarietyModule : MonoBehaviour
             mult *= (ulong) _items[i].NumStates;
             //Debug.LogFormat(@"<Variety #{0}> states = {1}, mult = {2}", _moduleId, _items[i].NumStates, mult);
         }
-        if (state.ToString().Length > 17)
+        if (state.ToString().Length > 12)
             goto tryAgain;
 
+        Debug.LogFormat(@"<Variety #{0}> Iterations: {1}", _moduleId, iterations);
         Debug.LogFormat(@"[Variety #{0}] State: {1}", _moduleId, state);
         StateDisplay.text = state.ToString();
 
+        Module.OnActivate = delegate { StartCoroutine(UpdateChildren()); };
+    }
 
+    private IEnumerator UpdateChildren()
+    {
+        Debug.LogFormat("<> 1");
+        yield return null;
+
+        Debug.LogFormat("<> 2");
         // Generate the game objects on the module
         var children = new KMSelectable[W * H];
-        foreach (var item in items)
-            foreach (var inf in item.SetUp())
+        Debug.LogFormat("<> 3");
+        for (var i = 0; i < _items.Length; i++)
+        {
+            Debug.LogFormat("<> 4: item {0} ({1})", i, _items[i]);
+            foreach (var inf in _items[i].SetUp())
             {
                 inf.Selectable.Parent = ModuleSelectable;
                 children[inf.Cell] = inf.Selectable;
             }
+        }
+        Debug.LogFormat("<> 5");
         ModuleSelectable.Children = children;
-        ModuleSelectable.UpdateChildren();
+        ModuleSelectable.ChildRowLength = W;
+        ModuleSelectable.UpdateChildren(children.FirstOrDefault(c => c != null));
+        Debug.LogFormat("<> 6");
 
         Debug.LogFormat(@"[Variety #{0}] Expected actions:", _moduleId);
         for (var i = 0; i < _items.Length; i++)
         {
+            Debug.LogFormat("<> 7: item {0} ({1})", i, _items[i]);
             _items[i].StateSet = StateSet(i);
             Debug.LogFormat(@"[Variety #{0}] {1}", _moduleId, _items[i].DescribeSolutionState(_expectedStates[i]));
         }
@@ -169,6 +186,8 @@ public class VarietyModule : MonoBehaviour
                 for (var ix = itemIx + 1; ix < _items.Length; ix++)
                     _items[ix].ReceiveItemChange(stageItemIndex);
             }
+
+            Debug.LogFormat("<Variety #{0}> States:\n{1}", _moduleId, _items.Select((item, ix) => string.Format("{0}: desired={1}, actual={2}, stuck={3}", ix, _expectedStates[ix], item.State, item.IsStuck)).Join("\n"));
 
             if (_isSolved)
                 return;

@@ -8,20 +8,25 @@ namespace Variety
 {
     public class Wire : Item
     {
-        public Wire(VarietyModule module, WireColor color, int[] cells) : base(module, cells)
+        public Wire(VarietyModule module, WireColor color, int[] cells, bool conditionFlipped) : base(module, cells)
         {
             Color = color;
+            State = conditionFlipped ? 1 : 0;
+            _conditionFlipped = conditionFlipped;
         }
 
         public WireColor Color { get; private set; }
 
         private bool _isStuck = false;
+        private bool _conditionFlipped;
         public override bool IsStuck { get { return _isStuck; } }
         public override void Checked() { _isStuck = State == 1; }
 
         public override IEnumerable<ItemSelectable> SetUp()
         {
+            Debug.LogFormat("<><> 1: {0} ({1})", Module.WireTemplate == null, Module.WireTemplate);
             var prefab = UnityEngine.Object.Instantiate(Module.WireTemplate, Module.transform);
+            Debug.LogFormat("<><> 2");
             var seed = Rnd.Range(0, int.MaxValue);
 
             var x1 = GetX(Cells[0]);
@@ -29,7 +34,7 @@ namespace Variety
             var y1 = GetY(Cells[0]);
             var y2 = GetY(Cells[1]);
             var length = Math.Sqrt(Math.Pow(x2 - x1, 2) + Math.Pow(y2 - y1, 2));
-            var numSegments = Math.Max(2, (int) Math.Floor(length / .02));
+            var numSegments = Math.Max(2, (int) Math.Floor(length / .04));
             prefab.WireMeshFilter.sharedMesh = WireMeshGenerator.GenerateWire(length, numSegments, WireMeshGenerator.WirePiece.Uncut, highlight: false, seed: seed);
             var hl = WireMeshGenerator.GenerateWire(length, numSegments, WireMeshGenerator.WirePiece.Uncut, highlight: true, seed: seed);
             prefab.WireHighlightMeshFilter.sharedMesh = hl;
@@ -53,24 +58,26 @@ namespace Variety
                 var filter = child == null ? null : child.GetComponent<MeshFilter>();
                 if (filter != null)
                     filter.sharedMesh = highlightMesh;
-                State = 1;
+                State ^= 1;
                 return false;
             };
         }
 
-        public override string ToString() { return string.Format("{0} wire from {1} to {2}", Color, coords(Cells[0]), coords(Cells[1])); }
+        private static readonly string[] _colorNames = { "black", "blue", "red", "yellow", "white" };
+
+        public override string ToString() { return string.Format("{0} wire from {1} to {2}", _colorNames[(int) Color], coords(Cells[0]), coords(Cells[1])); }
         public override bool CanProvideStage { get { return false; } }
         public override int NumStates { get { return 2; } }
         public override object Flavor { get { return Color; } }
-        public override string DescribeSolutionState(int state) { return string.Format(state == 0 ? "don’t cut the {0} wire" : "cut the {0} wire", Color.ToString().ToLowerInvariant()); }
-        public override string DescribeWhatUserDid() { return string.Format("you cut the {0} wire", Color.ToString().ToLowerInvariant()); }
+        public override string DescribeSolutionState(int state) { return string.Format((state == 0) ^ _conditionFlipped ? "don’t cut the {0} wire" : "cut the {0} wire", _colorNames[(int) Color]); }
+        public override string DescribeWhatUserDid() { return string.Format("you cut the {0} wire", _colorNames[(int) Color]); }
         public override string DescribeWhatUserShouldHaveDone(int desiredState)
         {
             return string.Format(
-                State == 0 && desiredState == 1 ? "you should have cut the {0} wire" :
-                State == 1 && desiredState == 0 ? "you should not have cut the {0} wire" :
+                (State == 0 && desiredState == 1) ^ _conditionFlipped ? "you should have cut the {0} wire" :
+                (State == 1 && desiredState == 0) ^ _conditionFlipped ? "you should not have cut the {0} wire" :
                 "[ERROR]",
-                Color.ToString().ToLowerInvariant());
+                _colorNames[(int) Color]);
         }
     }
 }
