@@ -21,7 +21,7 @@ namespace Variety
             claimRect(taken, spot, 3, 3);
             taken.Add(this);
 
-            return new Knob(module, spot, Rnd.Range(5, 11), module.Bomb.GetSerialNumber().First());
+            return new Knob(module, spot, Rnd.Range(5, 11));
         }
 
         public override IEnumerable<object> Flavors { get { yield return "Knob"; } }

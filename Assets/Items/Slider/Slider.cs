@@ -62,6 +62,9 @@ namespace Variety
 
             prefab.Knob.OnInteract += delegate
             {
+                prefab.Knob.AddInteractionPunch(.5f);
+                Module.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, prefab.Knob.transform);
+
                 State += movingRight ? 1 : -1;
                 if (State == 0)
                     movingRight = true;

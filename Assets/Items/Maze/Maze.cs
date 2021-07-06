@@ -79,7 +79,7 @@ namespace Variety
             yield return new ItemSelectable(prefab.Buttons[3], X + W * (Y + Height / 2));
 
             for (var i = 0; i < 4; i++)
-                prefab.Buttons[i].OnInteract = ButtonPress(i, prefab.Position, dots);
+                prefab.Buttons[i].OnInteract = ButtonPress(prefab.Buttons[i], i, prefab.Position, dots);
             Module.StartCoroutine(Spin(prefab.Position));
         }
 
@@ -97,16 +97,19 @@ namespace Variety
         private static readonly int[] _dxs = { 0, 1, 0, -1 };
         private static readonly int[] _dys = { -1, 0, 1, 0 };
 
-        private KMSelectable.OnInteractHandler ButtonPress(int btn, GameObject position, GameObject[] dots)
+        private KMSelectable.OnInteractHandler ButtonPress(KMSelectable button, int btnIx, GameObject position, GameObject[] dots)
         {
             return delegate
             {
+                button.AddInteractionPunch(.25f);
+                Module.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, button.transform);
+
                 var x = State % Width;
                 var y = State / Width;
-                var nx = x + _dxs[btn];
-                var ny = y + _dys[btn];
+                var nx = x + _dxs[btnIx];
+                var ny = y + _dys[btnIx];
 
-                if (nx < 0 || nx >= Width || ny < 0 || ny >= Height || !_maze.CanGo(State, btn))
+                if (nx < 0 || nx >= Width || ny < 0 || ny >= Height || !_maze.CanGo(State, btnIx))
                 {
                     Module.Module.HandleStrike();
                     Debug.LogFormat(@"[Variety #{0}] In the {1}×{2} maze, you tried to go from {3}{4} to {5}{6} but there’s a wall there.",

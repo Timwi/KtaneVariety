@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using KModkit;
 using UnityEngine;
 
 using Rnd = UnityEngine.Random;
@@ -15,12 +16,11 @@ namespace Variety
         private Coroutine _turning;
         private Transform _knob;
 
-        public Knob(VarietyModule module, int topLeftCell, int numTicks, char snFirstChar)
+        public Knob(VarietyModule module, int topLeftCell, int numTicks)
             : base(module, CellRect(topLeftCell, 4, 4))
         {
             TopLeftCell = topLeftCell;
             NumTicks = numTicks;
-            Offset = (snFirstChar >= 'A' && snFirstChar <= 'Z' ? snFirstChar - 'A' + 1 : snFirstChar - '0') % NumTicks;
             State = Rnd.Range(0, NumTicks);
         }
 
@@ -30,6 +30,13 @@ namespace Variety
             if (_turning != null)
                 Module.StopCoroutine(_turning);
             _turning = Module.StartCoroutine(turnTo(pos));
+        }
+
+        public override void ObtainEdgework()
+        {
+            var snFirstChar = Module.Bomb.GetSerialNumber()[0];
+            Offset = (snFirstChar >= 'A' && snFirstChar <= 'Z' ? snFirstChar - 'A' + 1 : snFirstChar - '0') % NumTicks;
+            _knob.localRotation = Quaternion.Euler(0, 360f * (State + Offset) / NumTicks, 0);
         }
 
         private IEnumerator turnTo(int pos)
@@ -63,8 +70,13 @@ namespace Variety
             }
 
             _knob = prefab.Knob.transform;
-            _knob.localRotation = Quaternion.Euler(0, 360f * (State + Offset) / NumTicks, 0);
-            prefab.Knob.OnInteract = delegate { SetPosition((State + 1) % NumTicks); return false; };
+            prefab.Knob.OnInteract = delegate
+            {
+                prefab.Knob.AddInteractionPunch(.25f);
+                Module.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, prefab.Knob.transform);
+                SetPosition((State + 1) % NumTicks);
+                return false;
+            };
             yield return new ItemSelectable(prefab.Knob, TopLeftCell);
         }
 

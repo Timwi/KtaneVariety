@@ -32,16 +32,19 @@ namespace Variety
             var prefab = Object.Instantiate(Module.SwitchTemplate, Module.transform);
             prefab.transform.localPosition = new Vector3(GetXOfCellRect(Cells[0], 1), .015f, GetYOfCellRect(Cells[0], 3));
             prefab.transform.localScale = new Vector3(1.1f, 1.1f, 1.1f);
-            prefab.Selectable.OnInteract = ToggleSwitch(prefab.Selectable.transform);
+            prefab.Selectable.OnInteract = ToggleSwitch(prefab.Selectable);
             prefab.MeshRenderer.sharedMaterial = prefab.SwitchMaterials[(int) Color];
             yield return new ItemSelectable(prefab.Selectable, Cells[0]);
         }
 
-        private KMSelectable.OnInteractHandler ToggleSwitch(Transform switchObj)
+        private KMSelectable.OnInteractHandler ToggleSwitch(KMSelectable switchObj)
         {
             Coroutine _coroutine = null;
             return delegate
             {
+                switchObj.AddInteractionPunch(.5f);
+                Module.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, switchObj.transform);
+
                 if (State == 0)
                     _currentDirectionDown = false;
                 if (State == NumPositions - 1)
@@ -50,7 +53,7 @@ namespace Variety
 
                 if (_coroutine != null)
                     Module.StopCoroutine(_coroutine);
-                _coroutine = Module.StartCoroutine(MoveSwitch(switchObj, State));
+                _coroutine = Module.StartCoroutine(MoveSwitch(switchObj.transform, State));
                 return false;
             };
         }

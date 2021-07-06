@@ -225,7 +225,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ModuleType: VarietyModule
   ModuleDisplayName: Variety
-  RequiresTimerVisibility: 0
+  RequiresTimerVisibility: 1
 --- !u!114 &11464240
 MonoBehaviour:
   m_ObjectHideFlags: 1

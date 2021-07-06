@@ -60,7 +60,7 @@ public class VarietyModule : MonoBehaviour
     private object[] _flavorOrder;
     private bool _isSolved;
 
-    void Start()
+    void Awake()
     {
         _moduleId = _moduleIdCounter++;
 
@@ -72,11 +72,11 @@ public class VarietyModule : MonoBehaviour
             new ItemFactoryInfo(1, new WireFactory(ruleSeedRnd)),
             new ItemFactoryInfo(2, new KeyFactory()),
             new ItemFactoryInfo(2, new SliderFactory()),
-            new ItemFactoryInfo(2, new KnobFactory()),
-            new ItemFactoryInfo(2, new DigitDisplayFactory()),
-            new ItemFactoryInfo(2, new SwitchFactory()),
-            new ItemFactoryInfo(3, new KeypadFactory()),
-            new ItemFactoryInfo(3, new MazeFactory(ruleSeedRnd))
+            new ItemFactoryInfo(5, new KnobFactory()),
+            new ItemFactoryInfo(7, new DigitDisplayFactory()),
+            new ItemFactoryInfo(5, new SwitchFactory()),
+            new ItemFactoryInfo(8, new KeypadFactory()),
+            new ItemFactoryInfo(10, new MazeFactory(ruleSeedRnd))
         };
         _flavorOrder = factories.SelectMany(inf => inf.Factory.Flavors).ToArray();
         ruleSeedRnd.ShuffleFisherYates(_flavorOrder);
@@ -100,7 +100,7 @@ public class VarietyModule : MonoBehaviour
                 remainingFactories.RemoveAt(fIx);
             else
             {
-                remainingFactories[fIx] = new ItemFactoryInfo(/*Math.Max(1, remainingFactories[fIx].Weight - 1)*/1, remainingFactories[fIx].Factory);
+                remainingFactories[fIx] = new ItemFactoryInfo(1, remainingFactories[fIx].Factory);
                 items.Add(item);
             }
         }
@@ -112,9 +112,9 @@ public class VarietyModule : MonoBehaviour
         for (var i = 0; i < items.Count; i++)
             if (!items[i].DecideStates(items.Take(i).Count(item => item.CanProvideStage)))
                 goto tryAgain;
+        _items = items.Where(item => !(item is Dummy)).ToArray();
 
         // Decide on the goal states and calculate the overall state number
-        _items = items.Where(item => !(item is Dummy)).ToArray();
         _expectedStates = _items.Select(item => Rnd.Range(0, item.NumStates)).ToArray();
         var itemsInFlavorOrder = _items.OrderBy(item => Array.IndexOf(_flavorOrder, item.Flavor)).ToList();
         ulong state = 0;
@@ -124,11 +124,9 @@ public class VarietyModule : MonoBehaviour
             var itemIx = itemsInFlavorOrder.IndexOf(_items[i]);
             state += mult * (ulong) itemIx;
             mult *= (ulong) itemsInFlavorOrder.Count;
-            //Debug.LogFormat(@"<Variety #{0}> items = {1}, mult = {2}", _moduleId, itemsInFlavorOrder.Count, mult);
             itemsInFlavorOrder.RemoveAt(itemIx);
             state += mult * (ulong) _expectedStates[i];
             mult *= (ulong) _items[i].NumStates;
-            //Debug.LogFormat(@"<Variety #{0}> states = {1}, mult = {2}", _moduleId, _items[i].NumStates, mult);
         }
         if (state.ToString().Length > 12)
             goto tryAgain;
@@ -137,37 +135,28 @@ public class VarietyModule : MonoBehaviour
         Debug.LogFormat(@"[Variety #{0}] State: {1}", _moduleId, state);
         StateDisplay.text = state.ToString();
 
-        Module.OnActivate = delegate { StartCoroutine(UpdateChildren()); };
-    }
-
-    private IEnumerator UpdateChildren()
-    {
-        Debug.LogFormat("<> 1");
-        yield return null;
-
-        Debug.LogFormat("<> 2");
         // Generate the game objects on the module
         var children = new KMSelectable[W * H];
-        Debug.LogFormat("<> 3");
         for (var i = 0; i < _items.Length; i++)
-        {
-            Debug.LogFormat("<> 4: item {0} ({1})", i, _items[i]);
             foreach (var inf in _items[i].SetUp())
             {
                 inf.Selectable.Parent = ModuleSelectable;
                 children[inf.Cell] = inf.Selectable;
             }
-        }
-        Debug.LogFormat("<> 5");
         ModuleSelectable.Children = children;
         ModuleSelectable.ChildRowLength = W;
-        ModuleSelectable.UpdateChildren(children.FirstOrDefault(c => c != null));
-        Debug.LogFormat("<> 6");
+
+        StartCoroutine(AfterAwake());
+    }
+
+    private IEnumerator AfterAwake()
+    {
+        yield return null;
 
         Debug.LogFormat(@"[Variety #{0}] Expected actions:", _moduleId);
         for (var i = 0; i < _items.Length; i++)
         {
-            Debug.LogFormat("<> 7: item {0} ({1})", i, _items[i]);
+            _items[i].ObtainEdgework();
             _items[i].StateSet = StateSet(i);
             Debug.LogFormat(@"[Variety #{0}] {1}", _moduleId, _items[i].DescribeSolutionState(_expectedStates[i]));
         }
@@ -187,7 +176,7 @@ public class VarietyModule : MonoBehaviour
                     _items[ix].ReceiveItemChange(stageItemIndex);
             }
 
-            Debug.LogFormat("<Variety #{0}> States:\n{1}", _moduleId, _items.Select((item, ix) => string.Format("{0}: desired={1}, actual={2}, stuck={3}", ix, _expectedStates[ix], item.State, item.IsStuck)).Join("\n"));
+            Debug.LogFormat("<Variety #{0}> States:\n{1}", _moduleId, _items.Select((item, ix) => string.Format("{0}: {4}, desired={1}, actual={2}, stuck={3}", ix, _expectedStates[ix], item.State, item.IsStuck, item)).Join("\n"));
 
             if (_isSolved)
                 return;

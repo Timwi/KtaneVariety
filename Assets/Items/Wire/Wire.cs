@@ -8,25 +8,31 @@ namespace Variety
 {
     public class Wire : Item
     {
-        public Wire(VarietyModule module, WireColor color, int[] cells, bool conditionFlipped) : base(module, cells)
+        public Wire(VarietyModule module, WireColor color, int[] cells, Func<KMBombInfo, bool> edgeworkCondition) : base(module, cells)
         {
             Color = color;
-            State = conditionFlipped ? 1 : 0;
-            _conditionFlipped = conditionFlipped;
+            EdgeworkCondition = edgeworkCondition;
+        }
+
+        public override void ObtainEdgework()
+        {
+            _conditionFlipped = EdgeworkCondition(Module.Bomb);
+            State = _conditionFlipped ? 1 : 0;
         }
 
         public WireColor Color { get; private set; }
+        public Func<KMBombInfo, bool> EdgeworkCondition { get; private set; }
 
         private bool _isStuck = false;
+        private bool _isCut = false;
         private bool _conditionFlipped;
+
         public override bool IsStuck { get { return _isStuck; } }
-        public override void Checked() { _isStuck = State == 1; }
+        public override void Checked() { _isStuck = _isCut; }
 
         public override IEnumerable<ItemSelectable> SetUp()
         {
-            Debug.LogFormat("<><> 1: {0} ({1})", Module.WireTemplate == null, Module.WireTemplate);
             var prefab = UnityEngine.Object.Instantiate(Module.WireTemplate, Module.transform);
-            Debug.LogFormat("<><> 2");
             var seed = Rnd.Range(0, int.MaxValue);
 
             var x1 = GetX(Cells[0]);
@@ -37,7 +43,7 @@ namespace Variety
             var numSegments = Math.Max(2, (int) Math.Floor(length / .04));
             prefab.WireMeshFilter.sharedMesh = WireMeshGenerator.GenerateWire(length, numSegments, WireMeshGenerator.WirePiece.Uncut, highlight: false, seed: seed);
             var hl = WireMeshGenerator.GenerateWire(length, numSegments, WireMeshGenerator.WirePiece.Uncut, highlight: true, seed: seed);
-            prefab.WireHighlightMeshFilter.sharedMesh = hl;
+            SetHighlightMesh(prefab.WireHighlightMeshFilter, hl);
             prefab.WireCollider.sharedMesh = hl;
             prefab.WireMeshRenderer.sharedMaterial = prefab.WireMaterials[(int) Color];
 
@@ -50,17 +56,29 @@ namespace Variety
 
             prefab.Wire.OnInteract = delegate
             {
+                if (_isCut)
+                    return false;
+                _isCut = true;
+
+                prefab.Wire.AddInteractionPunch(.5f);
+                Module.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.WireSnip, prefab.Wire.transform);
+
                 prefab.WireMeshFilter.sharedMesh = WireMeshGenerator.GenerateWire(length, numSegments, WireMeshGenerator.WirePiece.Cut, highlight: false, seed: seed);
                 prefab.WireCopperMeshFilter.sharedMesh = WireMeshGenerator.GenerateWire(length, numSegments, WireMeshGenerator.WirePiece.Copper, highlight: false, seed: seed);
                 var highlightMesh = WireMeshGenerator.GenerateWire(length, numSegments, WireMeshGenerator.WirePiece.Cut, highlight: true, seed: seed);
-                prefab.WireHighlightMeshFilter.sharedMesh = highlightMesh;
-                var child = prefab.WireHighlightMeshFilter.transform.Find("Highlight(Clone)");
-                var filter = child == null ? null : child.GetComponent<MeshFilter>();
-                if (filter != null)
-                    filter.sharedMesh = highlightMesh;
-                State ^= 1;
+                SetHighlightMesh(prefab.WireHighlightMeshFilter, highlightMesh);
+                State = _conditionFlipped ? 0 : 1;
                 return false;
             };
+        }
+
+        private void SetHighlightMesh(MeshFilter mf, Mesh highlightMesh)
+        {
+            mf.sharedMesh = highlightMesh;
+            var child = mf.transform.Find("Highlight(Clone)");
+            var filter = child == null ? null : child.GetComponent<MeshFilter>();
+            if (filter != null)
+                filter.sharedMesh = highlightMesh;
         }
 
         private static readonly string[] _colorNames = { "black", "blue", "red", "yellow", "white" };

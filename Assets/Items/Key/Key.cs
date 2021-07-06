@@ -17,17 +17,22 @@ namespace Variety
         public bool Turned { get; private set; }
 
         private Transform _core;
+        private KMSelectable _key;
         public override IEnumerable<ItemSelectable> SetUp()
         {
             var prefab = Object.Instantiate(Module.KeyTemplate, Module.transform);
             _core = prefab.Core;
+            _key = prefab.Key;
             prefab.transform.localPosition = new Vector3(GetX(TopLeftCell) + VarietyModule.CellWidth / 2, .015f, GetY(TopLeftCell) - VarietyModule.CellHeight / 2);
-            yield return new ItemSelectable(prefab.Key, Cells[0]);
-            prefab.Key.OnInteract = TurnKey;
+            yield return new ItemSelectable(_key, Cells[0]);
+            _key.OnInteract = TurnKey;
         }
 
         private bool TurnKey()
         {
+            _key.AddInteractionPunch(.5f);
+            Module.Audio.PlaySoundAtTransform(Turned ? "KeySound2" : "KeySound1", _key.transform);
+
             Turned = !Turned;
             State = Turned ? (int) Module.Bomb.GetTime() % 10 : -1;
             Module.StartCoroutine(KeyTurnAnimation(Turned));

@@ -22,6 +22,7 @@ namespace Variety
         public virtual bool IsStuck { get { return false; } }
         public virtual bool DecideStates(int numPriorNonWireItems) { return true; }
         public virtual void ReceiveItemChange(int stageItemIndex) { }
+        public virtual void ObtainEdgework() { }
 
         private int _state;
         public int State
