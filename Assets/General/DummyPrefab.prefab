@@ -108,3 +108,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f3ee790194f2464daf49feaa71781fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  White: {fileID: 2100000, guid: 2b03f096fe94dfd42a137223eeb159ef, type: 2}
+  Black: {fileID: 2100000, guid: 58bdca99901fa1c49af48323829240be, type: 2}
+  Renderer: {fileID: 23137813293326554}

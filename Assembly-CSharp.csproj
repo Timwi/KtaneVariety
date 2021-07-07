@@ -51,6 +51,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\General\DummyPrefab.cs" />
      <Compile Include="Assets\General\Item.cs" />
      <Compile Include="Assets\General\ItemFactory.cs" />
      <Compile Include="Assets\General\ItemSelectable.cs" />
@@ -60,9 +61,6 @@
      <Compile Include="Assets\Items\DigitDisplay\DigitDisplay.cs" />
      <Compile Include="Assets\Items\DigitDisplay\DigitDisplayFactory.cs" />
      <Compile Include="Assets\Items\DigitDisplay\DigitDisplayPrefab.cs" />
-     <Compile Include="Assets\Items\Dummy\Dummy.cs" />
-     <Compile Include="Assets\Items\Dummy\DummyFactory.cs" />
-     <Compile Include="Assets\Items\Dummy\DummyPrefab.cs" />
      <Compile Include="Assets\Items\Key\Key.cs" />
      <Compile Include="Assets\Items\Key\KeyFactory.cs" />
      <Compile Include="Assets\Items\Key\KeyPrefab.cs" />
@@ -73,6 +71,9 @@
      <Compile Include="Assets\Items\Knob\Knob.cs" />
      <Compile Include="Assets\Items\Knob\KnobFactory.cs" />
      <Compile Include="Assets\Items\Knob\KnobPrefab.cs" />
+     <Compile Include="Assets\Items\LetterDisplay\LetterDisplay.cs" />
+     <Compile Include="Assets\Items\LetterDisplay\LetterDisplayFactory.cs" />
+     <Compile Include="Assets\Items\LetterDisplay\LetterDisplayPrefab.cs" />
      <Compile Include="Assets\Items\Maze\Maze.cs" />
      <Compile Include="Assets\Items\Maze\MazeFactory.cs" />
      <Compile Include="Assets\Items\Maze\MazeLayout.cs" />

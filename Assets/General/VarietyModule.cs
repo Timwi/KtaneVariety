@@ -29,6 +29,7 @@ public class VarietyModule : MonoBehaviour
     public KnobPrefab KnobTemplate;
     public DigitDisplayPrefab DigitDisplayTemplate;
     public SwitchPrefab SwitchTemplate;
+    public LetterDisplayPrefab LetterDisplayTemplate;
 
     private static int _moduleIdCounter = 1;
     private int _moduleId;
@@ -38,7 +39,7 @@ public class VarietyModule : MonoBehaviour
     public int ModuleID { get { return _moduleId; } }
 
     public const int W = 10;                // Number of slots in X direction
-    public const int H = 7;                // Number of slots in Y direction
+    public const int H = 8;                // Number of slots in Y direction
     public const float Width = .15f;      // Width of the field on the module
     public const float Height = .1125f; // Height of the field on the module
     public const float YOffset = -.02f;  // Vertical positioning of the field
@@ -60,15 +61,15 @@ public class VarietyModule : MonoBehaviour
     private object[] _flavorOrder;
     private bool _isSolved;
 
+    static List<T> makeList<T>(params T[] items) { return new List<T>(items); }
+
     void Awake()
     {
         _moduleId = _moduleIdCounter++;
 
         var ruleSeedRnd = RuleSeedable.GetRNG();
 
-        var factories = new List<ItemFactoryInfo>
-        {
-            //new ItemFactoryInfo(0, new DummyFactory()),
+        var factories = makeList(
             new ItemFactoryInfo(1, new WireFactory(ruleSeedRnd)),
             new ItemFactoryInfo(2, new KeyFactory()),
             new ItemFactoryInfo(2, new SliderFactory()),
@@ -76,8 +77,9 @@ public class VarietyModule : MonoBehaviour
             new ItemFactoryInfo(7, new DigitDisplayFactory()),
             new ItemFactoryInfo(5, new SwitchFactory()),
             new ItemFactoryInfo(8, new KeypadFactory()),
-            new ItemFactoryInfo(10, new MazeFactory(ruleSeedRnd))
-        };
+            new ItemFactoryInfo(10, new MazeFactory(ruleSeedRnd)),
+            new ItemFactoryInfo(10, new LetterDisplayFactory()));
+
         _flavorOrder = factories.SelectMany(inf => inf.Factory.Flavors).ToArray();
         ruleSeedRnd.ShuffleFisherYates(_flavorOrder);
         Debug.LogFormat("<Variety #{0}> Flavour order:\n{1}", _moduleId, _flavorOrder.Join("\n"));
@@ -112,7 +114,7 @@ public class VarietyModule : MonoBehaviour
         for (var i = 0; i < items.Count; i++)
             if (!items[i].DecideStates(items.Take(i).Count(item => item.CanProvideStage)))
                 goto tryAgain;
-        _items = items.Where(item => !(item is Dummy)).ToArray();
+        _items = items.ToArray();
 
         // Decide on the goal states and calculate the overall state number
         _expectedStates = _items.Select(item => Rnd.Range(0, item.NumStates)).ToArray();
@@ -146,8 +148,21 @@ public class VarietyModule : MonoBehaviour
         ModuleSelectable.Children = children;
         ModuleSelectable.ChildRowLength = W;
 
+#if UNITY_EDITOR
+        for (var cell = 0; cell < W * H; cell++)
+        {
+            var dummy = Instantiate(DummyTemplate, transform);
+            dummy.transform.localPosition = new Vector3(GetX(cell), .01501f, GetY(cell));
+            dummy.transform.localEulerAngles = new Vector3(90, 0, 0);
+            dummy.Renderer.sharedMaterial = takens.Contains(cell) ? dummy.Black : dummy.White;
+        }
+#endif
+
         StartCoroutine(AfterAwake());
     }
+
+    public static float GetX(int ix) { return -Width / 2 + (ix % W) * CellWidth; }
+    public static float GetY(int ix) { return Height / 2 - (ix / W) * CellHeight + YOffset; }
 
     private IEnumerator AfterAwake()
     {

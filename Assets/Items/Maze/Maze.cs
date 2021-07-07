@@ -29,7 +29,7 @@ namespace Variety
 
         private Vector3 Pos(int cell, bool dot = false)
         {
-            return new Vector3((cell % Width) - (Width - 1) * .5f, dot ? .002f : .003f, (Height - 1) * .5f - (cell / Width));
+            return new Vector3((cell % Width) - (Width - 1) * .5f, dot ? .003f : .004f, (Height - 1) * .5f - (cell / Width));
         }
 
         public override IEnumerable<ItemSelectable> SetUp()
@@ -38,7 +38,7 @@ namespace Variety
 
             var cx = -VarietyModule.Width / 2 + (X + Width * .5f) * VarietyModule.CellWidth;
             var cy = VarietyModule.Height / 2 - (Y + Height * .5f) * VarietyModule.CellHeight + VarietyModule.YOffset;
-            prefab.transform.localPosition = new Vector3(cx, .015f, cy);
+            prefab.transform.localPosition = new Vector3(cx, .01502f, cy);
             prefab.transform.localRotation = Quaternion.identity;
             prefab.transform.localScale = new Vector3(VarietyModule.CellWidth * .75f, VarietyModule.CellWidth * .75f, VarietyModule.CellWidth * .75f);
 

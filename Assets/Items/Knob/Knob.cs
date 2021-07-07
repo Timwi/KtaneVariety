@@ -57,14 +57,14 @@ namespace Variety
         public override IEnumerable<ItemSelectable> SetUp()
         {
             var prefab = Object.Instantiate(Module.KnobTemplate, Module.transform);
-            prefab.transform.localPosition = new Vector3(GetXOfCellRect(TopLeftCell, 3), .015f, GetYOfCellRect(TopLeftCell, 3));
+            prefab.transform.localPosition = new Vector3(GetXOfCellRect(TopLeftCell, 3), .01501f, GetYOfCellRect(TopLeftCell, 3));
             prefab.transform.localRotation = Quaternion.identity;
-            prefab.transform.localScale = new Vector3(1, 1, 1);
+            prefab.transform.localScale = new Vector3(1.09f, 1.09f, 1.09f);
 
             for (var i = 0; i < NumTicks; i++)
             {
                 var tick = i == 0 ? prefab.TickTemplate : Object.Instantiate(prefab.TickTemplate, prefab.transform);
-                tick.transform.localPosition = new Vector3(0, .0001f, 0);
+                tick.transform.localPosition = new Vector3(0, .0002f, 0);
                 tick.transform.localEulerAngles = new Vector3(0, 360f * i / NumTicks, 0);
                 tick.transform.localScale = new Vector3(1, 1, 1);
             }

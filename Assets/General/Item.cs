@@ -45,8 +45,8 @@ namespace Variety
         protected static int W { get { return VarietyModule.W; } }
         protected static int H { get { return VarietyModule.H; } }
 
-        protected static float GetX(int ix) { return -VarietyModule.Width / 2 + (ix % W) * VarietyModule.CellWidth; }
-        protected static float GetY(int ix) { return VarietyModule.Height / 2 - (ix / W) * VarietyModule.CellHeight + VarietyModule.YOffset; }
+        protected static float GetX(int ix) { return VarietyModule.GetX(ix); }
+        protected static float GetY(int ix) { return VarietyModule.GetY(ix); }
 
         protected static int[] CellRect(int cell, int width, int height) { return Enumerable.Range(0, width * height).Select(i => i % width + cell % W + W * (i / width + cell / W)).ToArray(); }
         protected static float GetXOfCellRect(int cell, int width) { return -VarietyModule.Width / 2 + (cell % W + (width - 1) * .5f) * VarietyModule.CellWidth; }
