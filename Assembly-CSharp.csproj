@@ -58,6 +58,9 @@
      <Compile Include="Assets\General\Pt.cs" />
      <Compile Include="Assets\General\Ut.cs" />
      <Compile Include="Assets\General\VarietyModule.cs" />
+     <Compile Include="Assets\Items\BrailleDisplay\BrailleDisplay.cs" />
+     <Compile Include="Assets\Items\BrailleDisplay\BrailleDisplayFactory.cs" />
+     <Compile Include="Assets\Items\BrailleDisplay\BrailleDisplayPrefab.cs" />
      <Compile Include="Assets\Items\DigitDisplay\DigitDisplay.cs" />
      <Compile Include="Assets\Items\DigitDisplay\DigitDisplayFactory.cs" />
      <Compile Include="Assets\Items\DigitDisplay\DigitDisplayPrefab.cs" />

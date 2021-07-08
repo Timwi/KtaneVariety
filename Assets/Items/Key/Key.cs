@@ -53,11 +53,7 @@ namespace Variety
             _core.transform.localEulerAngles = new Vector3(0, forwards ? 60 : 0, 0);
         }
 
-        public override string ToString()
-        {
-            return string.Format("Key at {0}", coords(TopLeftCell));
-        }
-
+        public override string ToString() { return "key-in-lock"; }
         public override int NumStates { get { return 10; } }
         public override object Flavor { get { return "Key"; } }
         public override string DescribeSolutionState(int state) { return string.Format("turn the key when the last digit of the timer is {0}", state); }

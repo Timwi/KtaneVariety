@@ -129,9 +129,9 @@ namespace Variety
         private static readonly string[] _symbolColors = { "red", "yellow", "blue" };
         private static readonly string[] _symbolNames = { "plus", "star", "triangle" };
 
-        public override string ToString() { return string.Format("{0}×{1} maze at {2}", Width, Height, coords(Cells[0])); }
+        public override string ToString() { return string.Format("{0}×{1} maze with a {2} {3}", Width, Height, _symbolColors[Shape % 3], _symbolNames[Shape / 3]); }
         public override object Flavor { get { return string.Format("Maze:{0}:{1}", Width, Height); } }
-        public override string DescribeSolutionState(int state) { return string.Format("go to {0}{1} in the {2}×{3} maze (which has a {4} {5})", (char) (state % Width + 'A'), state / Width + 1, Width, Height, _symbolColors[Shape % 3], _symbolNames[Shape / 3]); }
+        public override string DescribeSolutionState(int state) { return string.Format("go to {0}{1} in the {2}×{3} maze", (char) (state % Width + 'A'), state / Width + 1, Width, Height); }
         public override string DescribeWhatUserDid() { return string.Format("you moved in the {0}×{1} maze", Width, Height); }
         public override string DescribeWhatUserShouldHaveDone(int desiredState) { return string.Format("you should have moved to {0}{1} in the {2}×{3} maze (instead of {4}{5})", (char) (desiredState % Width + 'A'), desiredState / Width + 1, Width, Height, (char) (State % Width + 'A'), State / Width + 1); }
     }

@@ -32,11 +32,12 @@ namespace Variety
             _turning = Module.StartCoroutine(turnTo(pos));
         }
 
-        public override void ObtainEdgework()
+        public override bool DecideStates(int numPriorNonWireItems)
         {
             var snFirstChar = Module.Bomb.GetSerialNumber()[0];
             Offset = (snFirstChar >= 'A' && snFirstChar <= 'Z' ? snFirstChar - 'A' + 1 : snFirstChar - '0') % NumTicks;
             _knob.localRotation = Quaternion.Euler(0, 360f * (State + Offset) / NumTicks, 0);
+            return true;
         }
 
         private IEnumerator turnTo(int pos)
@@ -80,10 +81,10 @@ namespace Variety
             yield return new ItemSelectable(prefab.Knob, TopLeftCell);
         }
 
-        public override string ToString() { return string.Format("Knob with {0} ticks at {1}", NumTicks, coords(Cells[0])); }
+        public override string ToString() { return string.Format("knob (north is {0})", (NumTicks - Offset) % NumTicks); }
         public override int NumStates { get { return NumTicks; } }
         public override object Flavor { get { return "Knob"; } }
-        public override string DescribeSolutionState(int state) { return string.Format("set the knob (which has {1} ticks and where North is {2}) to {0}", state, NumTicks, (NumTicks - Offset) % NumTicks); }
+        public override string DescribeSolutionState(int state) { return string.Format("set the knob to {0}", state, NumTicks, (NumTicks - Offset) % NumTicks); }
         public override string DescribeWhatUserDid() { return "you twisted the knob"; }
         public override string DescribeWhatUserShouldHaveDone(int desiredState) { return string.Format("you should have set the knob to {0} (instead of {1})", desiredState, State); }
     }

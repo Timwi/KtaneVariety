@@ -53,10 +53,10 @@ namespace Variety
             };
         }
 
-        public override string ToString() { return string.Format("Letter display at {0}", coords(Cells[0])); }
+        public override string ToString() { return string.Format("letter display which can spell {0}", FormableWords.Join(", ")); }
         public override int NumStates { get { return FormableWords.Length; } }
         public override object Flavor { get { return "LetterDisplay"; } }
-        public override string DescribeSolutionState(int state) { return string.Format("set the letter display (which can spell {0}) to {1}", FormableWords.Join(", "), FormableWords[state]); }
+        public override string DescribeSolutionState(int state) { return string.Format("set the letter display to {0}", FormableWords[state]); }
         public override string DescribeWhatUserDid() { return "you changed the letter display"; }
         public override string DescribeWhatUserShouldHaveDone(int desiredState) { return string.Format("you should have set the letter display to {0} (you set it to {1})", FormableWords[desiredState], State == -1 ? "an invalid word" : FormableWords[State]); }
     }

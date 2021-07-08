@@ -99,11 +99,11 @@ namespace Variety
             return Mathf.Lerp(-0.028f, 0.028f, state * 1f / (NumTicks - 1));
         }
 
-        public override string ToString() { return string.Format("{0} slider with {1} ticks at {2}", Orientation, NumTicks, coords(Cells[0])); }
+        public override string ToString() { return string.Format("{0} slider", Orientation.ToString().ToLowerInvariant()); }
         public override int NumStates { get { return NumTicks; } }
         public override object Flavor { get { return Orientation; } }
 
-        public override string DescribeSolutionState(int state) { return string.Format("set the {0} slider (which has {1} ticks) to {2}", Orientation.ToString().ToLowerInvariant(), NumTicks, state); }
+        public override string DescribeSolutionState(int state) { return string.Format("set the {0} slider to {1}", Orientation.ToString().ToLowerInvariant(), state); }
         public override string DescribeWhatUserDid() { return string.Format("you changed the {0} slider", Orientation.ToString().ToLowerInvariant()); }
         public override string DescribeWhatUserShouldHaveDone(int desiredState) { return string.Format("you should have set the {0} slider to {1} (instead of {2})", Orientation.ToString().ToLowerInvariant(), desiredState, State); }
     }

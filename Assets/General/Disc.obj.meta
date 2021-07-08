@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 00735f0f47dd5274d9c5630b0472a1fc
+guid: b1c5b983485506842a861a4b00889263
 ModelImporter:
   serializedVersion: 22
   fileIDToRecycleName:
@@ -13,7 +13,7 @@ ModelImporter:
     4300000: Disc
   externalObjects: {}
   materials:
-    importMaterials: 1
+    importMaterials: 0
     materialName: 0
     materialSearch: 1
     materialLocation: 1
@@ -41,7 +41,7 @@ ModelImporter:
     isReadable: 1
   meshes:
     lODScreenPercentages: []
-    globalScale: 1
+    globalScale: 0.1
     meshCompression: 0
     addColliders: 0
     importVisibility: 1

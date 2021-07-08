@@ -14,10 +14,11 @@ namespace Variety
             EdgeworkCondition = edgeworkCondition;
         }
 
-        public override void ObtainEdgework()
+        public override bool DecideStates(int numPriorNonWireItems)
         {
             _conditionFlipped = EdgeworkCondition(Module.Bomb);
             State = _conditionFlipped ? 1 : 0;
+            return true;
         }
 
         public WireColor Color { get; private set; }
@@ -83,7 +84,7 @@ namespace Variety
 
         private static readonly string[] _colorNames = { "black", "blue", "red", "yellow", "white" };
 
-        public override string ToString() { return string.Format("{0} wire from {1} to {2}", _colorNames[(int) Color], coords(Cells[0]), coords(Cells[1])); }
+        public override string ToString() { return string.Format("{0} wire", _colorNames[(int) Color]); }
         public override bool CanProvideStage { get { return false; } }
         public override int NumStates { get { return 2; } }
         public override object Flavor { get { return Color; } }

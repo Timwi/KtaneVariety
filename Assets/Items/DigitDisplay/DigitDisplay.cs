@@ -35,7 +35,7 @@ namespace Variety
         }
 
         public override object Flavor { get { return "DigitDisplay"; } }
-        public override string ToString() { return string.Format("Digit display with {1} states at {0}", coords(TopLeftCell), _numStates); }
+        public override string ToString() { return "digit display"; }
         public override string DescribeSolutionState(int state) { return string.Format("set the digit display to {0} (the digit at stage {1})", _displayedDigitPerState[state], state); }
         public override string DescribeWhatUserDid() { return "you changed the digit display"; }
         public override string DescribeWhatUserShouldHaveDone(int desiredState) { return string.Format("you should have changed the digit display to {0} (instead of {1})", _displayedDigitPerState[desiredState], State == -1 ? "leaving it unchanged" : _displayedDigitPerState[State].ToString()); }

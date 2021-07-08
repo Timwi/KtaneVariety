@@ -102,7 +102,7 @@ namespace Variety
             };
         }
 
-        public override string ToString() { return string.Format("{0}×{1} keypad at {2}", Widths[Size], Heights[Size], coords(Cells[0])); }
+        public override string ToString() { return string.Format("{0}×{1} keypad", Widths[Size], Heights[Size]); }
         public override int NumStates { get { return factorial(numKeys); } }
         public override object Flavor { get { return Size; } }
 

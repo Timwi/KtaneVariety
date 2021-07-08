@@ -76,11 +76,11 @@ namespace Variety
 
         private static readonly string[] _colorNames = { "blue", "red", "yellow", "white" };
 
-        public override string ToString() { return string.Format("{0} switch with {1} positions at {2}", _colorNames[(int) Color], NumPositions, coords(Cells[0])); }
+        public override string ToString() { return string.Format("{0} switch", _colorNames[(int) Color]); }
         public override bool CanProvideStage { get { return true; } }
         public override int NumStates { get { return NumPositions; } }
         public override object Flavor { get { return Color; } }
-        public override string DescribeSolutionState(int state) { return string.Format("set the {0} switch (which has {1} positions) to {2}", _colorNames[(int) Color], NumPositions, _positionNames[NumPositions - 2][state]); }
+        public override string DescribeSolutionState(int state) { return string.Format("set the {0} switch to {1}", _colorNames[(int) Color], _positionNames[NumPositions - 2][state]); }
         public override string DescribeWhatUserDid() { return string.Format("you toggled the {0} switch", _colorNames[(int) Color]); }
         public override string DescribeWhatUserShouldHaveDone(int desiredState) { return string.Format("you should have toggled the {0} switch to {1} (instead of {2})", _colorNames[(int) Color], _positionNames[NumPositions - 2][desiredState], _positionNames[NumPositions - 2][State]); }
     }

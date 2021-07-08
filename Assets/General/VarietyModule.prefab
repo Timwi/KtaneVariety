@@ -275,6 +275,8 @@ MonoBehaviour:
     type: 2}
   LetterDisplayTemplate: {fileID: 114504848070385606, guid: 9a9bbb901412659449a31317b5582306,
     type: 2}
+  BrailleDisplayTemplate: {fileID: 114914519322646110, guid: aef906de9361b514da2a2bcab665e1d6,
+    type: 2}
 --- !u!114 &11489324
 MonoBehaviour:
   m_ObjectHideFlags: 1
