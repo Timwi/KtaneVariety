@@ -63,15 +63,10 @@ namespace Variety
             var backMeshName = string.Format("Back{0}x{1}", Width, Height);
             prefab.Back.sharedMesh = prefab.BackMeshes.First(m => m.name == backMeshName);
 
-            prefab.ButtonPos[0].localPosition = new Vector3(0, 0, -.5f - .5f * Height);
-            prefab.ButtonPos[1].localPosition = new Vector3(0, 0, -.5f - .5f * Width);
-            prefab.ButtonPos[2].localPosition = new Vector3(0, 0, -.5f - .5f * Height);
-            prefab.ButtonPos[3].localPosition = new Vector3(0, 0, -.5f - .5f * Width);
-
-            prefab.ButtonColliders[0].center = new Vector3(0, 0, -.25f - .5f * Height);
-            prefab.ButtonColliders[1].center = new Vector3(0, 0, -.25f - .5f * Width);
-            prefab.ButtonColliders[2].center = new Vector3(0, 0, -.25f - .5f * Height);
-            prefab.ButtonColliders[3].center = new Vector3(0, 0, -.25f - .5f * Width);
+            prefab.ButtonPos[0].localPosition = new Vector3(0, .0001f, .5f + .5f * Height);
+            prefab.ButtonPos[1].localPosition = new Vector3(.5f + .5f * Width, .0001f, 0);
+            prefab.ButtonPos[2].localPosition = new Vector3(0, .0001f, -.5f - .5f * Height);
+            prefab.ButtonPos[3].localPosition = new Vector3(-.5f - .5f * Width, .0001f, 0);
 
             yield return new ItemSelectable(prefab.Buttons[0], X + Width / 2 + W * Y);
             yield return new ItemSelectable(prefab.Buttons[1], X + Width - 1 + W * (Y + Height / 2));
@@ -103,6 +98,7 @@ namespace Variety
             {
                 button.AddInteractionPunch(.25f);
                 Module.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, button.transform);
+                Module.MoveButton(button.transform, .1f, ButtonMoveType.DownThenUp);
 
                 var x = State % Width;
                 var y = State / Width;

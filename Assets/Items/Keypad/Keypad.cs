@@ -30,6 +30,7 @@ namespace Variety
         private readonly List<int> _presses = new List<int>();
         private MeshRenderer[] _leds;
         private KeypadPrefab _prefab;
+        private Transform[] _buttonParents;
 
         public Keypad(VarietyModule module, KeypadSize size, int topLeftCell)
             : base(module, CellRect(topLeftCell, 2 * Widths[size], 2 * Heights[size]))
@@ -53,6 +54,7 @@ namespace Variety
             _leds = new MeshRenderer[w * h];
 
             _prefab.Backing.localScale = new Vector3(d * w + .001f, d * h + .001f);
+            _buttonParents = new Transform[w * h];
 
             for (var keyIx = 0; keyIx < w * h; keyIx++)
             {
@@ -62,10 +64,10 @@ namespace Variety
                 key.transform.localRotation = Quaternion.identity;
                 key.transform.localScale = new Vector3(s, s, s);
                 key.OnInteract = pressed(key, keyIx);
+                _buttonParents[keyIx] = key.transform.Find("KeyCapParent");
+                _leds[keyIx] = _buttonParents[keyIx].Find("Led").GetComponent<MeshRenderer>();
 
                 yield return new ItemSelectable(key, Cells[0] + 2 * (keyIx % w) + W * 2 * (keyIx / w));
-
-                _leds[keyIx] = key.transform.Find("Led").GetComponent<MeshRenderer>();
             }
         }
 
@@ -75,12 +77,16 @@ namespace Variety
             {
                 key.AddInteractionPunch(.25f);
                 Module.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, key.transform);
+                Module.MoveButton(_buttonParents[keyIx], .1f, ButtonMoveType.DownThenUp);
+
                 if (_presses.Contains(keyIx))
                     _presses.Clear();
                 else
                     _presses.Add(keyIx);
+
                 for (var i = 0; i < numKeys; i++)
                     _leds[i].sharedMaterial = _presses.Contains(i) ? _prefab.LedOn : _prefab.LedOff;
+
                 if (_presses.Count == numKeys)
                 {
                     var newState = 0;

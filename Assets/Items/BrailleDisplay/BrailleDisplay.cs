@@ -56,14 +56,15 @@ namespace Variety
                 _curDisplay ^= 1 << dotIx;
                 for (var i = 0; i < 6; i++)
                     _prefab.Dots[i].sharedMaterial = (_curDisplay & (1 << i)) != 0 ? _prefab.DotOn : _prefab.DotOff;
-                State = Array.IndexOf(_braille, _curDisplay);
+                var charEntered = Array.IndexOf(_braille, _curDisplay);
+                State = charEntered == -1 ? -1 : Array.IndexOf(_snChars, charEntered);
                 return false;
             };
         }
 
         public override object Flavor { get { return "BrailleDisplay"; } }
         public override string ToString() { return "Braille display"; }
-        public override string DescribeSolutionState(int state) { return string.Format("set the braille display to {0}", _snChars[state]); }
+        public override string DescribeSolutionState(int state) { return string.Format("set the braille display to {0}", _chars[_snChars[state]]); }
         public override string DescribeWhatUserDid() { return "you changed the Braille display"; }
         public override string DescribeWhatUserShouldHaveDone(int desiredState)
         {

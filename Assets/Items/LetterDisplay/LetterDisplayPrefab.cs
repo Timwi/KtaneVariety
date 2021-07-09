@@ -6,6 +6,7 @@ public class LetterDisplayPrefab : MonoBehaviour
     public MeshRenderer[] Segments2;
     public MeshRenderer[] Segments3;
     public KMSelectable[] DownButtons;
+    public Transform[] DownButtonParents;
     public Material SegmentOn;
     public Material SegmentOff;
 

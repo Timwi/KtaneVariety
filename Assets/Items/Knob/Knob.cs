@@ -9,7 +9,6 @@ namespace Variety
 {
     public class Knob : Item
     {
-        public int TopLeftCell { get; private set; }
         public int NumTicks { get; private set; }
         public int Offset { get; private set; }
 
@@ -19,7 +18,6 @@ namespace Variety
         public Knob(VarietyModule module, int topLeftCell, int numTicks)
             : base(module, CellRect(topLeftCell, 4, 4))
         {
-            TopLeftCell = topLeftCell;
             NumTicks = numTicks;
             State = Rnd.Range(0, NumTicks);
         }
@@ -58,7 +56,7 @@ namespace Variety
         public override IEnumerable<ItemSelectable> SetUp()
         {
             var prefab = Object.Instantiate(Module.KnobTemplate, Module.transform);
-            prefab.transform.localPosition = new Vector3(GetXOfCellRect(TopLeftCell, 3), .01501f, GetYOfCellRect(TopLeftCell, 3));
+            prefab.transform.localPosition = new Vector3(GetXOfCellRect(Cells[0], 3), .01501f, GetYOfCellRect(Cells[0], 3));
             prefab.transform.localRotation = Quaternion.identity;
             prefab.transform.localScale = new Vector3(1.09f, 1.09f, 1.09f);
 
@@ -78,7 +76,7 @@ namespace Variety
                 SetPosition((State + 1) % NumTicks);
                 return false;
             };
-            yield return new ItemSelectable(prefab.Knob, TopLeftCell);
+            yield return new ItemSelectable(prefab.Knob, Cells[0] + W + 1);
         }
 
         public override string ToString() { return string.Format("knob (north is {0})", (NumTicks - Offset) % NumTicks); }

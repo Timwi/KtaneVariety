@@ -52,6 +52,6 @@ namespace Variety
             return new LetterDisplay(module, location, letters, formableValidWords);
         }
 
-        public override IEnumerable<object> Flavors { get { yield return "Letter Display"; } }
+        public override IEnumerable<object> Flavors { get { yield return "LetterDisplay"; } }
     }
 }

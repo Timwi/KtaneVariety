@@ -46,8 +46,8 @@ namespace Variety
             _prefab.transform.localPosition = new Vector3(GetXOfCellRect(TopLeftCell, 2), .015f, GetYOfCellRect(TopLeftCell, 3));
             _prefab.transform.localRotation = Quaternion.identity;
             _prefab.transform.localScale = new Vector3(1f, 1f, 1f);
-            _prefab.UpButton.OnInteract = ButtonPressHandler(_prefab.UpButton, 1);
-            _prefab.DownButton.OnInteract = ButtonPressHandler(_prefab.DownButton, 9);
+            _prefab.UpButton.OnInteract = ButtonPressHandler(_prefab.UpButtonParent, _prefab.UpButton, 1);
+            _prefab.DownButton.OnInteract = ButtonPressHandler(_prefab.DownButtonParent, _prefab.DownButton, 9);
 
             foreach (var seg in _prefab.Segments)
                 seg.sharedMaterial = _prefab.Black;
@@ -58,12 +58,13 @@ namespace Variety
             SetDisplay(-1, yellow: false);
         }
 
-        private KMSelectable.OnInteractHandler ButtonPressHandler(KMSelectable button, int offset)
+        private KMSelectable.OnInteractHandler ButtonPressHandler(Transform buttonParent, KMSelectable button, int offset)
         {
             return delegate
             {
                 button.AddInteractionPunch(.25f);
                 Module.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, button.transform);
+                Module.MoveButton(buttonParent, .001f, ButtonMoveType.DownThenUp);
                 SetDisplay((_curDisplay + offset) % 10, yellow: true);
                 State = Array.IndexOf(_displayedDigitPerState, _curDisplay);
                 return false;

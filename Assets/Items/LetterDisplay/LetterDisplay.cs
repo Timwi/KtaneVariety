@@ -21,6 +21,7 @@ namespace Variety
             Location = location;
             Letters = letters;
             FormableWords = formableWords;
+            State = Array.IndexOf(FormableWords, letters.Select(slot => slot[0]).Join(""));
         }
 
         private void ShowLetters()
@@ -46,6 +47,10 @@ namespace Variety
         {
             return delegate
             {
+                _prefab.DownButtons[btn].AddInteractionPunch(.25f);
+                Module.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, _prefab.DownButtons[btn].transform);
+                Module.MoveButton(_prefab.DownButtonParents[btn], .001f, ButtonMoveType.DownThenUp);
+
                 _curPos[btn] = (_curPos[btn] + 1) % Letters[btn].Length;
                 ShowLetters();
                 State = Array.IndexOf(FormableWords, Enumerable.Range(0, 3).Select(slot => Letters[slot][_curPos[slot]]).Join(""));

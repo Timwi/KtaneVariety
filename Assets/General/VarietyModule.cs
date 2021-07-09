@@ -31,13 +31,17 @@ public class VarietyModule : MonoBehaviour
     public SwitchPrefab SwitchTemplate;
     public LetterDisplayPrefab LetterDisplayTemplate;
     public BrailleDisplayPrefab BrailleDisplayTemplate;
+    public ButtonPrefab ButtonTemplate;
 
     private static int _moduleIdCounter = 1;
     private int _moduleId;
     private Item[] _items;
     private int[] _expectedStates;
+    private int _lastTimerSeconds;
+    private int _timerTicks;
 
     public int ModuleID { get { return _moduleId; } }
+    public int TimerTicks { get { return _timerTicks; } }
 
     public const int W = 10;                // Number of slots in X direction
     public const int H = 8;                // Number of slots in Y direction
@@ -74,8 +78,9 @@ public class VarietyModule : MonoBehaviour
             new ItemFactoryInfo(1, new WireFactory(ruleSeedRnd)),
             new ItemFactoryInfo(2, new KeyFactory()),
             new ItemFactoryInfo(2, new SliderFactory()),
+            new ItemFactoryInfo(3, new SwitchFactory()),
             new ItemFactoryInfo(5, new KnobFactory()),
-            new ItemFactoryInfo(5, new SwitchFactory()),
+            new ItemFactoryInfo(5, new ButtonFactory(ruleSeedRnd)),
             new ItemFactoryInfo(7, new BrailleDisplayFactory()),
             new ItemFactoryInfo(7, new DigitDisplayFactory()),
             new ItemFactoryInfo(8, new KeypadFactory()),
@@ -117,13 +122,13 @@ public class VarietyModule : MonoBehaviour
         ModuleSelectable.UpdateChildren();
 
 #if UNITY_EDITOR
-        for (var cell = 0; cell < W * H; cell++)
-        {
-            var dummy = Instantiate(DummyTemplate, transform);
-            dummy.transform.localPosition = new Vector3(GetX(cell), .01501f, GetY(cell));
-            dummy.transform.localEulerAngles = new Vector3(90, 0, 0);
-            dummy.Renderer.sharedMaterial = takens.Contains(cell) ? dummy.Black : dummy.White;
-        }
+        //for (var cell = 0; cell < W * H; cell++)
+        //{
+        //    var dummy = Instantiate(DummyTemplate, transform);
+        //    dummy.transform.localPosition = new Vector3(GetX(cell), .01501f, GetY(cell));
+        //    dummy.transform.localEulerAngles = new Vector3(90, 0, 0);
+        //    dummy.Renderer.sharedMaterial = takens.Contains(cell) ? dummy.Black : dummy.White;
+        //}
 #endif
 
         items.Sort((a, b) => Array.IndexOf(_flavorOrder, a.Flavor).CompareTo(Array.IndexOf(_flavorOrder, b.Flavor)));
@@ -181,35 +186,30 @@ public class VarietyModule : MonoBehaviour
         for (var i = 0; i < _items.Length; i++)
         {
             var remainingItemsCount = _items.Length - i;
-            var itemIx = (int) (reconstructedState % (ulong) remainingItemsCount);
-            Debug.LogFormat(@"[Variety #{0}] {1} % {2} = {3} = {4} ({5} states)", _moduleId, reconstructedState, remainingItemsCount, itemIx, _items[i], _items[i].NumStates);
+            Debug.LogFormat(@"[Variety #{0}] {1} % {2} = {3} = {4} ({5} states)", _moduleId, reconstructedState, remainingItemsCount, (int) (reconstructedState % (ulong) remainingItemsCount), _items[i], _items[i].NumStates);
             reconstructedState /= (ulong) remainingItemsCount;
 
             Debug.LogFormat(@"[Variety #{0}] {1} % {2} = {3} = {4}", _moduleId, reconstructedState, _items[i].NumStates, _expectedStates[i], _items[i].DescribeSolutionState(_expectedStates[i]));
+            //Debug.LogFormat(@"[Variety #{0}] {4}", _moduleId, reconstructedState, _items[i].NumStates, _expectedStates[i], _items[i].DescribeSolutionState(_expectedStates[i]));
             reconstructedState /= (ulong) _items[i].NumStates;
 
             _items[i].StateSet = StateSet(i);
             maximum *= (ulong) remainingItemsCount;
             maximum *= (ulong) _items[i].NumStates;
         }
-        Debug.LogWarningFormat(@"<Variety #{0}> Maximum: {1} ({2} digits) ({3})", _moduleId, maximum, maximum.ToString().Length, ulong.MaxValue.ToString().Length);
+        Debug.LogFormat(@"<Variety #{0}> Maximum: {1} ({2} digits)", _moduleId, maximum, maximum.ToString().Length);
     }
 
     private Action<int> StateSet(int itemIx)
     {
         return delegate (int newState)
         {
-            if (newState == -1)
-                return;
-
             if (_items[itemIx].CanProvideStage)
             {
                 var stageItemIndex = _items.Where(item => item.CanProvideStage).IndexOf(item => item == _items[itemIx]);
                 for (var ix = itemIx + 1; ix < _items.Length; ix++)
                     _items[ix].ReceiveItemChange(stageItemIndex);
             }
-
-            Debug.LogFormat("<Variety #{0}> States:\n{1}", _moduleId, _items.Select((item, ix) => string.Format("{0}: {4}, desired={1}, actual={2}, stuck={3}", ix, _expectedStates[ix], item.State, item.IsStuck, item)).Join("\n"));
 
             if (_isSolved)
                 return;
@@ -237,5 +237,52 @@ public class VarietyModule : MonoBehaviour
             Module.HandlePass();
             _isSolved = true;
         };
+    }
+
+    private Coroutine _movingButton = null;
+
+    public void MoveButton(Transform button, float amount, ButtonMoveType type)
+    {
+        if (_movingButton != null)
+            Module.StopCoroutine(_movingButton);
+        _movingButton = Module.StartCoroutine(moveButton(button, amount, type));
+    }
+
+    private IEnumerator moveButton(Transform button, float amount, ButtonMoveType type)
+    {
+        var duration = .1f;
+        var elapsed = 0f;
+
+        if (type == ButtonMoveType.Down || type == ButtonMoveType.DownThenUp)
+        {
+            while (elapsed < duration)
+            {
+                button.localPosition = new Vector3(0, Easing.OutQuad(elapsed, 0, -amount, duration), 0);
+                yield return null;
+                elapsed += Time.deltaTime;
+            }
+            button.localPosition = new Vector3(0, -amount, 0);
+        }
+        if (type == ButtonMoveType.Up || type == ButtonMoveType.DownThenUp)
+        {
+            elapsed = 0f;
+            while (elapsed < duration)
+            {
+                button.localPosition = new Vector3(0, Easing.OutQuad(elapsed, -amount, 0, duration), 0);
+                yield return null;
+                elapsed += Time.deltaTime;
+            }
+            button.localPosition = new Vector3(0, 0, 0);
+        }
+    }
+
+    void Update()
+    {
+        var seconds = (int) Bomb.GetTime() % 60;
+        if (seconds != _lastTimerSeconds)
+        {
+            _timerTicks++;
+            _lastTimerSeconds = seconds;
+        }
     }
 }

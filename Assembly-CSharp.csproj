@@ -51,6 +51,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\General\ButtonMoveType.cs" />
      <Compile Include="Assets\General\DummyPrefab.cs" />
      <Compile Include="Assets\General\Item.cs" />
      <Compile Include="Assets\General\ItemFactory.cs" />
@@ -61,6 +62,10 @@
      <Compile Include="Assets\Items\BrailleDisplay\BrailleDisplay.cs" />
      <Compile Include="Assets\Items\BrailleDisplay\BrailleDisplayFactory.cs" />
      <Compile Include="Assets\Items\BrailleDisplay\BrailleDisplayPrefab.cs" />
+     <Compile Include="Assets\Items\Button\Button.cs" />
+     <Compile Include="Assets\Items\Button\ButtonColor.cs" />
+     <Compile Include="Assets\Items\Button\ButtonFactory.cs" />
+     <Compile Include="Assets\Items\Button\ButtonPrefab.cs" />
      <Compile Include="Assets\Items\DigitDisplay\DigitDisplay.cs" />
      <Compile Include="Assets\Items\DigitDisplay\DigitDisplayFactory.cs" />
      <Compile Include="Assets\Items\DigitDisplay\DigitDisplayPrefab.cs" />

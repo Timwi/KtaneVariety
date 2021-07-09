@@ -30,11 +30,11 @@ namespace Variety
         public override IEnumerable<ItemSelectable> SetUp()
         {
             var prefab = Object.Instantiate(Module.SwitchTemplate, Module.transform);
-            prefab.transform.localPosition = new Vector3(GetXOfCellRect(Cells[0], 1), .015f, GetYOfCellRect(Cells[0], 3));
+            prefab.transform.localPosition = new Vector3(GetXOfCellRect(Cells[0], 1), .015f, GetYOfCellRect(Cells[0], 4));
             prefab.transform.localScale = new Vector3(1.1f, 1.1f, 1.1f);
             prefab.Selectable.OnInteract = ToggleSwitch(prefab.Selectable);
             prefab.MeshRenderer.sharedMaterial = prefab.SwitchMaterials[(int) Color];
-            yield return new ItemSelectable(prefab.Selectable, Cells[0]);
+            yield return new ItemSelectable(prefab.Selectable, Cells[0] + W);
         }
 
         private KMSelectable.OnInteractHandler ToggleSwitch(KMSelectable switchObj)
