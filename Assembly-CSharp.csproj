@@ -79,6 +79,11 @@
      <Compile Include="Assets\Items\Knob\Knob.cs" />
      <Compile Include="Assets\Items\Knob\KnobFactory.cs" />
      <Compile Include="Assets\Items\Knob\KnobPrefab.cs" />
+     <Compile Include="Assets\Items\Led\Led.cs" />
+     <Compile Include="Assets\Items\Led\LedColor.cs" />
+     <Compile Include="Assets\Items\Led\LedCyclingState.cs" />
+     <Compile Include="Assets\Items\Led\LedFactory.cs" />
+     <Compile Include="Assets\Items\Led\LedPrefab.cs" />
      <Compile Include="Assets\Items\LetterDisplay\LetterDisplay.cs" />
      <Compile Include="Assets\Items\LetterDisplay\LetterDisplayFactory.cs" />
      <Compile Include="Assets\Items\LetterDisplay\LetterDisplayPrefab.cs" />

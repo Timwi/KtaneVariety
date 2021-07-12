@@ -7,7 +7,7 @@ namespace Variety
     {
         public override Item Generate(VarietyModule module, HashSet<object> taken)
         {
-            var orientations = new[] { SliderOrientation.Horizontal, SliderOrientation.Vertical }.Where(or => !taken.Contains(or)).ToArray();
+            var orientations = new[] { SliderOrientation.HorizontalSlider, SliderOrientation.VerticalSlider }.Where(or => !taken.Contains(or)).ToArray();
             if (orientations.Length == 0)
                 return null;
 
@@ -29,8 +29,8 @@ namespace Variety
         {
             get
             {
-                yield return SliderOrientation.Horizontal;
-                yield return SliderOrientation.Vertical;
+                yield return SliderOrientation.HorizontalSlider;
+                yield return SliderOrientation.VerticalSlider;
             }
         }
     }

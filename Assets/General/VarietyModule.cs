@@ -32,6 +32,7 @@ public class VarietyModule : MonoBehaviour
     public LetterDisplayPrefab LetterDisplayTemplate;
     public BrailleDisplayPrefab BrailleDisplayTemplate;
     public ButtonPrefab ButtonTemplate;
+    public LedPrefab LedTemplate;
 
     private static int _moduleIdCounter = 1;
     private int _moduleId;
@@ -77,13 +78,14 @@ public class VarietyModule : MonoBehaviour
         var factories = makeList(
             new ItemFactoryInfo(1, new WireFactory(ruleSeedRnd)),
             new ItemFactoryInfo(2, new KeyFactory()),
-            new ItemFactoryInfo(2, new SliderFactory()),
-            new ItemFactoryInfo(3, new SwitchFactory()),
-            new ItemFactoryInfo(5, new KnobFactory()),
-            new ItemFactoryInfo(5, new ButtonFactory(ruleSeedRnd)),
-            new ItemFactoryInfo(7, new BrailleDisplayFactory()),
-            new ItemFactoryInfo(7, new DigitDisplayFactory()),
-            new ItemFactoryInfo(8, new KeypadFactory()),
+            new ItemFactoryInfo(2, new LedFactory(ruleSeedRnd)),
+            new ItemFactoryInfo(2, new SwitchFactory()),
+            new ItemFactoryInfo(3, new KnobFactory()),
+            new ItemFactoryInfo(4, new ButtonFactory(ruleSeedRnd)),
+            new ItemFactoryInfo(5, new BrailleDisplayFactory()),
+            new ItemFactoryInfo(6, new DigitDisplayFactory()),
+            new ItemFactoryInfo(7, new SliderFactory()),
+            new ItemFactoryInfo(10, new KeypadFactory()),
             new ItemFactoryInfo(10, new MazeFactory(ruleSeedRnd)),
             new ItemFactoryInfo(10, new LetterDisplayFactory()));
 
@@ -92,22 +94,30 @@ public class VarietyModule : MonoBehaviour
         Debug.LogFormat("<Variety #{0}> Flavour order:\n{1}", _moduleId, _flavorOrder.Join("\n"));
 
         // Decide what’s going to be on the module
+        var iterations = 0;
+        tryAgain:
+        iterations++;
+        var remainingFactories = factories.ToList();
         var takens = new HashSet<object>();
         var items = new List<Item>();
-        while (factories.Count > 0)
+        while (remainingFactories.Count > 0 && items.Count < 10)
         {
-            var cumulativeWeight = Ut.NewArray(factories.Count, i => factories.Take(i + 1).Sum(fi => fi.Weight));
+            var cumulativeWeight = Ut.NewArray(remainingFactories.Count, i => remainingFactories.Take(i + 1).Sum(fi => fi.Weight));
             var rnd = Rnd.Range(0, cumulativeWeight.Last());
             var fIx = cumulativeWeight.Last() == 0 ? 0 : cumulativeWeight.IndexOf(w => rnd < w);
-            var item = factories[fIx].Factory.Generate(this, takens);
+            var item = remainingFactories[fIx].Factory.Generate(this, takens);
             if (item == null)
-                factories.RemoveAt(fIx);
+                remainingFactories.RemoveAt(fIx);
             else
             {
-                factories[fIx] = new ItemFactoryInfo(1, factories[fIx].Factory);
+                remainingFactories[fIx] = new ItemFactoryInfo(Math.Max(1, remainingFactories[fIx].Weight - 2), remainingFactories[fIx].Factory);
                 items.Add(item);
             }
         }
+        if (items.Count != 10 && iterations < 100)
+            goto tryAgain;
+
+        Debug.LogFormat(@"<Variety #{0}> Iterations: {1}; items: {2}", _moduleId, iterations, items.Count);
 
         // Generate the game objects on the module
         var children = new KMSelectable[W * H];
@@ -145,53 +155,74 @@ public class VarietyModule : MonoBehaviour
         _expectedStates = new int[items.Count];
 
         // Start with a random state number and find out what it would do
-        tryAgain:
-        ulong state = Enumerable.Range(0, 8).Aggregate(0UL, (p, n) => (p << 8) | (uint) Rnd.Range(0, 256)) % 1000000000000UL;
-        ulong reconstructedState = 0UL;
-        ulong mult = 1UL;
+        var fewestZeros = int.MaxValue;
+        List<Item> itemsWithFewestZeros = null;
+        int[] expectedStatesWithFewestZeros = null;
+        ulong stateWithFewestZeros = 0;
 
-        var remainingItems = items.ToList();
-        var itemProcessingOrder = new List<Item>();
-
-        while (remainingItems.Count > 0)
+        for (var i = 0; i < 100 || itemsWithFewestZeros == null; i++)
         {
-            var itemIx = (int) (state % (ulong) remainingItems.Count);
-            state /= (ulong) remainingItems.Count;
-            reconstructedState += mult * (ulong) itemIx;
-            mult *= (ulong) remainingItems.Count;
-            var item = remainingItems[itemIx];
-            remainingItems.RemoveAt(itemIx);
-            if (!item.DecideStates(itemProcessingOrder.Count(priorItem => priorItem.CanProvideStage)))
-                goto tryAgain;
+            ulong state = Enumerable.Range(0, 8).Aggregate(0UL, (p, n) => (p << 8) | (uint) Rnd.Range(0, 256)) % 1000000000000UL;
+            ulong reconstructedState = 0UL;
+            ulong mult = 1UL;
 
-            var itemState = (int) (state % (ulong) item.NumStates);
-            state /= (ulong) item.NumStates;
-            reconstructedState += mult * (ulong) itemState;
-            mult *= (ulong) item.NumStates;
+            var remainingItems = items.ToList();
+            var itemProcessingOrder = new List<Item>();
+            var expectedStates = new int[items.Count];
 
-            _expectedStates[itemProcessingOrder.Count] = itemState;
-            itemProcessingOrder.Add(item);
+            while (remainingItems.Count > 0)
+            {
+                var itemIx = (int) (state % (ulong) remainingItems.Count);
+                state /= (ulong) remainingItems.Count;
+                reconstructedState += mult * (ulong) itemIx;
+                mult *= (ulong) remainingItems.Count;
+                var item = remainingItems[itemIx];
+                remainingItems.RemoveAt(itemIx);
+                if (!item.DecideStates(itemProcessingOrder.Count(priorItem => priorItem.CanProvideStage)))
+                    goto busted;
+
+                var itemState = (int) (state % (ulong) item.NumStates);
+                state /= (ulong) item.NumStates;
+                reconstructedState += mult * (ulong) itemState;
+                mult *= (ulong) item.NumStates;
+
+                expectedStates[itemProcessingOrder.Count] = itemState;
+                itemProcessingOrder.Add(item);
+            }
+
+            var numZeros = expectedStates.Reverse().TakeWhile(st => st == 0).Count();
+            if (numZeros < fewestZeros)
+            {
+                fewestZeros = numZeros;
+                itemsWithFewestZeros = itemProcessingOrder;
+                expectedStatesWithFewestZeros = expectedStates;
+                stateWithFewestZeros = reconstructedState;
+
+                if (numZeros == 0)
+                    break;
+            }
+
+            busted:;
         }
-        var stateStr = reconstructedState.ToString();
-        if (stateStr.Length > 12)
-            throw new InvalidOperationException();
 
-        Debug.LogFormat(@"[Variety #{0}] State: {1}", _moduleId, stateStr);
-        StateDisplay.text = stateStr;
+        Debug.LogFormat(@"[Variety #{0}] State: {1}", _moduleId, stateWithFewestZeros.ToString());
+        StateDisplay.text = stateWithFewestZeros.ToString();
 
-        _items = itemProcessingOrder.ToArray();
+        _items = itemsWithFewestZeros.ToArray();
+        _expectedStates = expectedStatesWithFewestZeros;
+        var finalState = stateWithFewestZeros;
 
         Debug.LogFormat(@"[Variety #{0}] Expected actions:", _moduleId);
         ulong maximum = 1UL;
         for (var i = 0; i < _items.Length; i++)
         {
             var remainingItemsCount = _items.Length - i;
-            Debug.LogFormat(@"[Variety #{0}] {1} % {2} = {3} = {4} ({5} states)", _moduleId, reconstructedState, remainingItemsCount, (int) (reconstructedState % (ulong) remainingItemsCount), _items[i], _items[i].NumStates);
-            reconstructedState /= (ulong) remainingItemsCount;
+            Debug.LogFormat(@"[Variety #{0}] {1} % {2} = {3} = {4} ({5} states)", _moduleId, finalState, remainingItemsCount, (int) (finalState % (ulong) remainingItemsCount), _items[i], _items[i].NumStates);
+            finalState /= (ulong) remainingItemsCount;
 
-            Debug.LogFormat(@"[Variety #{0}] {1} % {2} = {3} = {4}", _moduleId, reconstructedState, _items[i].NumStates, _expectedStates[i], _items[i].DescribeSolutionState(_expectedStates[i]));
+            Debug.LogFormat(@"[Variety #{0}] {1} % {2} = {3} = {4}", _moduleId, finalState, _items[i].NumStates, _expectedStates[i], _items[i].DescribeSolutionState(_expectedStates[i]));
             //Debug.LogFormat(@"[Variety #{0}] {4}", _moduleId, reconstructedState, _items[i].NumStates, _expectedStates[i], _items[i].DescribeSolutionState(_expectedStates[i]));
-            reconstructedState /= (ulong) _items[i].NumStates;
+            finalState /= (ulong) _items[i].NumStates;
 
             _items[i].StateSet = StateSet(i);
             maximum *= (ulong) remainingItemsCount;

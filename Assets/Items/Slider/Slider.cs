@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using UnityEngine;
 
 namespace Variety
@@ -15,8 +14,10 @@ namespace Variety
         public SliderOrientation Orientation { get; private set; }
         public int NumTicks { get; private set; }
 
-        public static int SW(SliderOrientation orientation) { return orientation == SliderOrientation.Horizontal ? LongSlots : ShortSlots; }
-        public static int SH(SliderOrientation orientation) { return orientation == SliderOrientation.Horizontal ? ShortSlots : LongSlots; }
+        public static int SW(SliderOrientation orientation) { return orientation == SliderOrientation.HorizontalSlider ? LongSlots : ShortSlots; }
+        public static int SH(SliderOrientation orientation) { return orientation == SliderOrientation.HorizontalSlider ? ShortSlots : LongSlots; }
+
+        private static readonly string[] _orientationNames = { "horizontal", "vertical" };
 
         public Slider(VarietyModule module, int x, int y, SliderOrientation orientation) : base(module, CellRect(x + W * y, SW(orientation), SH(orientation)))
         {
@@ -30,7 +31,7 @@ namespace Variety
         {
             var prefab = Object.Instantiate(Module.SliderTemplate, Module.transform);
 
-            if (Orientation == SliderOrientation.Horizontal)
+            if (Orientation == SliderOrientation.HorizontalSlider)
             {
                 var x = -VarietyModule.Width / 2 + (X + (LongSlots - 1) * .5f) * VarietyModule.CellWidth;
                 var y = VarietyModule.Height / 2 - (Y + (ShortSlots - 1) * .5f) * VarietyModule.CellHeight + VarietyModule.YOffset;
@@ -99,12 +100,12 @@ namespace Variety
             return Mathf.Lerp(-0.028f, 0.028f, state * 1f / (NumTicks - 1));
         }
 
-        public override string ToString() { return string.Format("{0} slider", Orientation.ToString().ToLowerInvariant()); }
+        public override string ToString() { return string.Format("{0} slider", _orientationNames[(int) Orientation]); }
         public override int NumStates { get { return NumTicks; } }
         public override object Flavor { get { return Orientation; } }
 
-        public override string DescribeSolutionState(int state) { return string.Format("set the {0} slider to {1}", Orientation.ToString().ToLowerInvariant(), state); }
-        public override string DescribeWhatUserDid() { return string.Format("you changed the {0} slider", Orientation.ToString().ToLowerInvariant()); }
-        public override string DescribeWhatUserShouldHaveDone(int desiredState) { return string.Format("you should have set the {0} slider to {1} (instead of {2})", Orientation.ToString().ToLowerInvariant(), desiredState, State); }
+        public override string DescribeSolutionState(int state) { return string.Format("set the {0} slider to {1}", _orientationNames[(int) Orientation], state); }
+        public override string DescribeWhatUserDid() { return string.Format("you changed the {0} slider", _orientationNames[(int) Orientation]); }
+        public override string DescribeWhatUserShouldHaveDone(int desiredState) { return string.Format("you should have set the {0} slider to {1} (instead of {2})", _orientationNames[(int) Orientation], desiredState, State); }
     }
 }

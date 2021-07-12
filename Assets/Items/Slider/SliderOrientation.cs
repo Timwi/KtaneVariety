@@ -2,7 +2,7 @@
 {
     public enum SliderOrientation
     {
-        Horizontal,
-        Vertical
+        HorizontalSlider,
+        VerticalSlider
     }
 }

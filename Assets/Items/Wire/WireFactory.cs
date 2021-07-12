@@ -26,6 +26,10 @@ namespace Variety
 
         public override Item Generate(VarietyModule module, HashSet<object> taken)
         {
+            // Decline to create more wires if there are already two
+            if (taken.Count(obj => obj is WireColor) >= 2)
+                return null;
+
             var availableColors = ((WireColor[]) Enum.GetValues(typeof(WireColor))).Where(c => !taken.Contains(c)).ToArray();
             if (availableColors.Length == 0)
                 return null;

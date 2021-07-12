@@ -279,6 +279,8 @@ MonoBehaviour:
     type: 2}
   ButtonTemplate: {fileID: 114817336223241004, guid: f48c72489f0a2bf43a41abbfcae2cef9,
     type: 2}
+  LedTemplate: {fileID: 114881874125031976, guid: f9de10d84874b94448ecd6ad1b9cec01,
+    type: 2}
 --- !u!114 &11489324
 MonoBehaviour:
   m_ObjectHideFlags: 1
