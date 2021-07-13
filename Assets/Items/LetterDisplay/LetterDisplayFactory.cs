@@ -48,7 +48,7 @@ namespace Variety
                 from ltr3 in letters[2]
                 select string.Concat(ltr1, ltr2, ltr3)).ToArray();
             var formableValidWords = formableWords.Where(w => _words.Contains(w)).ToArray();
-            Array.Sort(formableWords, StringComparer.InvariantCultureIgnoreCase);
+            Array.Sort(formableValidWords, StringComparer.InvariantCultureIgnoreCase);
             return new LetterDisplay(module, location, letters, formableValidWords);
         }
 

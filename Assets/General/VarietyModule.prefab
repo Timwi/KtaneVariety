@@ -267,6 +267,8 @@ MonoBehaviour:
     type: 2}
   KeypadTemplate: {fileID: 114569308335049856, guid: 62241a94459821341a3000a0cc4b3b20,
     type: 2}
+  ColoredKeypadTemplate: {fileID: 114987363867626380, guid: c99dc43f596be1a4b8fbd186a7ff2f8f,
+    type: 2}
   KnobTemplate: {fileID: 114625087406824688, guid: a1e2dfaee44d97446bc8594566f0ac2a,
     type: 2}
   DigitDisplayTemplate: {fileID: 114420646302354140, guid: d2570382521a7454f8500ac70f566547,

@@ -66,6 +66,11 @@
      <Compile Include="Assets\Items\Button\ButtonColor.cs" />
      <Compile Include="Assets\Items\Button\ButtonFactory.cs" />
      <Compile Include="Assets\Items\Button\ButtonPrefab.cs" />
+     <Compile Include="Assets\Items\ColoredKeypad\ColoredKeypad.cs" />
+     <Compile Include="Assets\Items\ColoredKeypad\ColoredKeypadColor.cs" />
+     <Compile Include="Assets\Items\ColoredKeypad\ColoredKeypadFactory.cs" />
+     <Compile Include="Assets\Items\ColoredKeypad\ColoredKeypadPrefab.cs" />
+     <Compile Include="Assets\Items\ColoredKeypad\ColoredKeypadSize.cs" />
      <Compile Include="Assets\Items\DigitDisplay\DigitDisplay.cs" />
      <Compile Include="Assets\Items\DigitDisplay\DigitDisplayFactory.cs" />
      <Compile Include="Assets\Items\DigitDisplay\DigitDisplayPrefab.cs" />

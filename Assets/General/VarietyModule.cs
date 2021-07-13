@@ -26,6 +26,7 @@ public class VarietyModule : MonoBehaviour
     public MazePrefab MazeTemplate;
     public SliderPrefab SliderTemplate;
     public KeypadPrefab KeypadTemplate;
+    public ColoredKeypadPrefab ColoredKeypadTemplate;
     public KnobPrefab KnobTemplate;
     public DigitDisplayPrefab DigitDisplayTemplate;
     public SwitchPrefab SwitchTemplate;
@@ -85,13 +86,14 @@ public class VarietyModule : MonoBehaviour
             new ItemFactoryInfo(5, new BrailleDisplayFactory()),
             new ItemFactoryInfo(6, new DigitDisplayFactory()),
             new ItemFactoryInfo(7, new SliderFactory()),
-            new ItemFactoryInfo(10, new KeypadFactory()),
+            new ItemFactoryInfo(7, new KeypadFactory()),
+            new ItemFactoryInfo(7, new ColoredKeypadFactory(ruleSeedRnd)),
             new ItemFactoryInfo(10, new MazeFactory(ruleSeedRnd)),
             new ItemFactoryInfo(10, new LetterDisplayFactory()));
 
         _flavorOrder = factories.SelectMany(inf => inf.Factory.Flavors).ToArray();
-        ruleSeedRnd.ShuffleFisherYates(_flavorOrder);
         Debug.LogFormat("<Variety #{0}> Flavour order:\n{1}", _moduleId, _flavorOrder.Join("\n"));
+        ruleSeedRnd.ShuffleFisherYates(_flavorOrder);
 
         // Decide what’s going to be on the module
         var iterations = 0;

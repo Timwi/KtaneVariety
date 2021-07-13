@@ -85,7 +85,7 @@ namespace Variety
                     _presses.Add(keyIx);
 
                 for (var i = 0; i < numKeys; i++)
-                    _leds[i].sharedMaterial = _presses.Contains(i) ? _prefab.LedOn : _prefab.LedOff;
+                    _leds[i].sharedMaterial = _prefab.LedColors[_presses.IndexOf(i) + 1];
 
                 if (_presses.Count == numKeys)
                 {

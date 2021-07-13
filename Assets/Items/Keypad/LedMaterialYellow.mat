@@ -6,7 +6,7 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: LedMaterial
+  m_Name: LedMaterialYellow
   m_Shader: {fileID: 4800000, guid: 02561f4db7e9b5145baccdae9ca37856, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
@@ -39,7 +39,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: a7525246b3fdb7e4986c1b6fca044064, type: 3}
+        m_Texture: {fileID: 2800000, guid: 89866020146b695429378d9b6fe2ae66, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:

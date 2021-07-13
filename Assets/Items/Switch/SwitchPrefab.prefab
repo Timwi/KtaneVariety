@@ -38,7 +38,7 @@ GameObject:
   - component: {fileID: 4073906053589754}
   - component: {fileID: 33475827116344760}
   - component: {fileID: 23579962718896102}
-  - component: {fileID: 114891383810264752}
+  - component: {fileID: 114521350275811428}
   m_Layer: 0
   m_Name: Socket
   m_TagString: Untagged
@@ -184,7 +184,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 06f3b63702aeebc41818acb87310c51e, type: 3}
+  - {fileID: 2100000, guid: ca3b62595ba611b4399ffcb0fe7ea124, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -256,6 +256,19 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 3292050ba847edd41bdcf97bb4832b86, type: 2}
   - {fileID: 2100000, guid: 16b86492310b8c74aa9bc3e9a25ffd1a, type: 2}
   - {fileID: 2100000, guid: 5dd854c9a992a0b488ebefb3065b1d79, type: 2}
+--- !u!114 &114521350275811428
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1116471001268232}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1005838349, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShaderNames:
+  - KT/Mobile/DiffuseTint
 --- !u!114 &114577804005189672
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -291,16 +304,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShaderNames:
   - Legacy Shaders/Diffuse
---- !u!114 &114891383810264752
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1116471001268232}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1005838349, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShaderNames:
-  - Standard

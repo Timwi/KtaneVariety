@@ -11,10 +11,10 @@ namespace Variety
         public override Item Generate(VarietyModule module, HashSet<object> taken)
         {
             var availableSlots = Keypad.Widths.Keys
-                .Where(key => !taken.Contains(key))
-                .SelectMany(key => Enumerable.Range(0, W * H)
-                    .Where(topleft => isRectAvailable(taken, topleft, 2 * Keypad.Widths[key], 2 * Keypad.Heights[key]))
-                    .Select(topleft => new { TopLeft = topleft, Size = key }))
+                .Where(size => !taken.Contains(size))
+                .SelectMany(size => Enumerable.Range(0, W * H)
+                    .Where(topleft => isRectAvailable(taken, topleft, 2 * Keypad.Widths[size], 2 * Keypad.Heights[size]))
+                    .Select(topleft => new { TopLeft = topleft, Size = size }))
                 .ToArray();
             if (availableSlots.Length == 0)
                 return null;

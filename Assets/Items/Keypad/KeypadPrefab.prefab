@@ -417,8 +417,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   KeyTemplate: {fileID: 114220298026823172}
-  LedOff: {fileID: 2100000, guid: 97192e471e7e0e248a3d70141dd6d7f8, type: 2}
-  LedOn: {fileID: 2100000, guid: 565572aaddd64cf41b9d0b254d42b405, type: 2}
+  LedColors:
+  - {fileID: 2100000, guid: 97192e471e7e0e248a3d70141dd6d7f8, type: 2}
+  - {fileID: 2100000, guid: 05133cebd224e6c4aa7cb107f485357b, type: 2}
+  - {fileID: 2100000, guid: aecc8f3fc9e1c0441b9576de9967d5af, type: 2}
+  - {fileID: 2100000, guid: 565572aaddd64cf41b9d0b254d42b405, type: 2}
+  - {fileID: 2100000, guid: 3b25c3bd5a31bab48a10a000670e581f, type: 2}
   Backing: {fileID: 4071203243485024}
 --- !u!114 &114646247071512394
 MonoBehaviour:

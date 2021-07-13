@@ -3,7 +3,6 @@
 public class KeypadPrefab : MonoBehaviour
 {
     public KMSelectable KeyTemplate;
-    public Material LedOff;
-    public Material LedOn;
+    public Material[] LedColors;
     public Transform Backing;
 }
