@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 using Rnd = UnityEngine.Random;
@@ -27,6 +29,7 @@ namespace Variety
         private bool _isStuck = false;
         private bool _isCut = false;
         private bool _conditionFlipped;
+        private KMSelectable _wire;
 
         public override bool IsStuck { get { return _isStuck; } }
         public override void Checked() { _isStuck = _isCut; }
@@ -50,19 +53,20 @@ namespace Variety
 
             prefab.Base1.transform.localPosition = new Vector3(x1, 0.015f, y1);
             prefab.Base2.transform.localPosition = new Vector3(x2, 0.015f, y2);
-            prefab.Wire.transform.localPosition = new Vector3(x1, 0.035f, y1);
-            prefab.Wire.transform.localEulerAngles = new Vector3(0, Mathf.Atan2(y1 - y2, x2 - x1) / Mathf.PI * 180, 0);
+            _wire = prefab.Wire;
+            _wire.transform.localPosition = new Vector3(x1, 0.035f, y1);
+            _wire.transform.localEulerAngles = new Vector3(0, Mathf.Atan2(y1 - y2, x2 - x1) / Mathf.PI * 180, 0);
 
-            yield return new ItemSelectable(prefab.Wire, Cells[0]);
+            yield return new ItemSelectable(_wire, Cells[0]);
 
-            prefab.Wire.OnInteract = delegate
+            _wire.OnInteract = delegate
             {
                 if (_isCut)
                     return false;
                 _isCut = true;
 
-                prefab.Wire.AddInteractionPunch(.5f);
-                Module.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.WireSnip, prefab.Wire.transform);
+                _wire.AddInteractionPunch(.5f);
+                Module.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.WireSnip, _wire.transform);
 
                 prefab.WireMeshFilter.sharedMesh = WireMeshGenerator.GenerateWire(length, numSegments, WireMeshGenerator.WirePiece.Cut, highlight: false, seed: seed);
                 prefab.WireCopperMeshFilter.sharedMesh = WireMeshGenerator.GenerateWire(length, numSegments, WireMeshGenerator.WirePiece.Copper, highlight: false, seed: seed);
@@ -97,6 +101,25 @@ namespace Variety
                 (State == 1 && desiredState == 0) ^ _conditionFlipped ? "you should not have cut the {0} wire" :
                 "[ERROR]",
                 _colorNames[(int) Color]);
+        }
+
+        public override IEnumerator ProcessTwitchCommand(string command)
+        {
+            var m = Regex.Match(command, string.Format(@"^\s*cut\s+{0}\s*$", _colorNames[(int) Color]), RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+            if (!m.Success || _isCut)
+                return null;
+            return TwitchCut().GetEnumerator();
+        }
+
+        private IEnumerable<object> TwitchCut()
+        {
+            _wire.OnInteract();
+            yield return new WaitForSeconds(.1f);
+        }
+
+        public override IEnumerable<object> TwitchHandleForcedSolve(int desiredState)
+        {
+            return State != (_conditionFlipped ? 0 : 1) ? TwitchCut() : null;
         }
     }
 }

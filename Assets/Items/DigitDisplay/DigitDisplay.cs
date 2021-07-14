@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace Variety
@@ -12,6 +14,7 @@ namespace Variety
 
         private int _numStates;
         private int _curDisplay;
+        private bool _curYellow;
         private int[] _displayedDigitPerState;
         private DigitDisplayPrefab _prefab;
 
@@ -23,6 +26,7 @@ namespace Variety
             TopLeftCell = topLeftCell;
             State = -1;
             _curDisplay = -1;
+            _curYellow = false;
         }
 
         public override bool DecideStates(int numPriorNonWireItems)
@@ -74,6 +78,7 @@ namespace Variety
         private void SetDisplay(int value, bool yellow)
         {
             _curDisplay = value;
+            _curYellow = yellow;
             for (var i = 0; i < _prefab.Segments.Length; i++)
                 _prefab.Segments[i].sharedMaterial = _segmentMap[value + 1][i] == '0' ? _prefab.Black : yellow ? _prefab.Yellow : _prefab.Blue;
         }
@@ -82,6 +87,29 @@ namespace Variety
         {
             SetDisplay(_displayedDigitPerState[stageItemIndex], yellow: false);
             State = -1;
+        }
+
+        public override IEnumerator ProcessTwitchCommand(string command)
+        {
+            var m = Regex.Match(command, @"^\s*digit\s+(\d+)\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+            int number;
+            if (m.Success && int.TryParse(m.Groups[1].Value, out number) && number >= 0 && number <= 9)
+                return TwitchSet(number).GetEnumerator();
+            return null;
+        }
+
+        private IEnumerable<object> TwitchSet(int number)
+        {
+            while (_curDisplay != number || !_curYellow)
+            {
+                _prefab.UpButton.OnInteract();
+                yield return new WaitForSeconds(.1f);
+            }
+        }
+
+        public override IEnumerable<object> TwitchHandleForcedSolve(int desiredState)
+        {
+            return TwitchSet(_displayedDigitPerState[desiredState]);
         }
     }
 }

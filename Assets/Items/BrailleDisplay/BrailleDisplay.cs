@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using KModkit;
 using UnityEngine;
 
@@ -74,6 +76,31 @@ namespace Variety
                 Enumerable.Range(1, 6).Where(i => (_braille[_snChars[desiredState]] & (1 << (i - 1))) != 0).Join(""),
                 Enumerable.Range(1, 6).Where(i => (_curDisplay & (1 << (i - 1))) != 0).Join(""),
                 curChar == -1 ? "invalid" : _chars.Substring(curChar, 1));
+        }
+
+        public override IEnumerator ProcessTwitchCommand(string command)
+        {
+            var m = Regex.Match(command, @"^\s*braille\s+(\d+)\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+            if (m.Success && m.Groups[1].Value.All(ch => ch >= '1' && ch <= '6'))
+                return TwitchSet(m.Groups[1].Value.Aggregate(0, (p, ch) => p | (1 << (ch - '1')))).GetEnumerator();
+            return null;
+        }
+
+        public override IEnumerable<object> TwitchHandleForcedSolve(int desiredState)
+        {
+            return TwitchSet(_braille[_snChars[desiredState]]);
+        }
+
+        private IEnumerable<object> TwitchSet(int dots)
+        {
+            for (var i = 0; i < 6; i++)
+            {
+                if ((_curDisplay & (1 << i)) != (dots & (1 << i)))
+                {
+                    _prefab.Selectables[i].OnInteract();
+                    yield return new WaitForSeconds(.1f);
+                }
+            }
         }
     }
 }

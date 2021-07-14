@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace Variety
@@ -59,5 +60,32 @@ namespace Variety
         public override string DescribeSolutionState(int state) { return string.Format("turn the key when the last digit of the timer is {0}", state); }
         public override string DescribeWhatUserDid() { return "you turned the key"; }
         public override string DescribeWhatUserShouldHaveDone(int desiredState) { return string.Format("you should have turned the key when the last digit on the timer was {0} ({1})", desiredState, State == -1 ? "you left it unturned" : string.Format("instead of {0}", State)); }
+
+        public override IEnumerator ProcessTwitchCommand(string command)
+        {
+            var m = Regex.Match(command, @"^\s*key\s+(\d+)\s*$", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+            int val;
+            if (!m.Success || !int.TryParse(m.Groups[1].Value, out val) || val < 0 || val >= 10)
+                return null;
+            return TwitchSetTo(val).GetEnumerator();
+        }
+
+        public override IEnumerable<object> TwitchHandleForcedSolve(int desiredState)
+        {
+            return TwitchSetTo(desiredState);
+        }
+
+        private IEnumerable<object> TwitchSetTo(int val)
+        {
+            if (Turned)
+            {
+                _key.OnInteract();
+                yield return new WaitForSeconds(.1f);
+            }
+            while ((int) Module.Bomb.GetTime() % 10 != val)
+                yield return true;
+            _key.OnInteract();
+            yield return new WaitForSeconds(.1f);
+        }
     }
 }

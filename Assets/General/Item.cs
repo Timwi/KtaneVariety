@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -22,6 +23,8 @@ namespace Variety
         public virtual bool IsStuck { get { return false; } }
         public virtual bool DecideStates(int numPriorNonWireItems) { return true; }
         public virtual void ReceiveItemChange(int stageItemIndex) { }
+        public abstract IEnumerator ProcessTwitchCommand(string command);
+        public abstract IEnumerable<object> TwitchHandleForcedSolve(int desiredState);
 
         private int _state;
         public int State

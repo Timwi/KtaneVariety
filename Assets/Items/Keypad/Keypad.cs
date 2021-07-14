@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace Variety
@@ -30,6 +32,7 @@ namespace Variety
         private readonly List<int> _presses = new List<int>();
         private MeshRenderer[] _leds;
         private KeypadPrefab _prefab;
+        private KMSelectable[] _buttons;
         private Transform[] _buttonParents;
 
         public Keypad(VarietyModule module, KeypadSize size, int topLeftCell)
@@ -55,28 +58,29 @@ namespace Variety
 
             _prefab.Backing.localScale = new Vector3(d * w + .001f, d * h + .001f);
             _buttonParents = new Transform[w * h];
+            _buttons = new KMSelectable[w * h];
 
             for (var keyIx = 0; keyIx < w * h; keyIx++)
             {
-                var key = keyIx == 0 ? _prefab.KeyTemplate : Object.Instantiate(_prefab.KeyTemplate, _prefab.transform);
-                key.name = string.Format("Key {0}", keyIx + 1);
-                key.transform.localPosition = new Vector3(d * (keyIx % w - (w - 1) * .5f), 0, d * ((h - 1 - keyIx / w) - (h - 1) * .5f));
-                key.transform.localRotation = Quaternion.identity;
-                key.transform.localScale = new Vector3(s, s, s);
-                key.OnInteract = pressed(key, keyIx);
-                _buttonParents[keyIx] = key.transform.Find("KeyCapParent");
+                _buttons[keyIx] = keyIx == 0 ? _prefab.KeyTemplate : Object.Instantiate(_prefab.KeyTemplate, _prefab.transform);
+                _buttons[keyIx].name = string.Format("Key {0}", keyIx + 1);
+                _buttons[keyIx].transform.localPosition = new Vector3(d * (keyIx % w - (w - 1) * .5f), 0, d * ((h - 1 - keyIx / w) - (h - 1) * .5f));
+                _buttons[keyIx].transform.localRotation = Quaternion.identity;
+                _buttons[keyIx].transform.localScale = new Vector3(s, s, s);
+                _buttons[keyIx].OnInteract = pressed(keyIx);
+                _buttonParents[keyIx] = _buttons[keyIx].transform.Find("KeyCapParent");
                 _leds[keyIx] = _buttonParents[keyIx].Find("Led").GetComponent<MeshRenderer>();
 
-                yield return new ItemSelectable(key, Cells[0] + 2 * (keyIx % w) + W * 2 * (keyIx / w));
+                yield return new ItemSelectable(_buttons[keyIx], Cells[0] + 2 * (keyIx % w) + W * 2 * (keyIx / w));
             }
         }
 
-        private KMSelectable.OnInteractHandler pressed(KMSelectable key, int keyIx)
+        private KMSelectable.OnInteractHandler pressed(int keyIx)
         {
             return delegate
             {
-                key.AddInteractionPunch(.25f);
-                Module.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, key.transform);
+                _buttons[keyIx].AddInteractionPunch(.25f);
+                Module.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, _buttons[keyIx].transform);
                 Module.MoveButton(_buttonParents[keyIx], .1f, ButtonMoveType.DownThenUp);
 
                 if (_presses.Contains(keyIx))
@@ -131,6 +135,35 @@ namespace Variety
                 list.RemoveAt(nx);
             }
             return answer;
+        }
+
+        public override IEnumerator ProcessTwitchCommand(string command)
+        {
+            var m = Regex.Match(command, string.Format(@"^\s*{0}[x×]{1}\s+keys\s+(\d+)\s*$", Widths[Size], Heights[Size]), RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+            if (!m.Success || m.Groups[1].Value.Any(ch => ch < '0' || ch >= '0' + numKeys))
+                return null;
+            var numbers = m.Groups[1].Value.Select(ch => ch - '0').ToArray();
+            return TwitchPress(numbers).GetEnumerator();
+        }
+
+        public override IEnumerable<object> TwitchHandleForcedSolve(int desiredState)
+        {
+            return TwitchPress(getSequence(desiredState));
+        }
+
+        private IEnumerable<object> TwitchPress(int[] indexes)
+        {
+            if (_presses.Any())
+            {
+                _buttons[_presses[0]].OnInteract();
+                yield return new WaitForSeconds(.4f);
+            }
+
+            foreach (var index in indexes)
+            {
+                _buttons[index].OnInteract();
+                yield return new WaitForSeconds(.25f);
+            }
         }
     }
 }

@@ -1,5 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text.RegularExpressions;
 using KModkit;
 using UnityEngine;
 
@@ -13,7 +16,7 @@ namespace Variety
         public int Offset { get; private set; }
 
         private Coroutine _turning;
-        private Transform _knob;
+        private KMSelectable _knob;
 
         public Knob(VarietyModule module, int topLeftCell, int numTicks)
             : base(module, CellRect(topLeftCell, 4, 4))
@@ -34,23 +37,24 @@ namespace Variety
         {
             var snFirstChar = Module.Bomb.GetSerialNumber()[0];
             Offset = (snFirstChar >= 'A' && snFirstChar <= 'Z' ? snFirstChar - 'A' + 1 : snFirstChar - '0') % NumTicks;
-            _knob.localRotation = Quaternion.Euler(0, 360f * (State + Offset) / NumTicks, 0);
+            _knob.transform.localRotation = Quaternion.Euler(0, 360f * (State + Offset) / NumTicks, 0);
             return true;
         }
 
         private IEnumerator turnTo(int pos)
         {
-            var oldRot = _knob.localRotation;
+            var oldRot = _knob.transform.localRotation;
             var newRot = Quaternion.Euler(0, 360f * (pos + Offset) / NumTicks, 0);
             var duration = .2f;
             var elapsed = 0f;
             while (elapsed < duration)
             {
-                _knob.localRotation = Quaternion.Slerp(oldRot, newRot, Easing.InOutQuad(elapsed, 0, 1, duration));
+                _knob.transform.localRotation = Quaternion.Slerp(oldRot, newRot, Easing.InOutQuad(elapsed, 0, 1, duration));
                 yield return null;
                 elapsed += Time.deltaTime;
             }
-            _knob.localRotation = newRot;
+            _knob.transform.localRotation = newRot;
+            _turning = null;
         }
 
         public override IEnumerable<ItemSelectable> SetUp()
@@ -68,8 +72,8 @@ namespace Variety
                 tick.transform.localScale = new Vector3(1, 1, 1);
             }
 
-            _knob = prefab.Knob.transform;
-            prefab.Knob.OnInteract = delegate
+            _knob = prefab.Knob;
+            _knob.OnInteract = delegate
             {
                 prefab.Knob.AddInteractionPunch(.25f);
                 Module.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, prefab.Knob.transform);
@@ -85,5 +89,30 @@ namespace Variety
         public override string DescribeSolutionState(int state) { return string.Format("set the knob to {0}", state, NumTicks, (NumTicks - Offset) % NumTicks); }
         public override string DescribeWhatUserDid() { return "you twisted the knob"; }
         public override string DescribeWhatUserShouldHaveDone(int desiredState) { return string.Format("you should have set the knob to {0} (instead of {1})", desiredState, State); }
+
+        public override IEnumerator ProcessTwitchCommand(string command)
+        {
+            var m = Regex.Match(command, @"^\s*knob\s+(\d+)\s*$", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+            int val;
+            if (!m.Success || !int.TryParse(m.Groups[1].Value, out val) || val < 0 || val >= NumTicks)
+                return null;
+            return TwitchPress((NumTicks - Offset + val) % NumTicks).GetEnumerator();
+        }
+
+        public override IEnumerable<object> TwitchHandleForcedSolve(int desiredState)
+        {
+            return TwitchPress(desiredState);
+        }
+
+        private IEnumerable<object> TwitchPress(int val)
+        {
+            while (State != val)
+            {
+                _knob.OnInteract();
+                while (_turning != null)
+                    yield return true;
+                yield return new WaitForSeconds(.1f);
+            }
+        }
     }
 }

@@ -273,16 +273,24 @@ public class VarietyModule : MonoBehaviour
     }
 
     private Coroutine _movingButton = null;
+    private Transform _movingButtonBtn = null;
+    private Vector3 _movingButtonFinal;
 
     public void MoveButton(Transform button, float amount, ButtonMoveType type)
     {
         if (_movingButton != null)
+        {
             Module.StopCoroutine(_movingButton);
+            _movingButtonBtn.localPosition = _movingButtonFinal;
+        }
         _movingButton = Module.StartCoroutine(moveButton(button, amount, type));
     }
 
     private IEnumerator moveButton(Transform button, float amount, ButtonMoveType type)
     {
+        _movingButtonBtn = button;
+        _movingButtonFinal = type == ButtonMoveType.Down ? new Vector3(0, -amount, 0) : new Vector3(0, 0, 0);
+
         var duration = .1f;
         var elapsed = 0f;
 
@@ -307,6 +315,9 @@ public class VarietyModule : MonoBehaviour
             }
             button.localPosition = new Vector3(0, 0, 0);
         }
+
+        _movingButton = null;
+        _movingButtonBtn = null;
     }
 
     void Update()
@@ -317,5 +328,31 @@ public class VarietyModule : MonoBehaviour
             _timerTicks++;
             _lastTimerSeconds = seconds;
         }
+    }
+
+#pragma warning disable 414
+    private readonly string TwitchHelpMessage = @"!{0} horiz/vert 0 [set horizontal/vertical slider] | !{0} key 0 [turn the key-in-lock at last timer digit] | !{0} 1x3 keys 012 [press keys on the 1×3 white keypad in that order] | !{0} red keys 01 [press those keys on the red keypad] | !{0} knob 0 [turn knob to that many tickmarks from north] | !{0} red button mash 3 [mash the red button that many times] | !{0} red button hold 2 [hold the red button over that many timer ticks] | !{0} digit 0 [set the digit display] | !{0} cut blue [cut a wire] | !{0} led white [set the LED to white] | !{0} led reset [show flashing colors again] | !{0} red switch 0 [toggle red switch to up] | !{0} letters cycle [cycle each letter slot] | !{0} letters ACE [set letter display] | !{0} braille 125 [set Braille display] | !{0} 3x3 maze UDLR [make moves in the 3×3 maze]";
+#pragma warning restore 414
+
+    private IEnumerator ProcessTwitchCommand(string command)
+    {
+        var ret = _items.Select(item => item.ProcessTwitchCommand(command)).FirstOrDefault(result => result != null);
+        if (ret != null)
+        {
+            yield return null;
+            while (ret.MoveNext())
+                yield return ret.Current;
+        }
+    }
+
+    IEnumerator TwitchHandleForcedSolve()
+    {
+        for (var i = 0; i < _items.Length; i++)
+            if (!_items[i].IsStuck && _items[i].State != _expectedStates[i])
+            {
+                foreach (var obj in _items[i].TwitchHandleForcedSolve(_expectedStates[i]))
+                    yield return obj;
+                yield return new WaitForSeconds(.25f);
+            }
     }
 }

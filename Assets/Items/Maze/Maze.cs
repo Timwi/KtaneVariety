@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace Variety
@@ -26,6 +28,7 @@ namespace Variety
         public override int NumStates { get { return Width * Height; } }
 
         private readonly MazeLayout _maze;
+        private KMSelectable[] _buttons;    // up, right, down, left
 
         private Vector3 Pos(int cell, bool dot = false)
         {
@@ -34,7 +37,7 @@ namespace Variety
 
         public override IEnumerable<ItemSelectable> SetUp()
         {
-            var prefab = Object.Instantiate(Module.MazeTemplate, Module.transform);
+            var prefab = UnityEngine.Object.Instantiate(Module.MazeTemplate, Module.transform);
 
             var cx = -VarietyModule.Width / 2 + (X + Width * .5f) * VarietyModule.CellWidth;
             var cy = VarietyModule.Height / 2 - (Y + Height * .5f) * VarietyModule.CellHeight + VarietyModule.YOffset;
@@ -46,7 +49,7 @@ namespace Variety
             for (var dx = 0; dx < Width; dx++)
                 for (var dy = 0; dy < Height; dy++)
                 {
-                    var dot = dx == 0 && dy == 0 ? prefab.Dot : Object.Instantiate(prefab.Dot, prefab.transform);
+                    var dot = dx == 0 && dy == 0 ? prefab.Dot : UnityEngine.Object.Instantiate(prefab.Dot, prefab.transform);
                     dot.transform.localPosition = Pos(dx + Width * dy, dot: true);
                     dot.transform.localEulerAngles = new Vector3(90, 0, 0);
                     dot.transform.localScale = new Vector3(.3f, .3f, .3f);
@@ -76,6 +79,7 @@ namespace Variety
             for (var i = 0; i < 4; i++)
                 prefab.Buttons[i].OnInteract = ButtonPress(prefab.Buttons[i], i, prefab.Position, dots);
             Module.StartCoroutine(Spin(prefab.Position));
+            _buttons = prefab.Buttons;
         }
 
         private IEnumerator Spin(GameObject position)
@@ -130,5 +134,78 @@ namespace Variety
         public override string DescribeSolutionState(int state) { return string.Format("go to {0}{1} in the {2}×{3} maze", (char) (state % Width + 'A'), state / Width + 1, Width, Height); }
         public override string DescribeWhatUserDid() { return string.Format("you moved in the {0}×{1} maze", Width, Height); }
         public override string DescribeWhatUserShouldHaveDone(int desiredState) { return string.Format("you should have moved to {0}{1} in the {2}×{3} maze (instead of {4}{5})", (char) (desiredState % Width + 'A'), desiredState / Width + 1, Width, Height, (char) (State % Width + 'A'), State / Width + 1); }
+
+        public override IEnumerator ProcessTwitchCommand(string command)
+        {
+            var m = Regex.Match(command, string.Format(@"^\s*{0}[x×]{1}\s+maze\s+([udlr]+)\s*$", Width, Height), RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+            if (m.Success)
+                return TwitchMove(m.Groups[1].Value.ToLowerInvariant()).GetEnumerator();
+            return null;
+        }
+
+        public override IEnumerable<object> TwitchHandleForcedSolve(int desiredState)
+        {
+            if (State == desiredState)
+                return Enumerable.Empty<object>();
+
+            var visited = new Dictionary<int, int>();
+            var q = new Queue<int>();
+            q.Enqueue(State);
+
+            while (q.Count > 0)
+            {
+                var item = q.Dequeue();
+                var adjs = new List<int>();
+                if (_maze.CanGoLeft(item))
+                    adjs.Add(item - 1);
+                if (_maze.CanGoRight(item))
+                    adjs.Add(item + 1);
+                if (_maze.CanGoUp(item))
+                    adjs.Add(item - Width);
+                if (_maze.CanGoDown(item))
+                    adjs.Add(item + Width);
+                foreach (var adj in adjs)
+                {
+                    if (adj != State && !visited.ContainsKey(adj))
+                    {
+                        visited[adj] = item;
+                        if (adj == desiredState)
+                            goto done;
+                        q.Enqueue(adj);
+                    }
+                }
+            }
+            done:
+            var moves = new List<char>();
+            var curPos = desiredState;
+            var iter = 0;
+            while (visited.ContainsKey(curPos))
+            {
+                iter++;
+                if (iter > 100)
+                {
+                    Debug.LogFormat("<> State = {0}", State);
+                    Debug.LogFormat("<> desiredState = {0}", desiredState);
+                    Debug.LogFormat("<> moves = {0}", moves.Join(","));
+                    Debug.LogFormat("<> visited:\n{0}", visited.Select(kvp => string.Format("{0} <= {1}", kvp.Key, kvp.Value)).Join("\n"));
+                    throw new InvalidOperationException();
+                }
+
+                var newPos = visited[curPos];
+                moves.Add(newPos == curPos + 1 ? 'l' : newPos == curPos - 1 ? 'r' : newPos == curPos + Width ? 'u' : 'd');
+                curPos = newPos;
+            }
+            moves.Reverse();
+            return TwitchMove(moves.Join(""));
+        }
+
+        private IEnumerable<object> TwitchMove(string moves)
+        {
+            for (var i = 0; i < moves.Length; i++)
+            {
+                _buttons["urdl".IndexOf(moves[i])].OnInteract();
+                yield return new WaitForSeconds(.2f);
+            }
+        }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace Variety
@@ -16,7 +18,7 @@ namespace Variety
         private LetterDisplayPrefab _prefab;
 
         public LetterDisplay(VarietyModule module, int location, char[][] letters, string[] formableWords)
-            : base(module, CellRect(location, 5, 3))
+            : base(module, CellRect(location, 4, 3))
         {
             Location = location;
             Letters = letters;
@@ -38,7 +40,7 @@ namespace Variety
             for (var i = 0; i < 3; i++)
             {
                 _prefab.DownButtons[i].OnInteract = ButtonPress(i);
-                yield return new ItemSelectable(_prefab.DownButtons[i], Cells[0] + i + 1 + 9 * 2);
+                yield return new ItemSelectable(_prefab.DownButtons[i], Cells[0] + i + W * 2);
             }
             ShowLetters();
         }
@@ -64,5 +66,48 @@ namespace Variety
         public override string DescribeSolutionState(int state) { return string.Format("set the letter display to {0}", FormableWords[state]); }
         public override string DescribeWhatUserDid() { return "you changed the letter display"; }
         public override string DescribeWhatUserShouldHaveDone(int desiredState) { return string.Format("you should have set the letter display to {0} (you set it to {1})", FormableWords[desiredState], State == -1 ? "an invalid word" : FormableWords[State]); }
+
+        public override IEnumerator ProcessTwitchCommand(string command)
+        {
+            var m = Regex.Match(command, @"^\s*letters\s+cycle\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+            if (m.Success)
+                return TwitchCycle().GetEnumerator();
+
+            m = Regex.Match(command, @"^\s*letters\s+([a-z]{3})\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+            if (m.Success && m.Groups[1].Value.ToUpperInvariant().Select((ltr, ix) => Letters[ix].Contains(ltr)).All(b => b))
+                return TwitchSetLetters(m.Groups[1].Value.ToUpperInvariant()).GetEnumerator();
+
+            return null;
+        }
+
+        public override IEnumerable<object> TwitchHandleForcedSolve(int desiredState)
+        {
+            return TwitchSetLetters(FormableWords[desiredState]);
+        }
+
+        private IEnumerable<object> TwitchCycle()
+        {
+            for (var slotIx = 0; slotIx < 3; slotIx++)
+            {
+                for (var iter = 0; iter < 3; iter++)
+                {
+                    _prefab.DownButtons[slotIx].OnInteract();
+                    yield return new WaitForSeconds(.7f);
+                }
+                yield return new WaitForSeconds(.4f);
+            }
+        }
+
+        private IEnumerable<object> TwitchSetLetters(string value)
+        {
+            for (var slotIx = 0; slotIx < 3; slotIx++)
+            {
+                for (var iter = 0; iter < 3 && Letters[slotIx][_curPos[slotIx]] != value[slotIx]; iter++)
+                {
+                    _prefab.DownButtons[slotIx].OnInteract();
+                    yield return new WaitForSeconds(.1f);
+                }
+            }
+        }
     }
 }

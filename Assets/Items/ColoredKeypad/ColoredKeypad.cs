@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace Variety
@@ -67,6 +69,7 @@ namespace Variety
         private readonly HashSet<int> _presses = new HashSet<int>();
         private MeshRenderer[] _leds;
         private ColoredKeypadPrefab _prefab;
+        private KMSelectable[] _buttons;
         private Transform[] _buttonParents;
         private int _expectedPresses;
         private int[] _combinations;
@@ -95,23 +98,24 @@ namespace Variety
             _leds = new MeshRenderer[w * h];
 
             _prefab.Backing.localScale = new Vector3(d * w + .001f, d * h + .001f);
+            _buttons = new KMSelectable[w * h];
             _buttonParents = new Transform[w * h];
 
             _combinations = Enumerable.Range(0, 1 << numKeys).Where(val => numBits(val) == _expectedPresses).ToArray();
 
             for (var keyIx = 0; keyIx < w * h; keyIx++)
             {
-                var key = keyIx == 0 ? _prefab.KeyTemplate : Object.Instantiate(_prefab.KeyTemplate, _prefab.transform);
-                key.name = string.Format("Key {0}", keyIx + 1);
-                key.transform.localPosition = new Vector3(d * (keyIx % w - (w - 1) * .5f), 0, d * ((h - 1 - keyIx / w) - (h - 1) * .5f));
-                key.transform.localRotation = Quaternion.identity;
-                key.transform.localScale = new Vector3(s, s, s);
-                key.OnInteract = pressed(key, keyIx);
-                _buttonParents[keyIx] = key.transform.Find("KeyCapParent");
+                _buttons[keyIx] = keyIx == 0 ? _prefab.KeyTemplate : Object.Instantiate(_prefab.KeyTemplate, _prefab.transform);
+                _buttons[keyIx].name = string.Format("Key {0}", keyIx + 1);
+                _buttons[keyIx].transform.localPosition = new Vector3(d * (keyIx % w - (w - 1) * .5f), 0, d * ((h - 1 - keyIx / w) - (h - 1) * .5f));
+                _buttons[keyIx].transform.localRotation = Quaternion.identity;
+                _buttons[keyIx].transform.localScale = new Vector3(s, s, s);
+                _buttons[keyIx].OnInteract = pressed(_buttons[keyIx], keyIx);
+                _buttonParents[keyIx] = _buttons[keyIx].transform.Find("KeyCapParent");
                 _leds[keyIx] = _buttonParents[keyIx].Find("Led").GetComponent<MeshRenderer>();
                 _buttonParents[keyIx].Find("KeyCap").GetComponent<MeshRenderer>().sharedMaterial = _prefab.KeycapColors[(int) Color];
 
-                yield return new ItemSelectable(key, Cells[0] + (keyIx % w) + W * (keyIx / w));
+                yield return new ItemSelectable(_buttons[keyIx], Cells[0] + (keyIx % w) + W * (keyIx / w));
             }
         }
 
@@ -143,7 +147,6 @@ namespace Variety
                     _leds[i].sharedMaterial = _presses.Contains(i) ? _prefab.LedOn : _prefab.LedOff;
 
                 State = _presses.Count == _expectedPresses ? _combinations.IndexOf(i => _presses.All(p => (i & (1 << (numKeys - 1 - p))) != 0)) : -1;
-                Debug.LogFormat("<> Keys pressed: {0}, State: {1}", _presses.Join(", "), State);
                 return false;
             };
         }
@@ -164,6 +167,35 @@ namespace Variety
         private int[] getSequence(int state)
         {
             return Enumerable.Range(0, numKeys).Where(key => (_combinations[state] & (1 << (numKeys - 1 - key))) != 0).ToArray();
+        }
+
+        public override IEnumerator ProcessTwitchCommand(string command)
+        {
+            var m = Regex.Match(command, string.Format(@"^\s*{0}\s+keys\s+(\d+)\s*$", _colorNames[(int) Color]), RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+            if (!m.Success || m.Groups[1].Value.Any(ch => ch < '0' || ch >= '0' + numKeys))
+                return null;
+            var numbers = m.Groups[1].Value.Select(ch => ch - '0').ToArray();
+            return TwitchPress(numbers).GetEnumerator();
+        }
+
+        public override IEnumerable<object> TwitchHandleForcedSolve(int desiredState)
+        {
+            return TwitchPress(getSequence(desiredState));
+        }
+
+        private IEnumerable<object> TwitchPress(int[] indexes)
+        {
+            if (_presses.Any())
+            {
+                _buttons[_presses.First()].OnInteract();
+                yield return new WaitForSeconds(.4f);
+            }
+
+            foreach (var index in indexes)
+            {
+                _buttons[index].OnInteract();
+                yield return new WaitForSeconds(.25f);
+            }
         }
     }
 }
