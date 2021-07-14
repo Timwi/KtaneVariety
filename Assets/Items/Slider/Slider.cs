@@ -9,8 +9,7 @@ namespace Variety
         public const int LongSlots = 5;
         public const int ShortSlots = 2;
 
-        public int X { get; private set; }
-        public int Y { get; private set; }
+        public int TopLeftCell { get; private set; }
         public SliderOrientation Orientation { get; private set; }
         public int NumTicks { get; private set; }
 
@@ -19,10 +18,9 @@ namespace Variety
 
         private static readonly string[] _orientationNames = { "horizontal", "vertical" };
 
-        public Slider(VarietyModule module, int x, int y, SliderOrientation orientation) : base(module, CellRect(x + W * y, SW(orientation), SH(orientation)))
+        public Slider(VarietyModule module, int topLeftCell, SliderOrientation orientation) : base(module, CellRect(topLeftCell, SW(orientation), SH(orientation)))
         {
-            X = x;
-            Y = y;
+            TopLeftCell = topLeftCell;
             Orientation = orientation;
             NumTicks = Random.Range(3, 8);
         }
@@ -33,15 +31,15 @@ namespace Variety
 
             if (Orientation == SliderOrientation.HorizontalSlider)
             {
-                var x = -VarietyModule.Width / 2 + (X + (LongSlots - 1) * .5f) * VarietyModule.CellWidth;
-                var y = VarietyModule.Height / 2 - (Y + (ShortSlots - 1) * .5f) * VarietyModule.CellHeight + VarietyModule.YOffset;
+                var x = -VarietyModule.Width / 2 + (TopLeftCell % W + (LongSlots - 1) * .5f) * VarietyModule.CellWidth;
+                var y = VarietyModule.Height / 2 - (TopLeftCell / W + (ShortSlots - 1) * .5f) * VarietyModule.CellHeight + VarietyModule.YOffset;
                 prefab.transform.localPosition = new Vector3(x, 0, y);
                 prefab.transform.localRotation = Quaternion.identity;
             }
             else
             {
-                var x = -VarietyModule.Width / 2 + (X + (ShortSlots - 1) * .5f) * VarietyModule.CellWidth;
-                var y = VarietyModule.Height / 2 - (Y + (LongSlots - 1) * .5f) * VarietyModule.CellHeight + VarietyModule.YOffset;
+                var x = -VarietyModule.Width / 2 + (TopLeftCell % W + (ShortSlots - 1) * .5f) * VarietyModule.CellWidth;
+                var y = VarietyModule.Height / 2 - (TopLeftCell / W + (LongSlots - 1) * .5f) * VarietyModule.CellHeight + VarietyModule.YOffset;
                 prefab.transform.localPosition = new Vector3(x, 0, y);
                 prefab.transform.localRotation = Quaternion.Euler(0, 90, 0);
             }
@@ -78,7 +76,7 @@ namespace Variety
                 return false;
             };
 
-            yield return new ItemSelectable(prefab.Knob, X + SW(Orientation) / 2 + W * (Y + SH(Orientation) / 2));
+            yield return new ItemSelectable(prefab.Knob, TopLeftCell % W + SW(Orientation) / 2 + W * (TopLeftCell / W + SH(Orientation) / 2));
         }
 
         private IEnumerator MoveKnob(float startX, float endX, Transform knob)
