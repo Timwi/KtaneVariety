@@ -222,6 +222,7 @@ public class VarietyModule : MonoBehaviour
             Debug.LogFormat(@"[Variety #{0}] {1} % {2} = {3} = {4} ({5} states)", _moduleId, finalState, remainingItemsCount, (int) (finalState % (ulong) remainingItemsCount), _items[i], _items[i].NumStates);
             finalState /= (ulong) remainingItemsCount;
 
+            _items[i].DecideStates(_items.Take(i).Count(priorItem => priorItem.CanProvideStage));
             Debug.LogFormat(@"[Variety #{0}] {1} % {2} = {3} = {4}", _moduleId, finalState, _items[i].NumStates, _expectedStates[i], _items[i].DescribeSolutionState(_expectedStates[i]));
             //Debug.LogFormat(@"[Variety #{0}] {4}", _moduleId, reconstructedState, _items[i].NumStates, _expectedStates[i], _items[i].DescribeSolutionState(_expectedStates[i]));
             finalState /= (ulong) _items[i].NumStates;
