@@ -112,15 +112,15 @@ namespace Variety
             };
         }
 
-        public override string ToString() { return string.Format("{0}×{1} keypad", Widths[Size], Heights[Size]); }
+        public override string ToString() { return string.Format("{0}×{1} white keypad", Widths[Size], Heights[Size]); }
         public override int NumStates { get { return factorial(numKeys); } }
         public override object Flavor { get { return Size; } }
 
         private int factorial(int n) { return n < 2 ? 1 : n * factorial(n - 1); }
 
-        public override string DescribeSolutionState(int state) { return string.Format("press the keys on the {0}×{1} keypad in the order {2}", Widths[Size], Heights[Size], getSequence(state).Join(", ")); }
-        public override string DescribeWhatUserDid() { return string.Format("you pressed keys on the {0}×{1} keypad", Widths[Size], Heights[Size]); }
-        public override string DescribeWhatUserShouldHaveDone(int desiredState) { return string.Format("you should have pressed the keys on the {0}×{1} keypad in the order {2} ({3})", Widths[Size], Heights[Size], getSequence(desiredState).Join(", "), State == -1 ? "you left it unfinished" : string.Format("instead of {0}", getSequence(State).Join(", "))); }
+        public override string DescribeSolutionState(int state) { return string.Format("press the keys on the {0}×{1}{2} white keypad in the order {3}", Widths[Size], Heights[Size], Widths[Size] > Heights[Size] ? " (wide)" : Widths[Size] < Heights[Size] ? " (tall)" : "", getSequence(state).Join(", ")); }
+        public override string DescribeWhatUserDid() { return string.Format("you pressed keys on the {0}×{1}{2} white keypad", Widths[Size], Heights[Size], Widths[Size] > Heights[Size] ? " (wide)" : Widths[Size] < Heights[Size] ? " (tall)" : ""); }
+        public override string DescribeWhatUserShouldHaveDone(int desiredState) { return string.Format("you should have pressed the keys on the {0}×{1} white keypad in the order {2} ({3})", Widths[Size], Heights[Size], getSequence(desiredState).Join(", "), State == -1 ? "you left it unfinished" : string.Format("instead of {0}", getSequence(State).Join(", "))); }
 
         private int[] getSequence(int state)
         {

@@ -57,7 +57,6 @@ namespace Variety
 
             _button.OnInteractEnded = delegate
             {
-                _button.AddInteractionPunch(.25f);
                 Module.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.BigButtonRelease, _button.transform);
                 Module.MoveButton(prefab.ButtonParent, .005f, ButtonMoveType.Up);
 
@@ -81,21 +80,6 @@ namespace Variety
             };
 
             yield return new ItemSelectable(_button, Cells[0] + W + 1);
-        }
-
-        private IEnumerator MoveButton(Transform button, bool down)
-        {
-            var duration = .1f;
-            var elapsed = 0f;
-            var amount = -.005f;
-
-            while (elapsed < duration)
-            {
-                button.localPosition = new Vector3(0, Easing.OutQuad(elapsed, down ? 0 : amount, down ? amount : 0, duration), 0);
-                yield return null;
-                elapsed += Time.deltaTime;
-            }
-            button.localPosition = new Vector3(0, down ? amount : 0, 0);
         }
 
         private void SetHighlightMesh(MeshFilter mf, Mesh highlightMesh)

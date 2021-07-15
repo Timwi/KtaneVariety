@@ -66,7 +66,7 @@ namespace Variety
 
         public override object Flavor { get { return "BrailleDisplay"; } }
         public override string ToString() { return "Braille display"; }
-        public override string DescribeSolutionState(int state) { return string.Format("set the braille display to {0}", _chars[_snChars[state]]); }
+        public override string DescribeSolutionState(int state) { return string.Format("set the Braille display to {0}, i.e., {1}", _chars[_snChars[state]], Enumerable.Range(1, 6).Where(i => (_braille[_snChars[state]] & (1 << (i - 1))) != 0).Join("")); }
         public override string DescribeWhatUserDid() { return "you changed the Braille display"; }
         public override string DescribeWhatUserShouldHaveDone(int desiredState)
         {

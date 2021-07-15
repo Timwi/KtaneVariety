@@ -215,7 +215,6 @@ public class VarietyModule : MonoBehaviour
         var finalState = stateWithFewestZeros;
 
         Debug.LogFormat(@"[Variety #{0}] Expected actions:", _moduleId);
-        ulong maximum = 1UL;
         for (var i = 0; i < _items.Length; i++)
         {
             var remainingItemsCount = _items.Length - i;
@@ -228,10 +227,7 @@ public class VarietyModule : MonoBehaviour
             finalState /= (ulong) _items[i].NumStates;
 
             _items[i].StateSet = StateSet(i);
-            maximum *= (ulong) remainingItemsCount;
-            maximum *= (ulong) _items[i].NumStates;
         }
-        Debug.LogFormat(@"<Variety #{0}> Maximum: {1} ({2} digits)", _moduleId, maximum, maximum.ToString().Length);
     }
 
     private Action<int> StateSet(int itemIx)
