@@ -94,6 +94,7 @@ public class VarietyModule : MonoBehaviour
         _flavorOrder = factories.SelectMany(inf => inf.Factory.Flavors).ToArray();
         Debug.LogFormat("<Variety #{0}> Flavour order:\n{1}", _moduleId, _flavorOrder.Join("\n"));
         ruleSeedRnd.ShuffleFisherYates(_flavorOrder);
+        ruleSeedRnd.ShuffleFisherYates(_flavorOrder);
 
         // Decide what’s going to be on the module
         var iterations = 0;
