@@ -72,11 +72,13 @@ namespace Variety
         public override string DescribeWhatUserShouldHaveDone(int desiredState)
         {
             var curChar = Array.IndexOf(_braille, _curDisplay);
-            return string.Format("you should have changed the Braille display to {0}, i.e., {1} (you set it to {2}, which is {3})",
+            return string.Format("you should have changed the Braille display to {0}, i.e., {1} ({2})",
                 _chars[_snChars[desiredState]],
                 Enumerable.Range(1, 6).Where(i => (_braille[_snChars[desiredState]] & (1 << (i - 1))) != 0).Join(""),
-                Enumerable.Range(1, 6).Where(i => (_curDisplay & (1 << (i - 1))) != 0).Join(""),
-                curChar == -1 ? "invalid" : _chars.Substring(curChar, 1));
+                _curDisplay == 0 ? "you left it blank" : string.Format(
+                    "you set it to {0}, which is {1}",
+                    Enumerable.Range(1, 6).Where(i => (_curDisplay & (1 << (i - 1))) != 0).Join(""),
+                    curChar == -1 ? "invalid" : _chars.Substring(curChar, 1)));
         }
 
         public override IEnumerator ProcessTwitchCommand(string command)
