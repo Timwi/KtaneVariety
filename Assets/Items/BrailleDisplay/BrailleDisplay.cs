@@ -26,6 +26,7 @@ namespace Variety
         {
             TopLeftCell = topLeftCell;
             _curDisplay = 0;
+            State = -1;
         }
 
         public override bool DecideStates(int numPriorNonWireItems)
