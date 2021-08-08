@@ -43,8 +43,10 @@ namespace Variety
             var x2 = GetX(Cells[1]);
             var y1 = GetY(Cells[0]);
             var y2 = GetY(Cells[1]);
+
             var length = Math.Sqrt(Math.Pow(x2 - x1, 2) + Math.Pow(y2 - y1, 2));
-            var numSegments = Math.Max(2, (int) Math.Floor(length / .04));
+            var numSegments = Math.Max(2, (int) Math.Floor(Math.Sqrt(Math.Pow((Cells[1] % W) - (Cells[0] % W), 2) + Math.Pow((Cells[1] / W) - (Cells[0] / W), 2))));
+
             prefab.WireMeshFilter.sharedMesh = WireMeshGenerator.GenerateWire(length, numSegments, WireMeshGenerator.WirePiece.Uncut, highlight: false, seed: seed);
             var hl = WireMeshGenerator.GenerateWire(length, numSegments, WireMeshGenerator.WirePiece.Uncut, highlight: true, seed: seed);
             SetHighlightMesh(prefab.WireHighlightMeshFilter, hl);

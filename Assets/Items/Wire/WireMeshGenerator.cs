@@ -12,7 +12,7 @@ namespace Variety
         public const double _wireRadius = .0032;
         public const double _wireRadiusHighlight = .0064;
 
-        const double _wireMaxSegmentDeviation = .001;
+        const double _wireMaxSegmentDeviation = .005;
         const double _wireMinBézierDeviation = .002;
         const double _wireMaxBézierDeviation = .005;
 
@@ -44,8 +44,11 @@ namespace Variety
             var interpolateStart = pt(0, interpolateHeight, 0);
             var interpolateEnd = pt(length, interpolateHeight, 0);
 
-            var intermediatePoints = newArray(numSegments - 1, i => interpolateStart + (interpolateEnd - interpolateStart) * (i + 1) / numSegments + pt(rnd.NextDouble() - .5, rnd.NextDouble() - .5, rnd.NextDouble() - .5) * _wireMaxSegmentDeviation);
-            var deviations = newArray(numSegments - 1, _ => pt(rnd.NextDouble() - .5, rnd.NextDouble() - .5, rnd.NextDouble() - .5).Normalize() * (rnd.NextDouble() * (_wireMaxBézierDeviation - _wireMinBézierDeviation) + _wireMinBézierDeviation));
+            var intermediatePoints = newArray(numSegments - 1, i => interpolateStart + (interpolateEnd - interpolateStart) * (i + 1) / numSegments + pt(rnd.NextDouble() - .5, rnd.NextDouble() - .5, rnd.NextDouble() - .5).Normalize() * _wireMaxSegmentDeviation);
+            var deviations = newArray(numSegments - 1, _ =>
+                (interpolateEnd - interpolateStart) * (.5 / numSegments)
+                    + pt(rnd.NextDouble() - .5, rnd.NextDouble() - .5, rnd.NextDouble() - .5).Normalize()
+                        * (rnd.NextDouble() * (_wireMaxBézierDeviation - _wireMinBézierDeviation + _wireMinBézierDeviation)));
 
             if (piece == WirePiece.Uncut)
             {
