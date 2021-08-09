@@ -13,12 +13,16 @@ using Rnd = UnityEngine.Random;
 /// </summary>
 public class VarietyModule : MonoBehaviour
 {
+    private static readonly string[] _segmentMap = new[] { "1111101", "1001000", "0111011", "1011011", "1001110", "1010111", "1110111", "1001001", "1111111", "1011111" };
+
     public KMBombInfo Bomb;
     public KMBombModule Module;
     public KMSelectable ModuleSelectable;
     public KMAudio Audio;
     public KMRuleSeedable RuleSeedable;
-    public TextMesh StateDisplay;
+    public MeshRenderer[] StateSegments;
+    public Material StateSegmentOn;
+    public Material StateSegmentOff;
 
     public DummyPrefab DummyTemplate;
     public WirePrefab WireTemplate;
@@ -120,8 +124,6 @@ public class VarietyModule : MonoBehaviour
         if (items.Count != 10 && iterations < 100)
             goto tryAgain;
 
-        Debug.LogFormat(@"<Variety #{0}> Iterations: {1}; items: {2}", _moduleId, iterations, items.Count);
-
         // Generate the game objects on the module
         var children = new KMSelectable[W * H];
         for (var i = 0; i < items.Count; i++)
@@ -208,8 +210,11 @@ public class VarietyModule : MonoBehaviour
             busted:;
         }
 
-        Debug.LogFormat(@"[Variety #{0}] State: {1}", _moduleId, stateWithFewestZeros.ToString());
-        StateDisplay.text = stateWithFewestZeros.ToString();
+        var stateStr = stateWithFewestZeros.ToString();
+        Debug.LogFormat(@"[Variety #{0}] State: {1}", _moduleId, stateStr);
+        for (var digit = 0; digit < 12; digit++)
+            for (var segment = 0; segment < 7; segment++)
+                StateSegments[digit * 7 + segment].sharedMaterial = digit >= stateStr.Length || _segmentMap[stateStr[stateStr.Length - 1 - digit] - '0'][segment] == '0' ? StateSegmentOff : StateSegmentOn;
 
         _items = itemsWithFewestZeros.ToArray();
         _expectedStates = expectedStatesWithFewestZeros;
