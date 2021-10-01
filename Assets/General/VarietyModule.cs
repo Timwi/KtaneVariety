@@ -334,7 +334,25 @@ public class VarietyModule : MonoBehaviour
     }
 
 #pragma warning disable 414
-    private readonly string TwitchHelpMessage = "!{0} horiz/vert 0 [set horizontal/vertical slider] | !{0} key 0 [turn the key-in-lock at last timer digit] | !{0} 1x3 keys 012 [press keys on the 1×3 white keypad in that order] | !{0} red keys 01 [press those keys on the red keypad] | !{0} knob 0 [turn knob to that many tickmarks from north] | !{0} red button mash 3 [mash the red button that many times] | !{0} red button hold 2 [hold the red button over that many timer ticks] | !{0} digit 0 [set the digit display]\n!{0} cut blue [cut a wire] | !{0} led white [set the LED to white] | !{0} led reset [show flashing colors again] | !{0} red switch 0 [toggle red switch to up] | !{0} letters cycle [cycle each letter slot] | !{0} letters ACE [set letter display] | !{0} braille 125 [set Braille display] | !{0} 3x3 maze UDLR [make moves in the 3×3 maze]";
+    private readonly string TwitchHelpMessage = new[]
+    {
+        "!{0} horiz/vert 0 [set horizontal/vertical slider]",
+        "!{0} key 0 [turn the key-in-lock at last timer digit]",
+        "!{0} 1x3 keys 012 [press keys on the 1×3 white keypad in that order]",
+        "!{0} red keys 01 [press those keys on the red keypad]",
+        "!{0} knob 0 [turn knob to that many tickmarks from north]",
+        "!{0} red button mash 3 [mash the red button that many times]",
+        "!{0} red button hold 2 [hold the red button over that many timer ticks]",
+        "!{0} digit 0 [set the digit display]",
+        "!{0} cut blue [cut a wire]",
+        "!{0} led white [set the LED to white]",
+        "!{0} led reset [show flashing colors again]",
+        "!{0} red switch 0 [toggle red switch to up]",
+        "!{0} letters cycle [cycle each letter slot]",
+        "!{0} letters ACE [set letter display]",
+        "!{0} braille 125 [set Braille display]",
+        "!{0} 3x3 maze UDLR [make moves in the 3×3 maze]"
+    }.Join(" | ");
 #pragma warning restore 414
 
     private IEnumerator ProcessTwitchCommand(string command)
