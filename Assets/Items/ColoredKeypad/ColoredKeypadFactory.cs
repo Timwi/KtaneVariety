@@ -18,7 +18,7 @@ namespace Variety
                 _numExpectedPresses[(ColoredKeypadColor) i] = values[i];
         }
 
-        public override Item Generate(VarietyModule module, HashSet<object> taken)
+        public override Item Generate(VarietyModule module, HashSet<object> taken, System.Random rnd)
         {
             var availableConfigurations = (
                 from color in (ColoredKeypadColor[]) Enum.GetValues(typeof(ColoredKeypadColor))
@@ -32,7 +32,7 @@ namespace Variety
             if (availableConfigurations.Length == 0)
                 return null;
 
-            var config = availableConfigurations[Rnd.Range(0, availableConfigurations.Length)];
+            var config = availableConfigurations[rnd.Next(0, availableConfigurations.Length)];
             taken.Add(config.Color);
             claimRect(taken, config.TopLeftCell, ColoredKeypad.CWidths[config.Size], ColoredKeypad.CHeights[config.Size]);
 

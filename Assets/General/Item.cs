@@ -11,7 +11,7 @@ namespace Variety
         public VarietyModule Module { get; private set; }
         public int[] Cells { get; private set; }
 
-        public abstract IEnumerable<ItemSelectable> SetUp();
+        public abstract IEnumerable<ItemSelectable> SetUp(Random rnd);
         public abstract override string ToString();
         public abstract int NumStates { get; }
         public abstract object Flavor { get; }

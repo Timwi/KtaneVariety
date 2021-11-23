@@ -21,14 +21,14 @@ namespace Variety
         private SliderPrefab _prefab;
         private Coroutine _sliderMoving;
 
-        public Slider(VarietyModule module, int topLeftCell, SliderOrientation orientation) : base(module, CellRect(topLeftCell, SW(orientation), SH(orientation)))
+        public Slider(VarietyModule module, int topLeftCell, SliderOrientation orientation, System.Random rnd) : base(module, CellRect(topLeftCell, SW(orientation), SH(orientation)))
         {
             TopLeftCell = topLeftCell;
             Orientation = orientation;
-            NumTicks = Random.Range(3, 8);
+            NumTicks = rnd.Next(3, 8);
         }
 
-        public override IEnumerable<ItemSelectable> SetUp()
+        public override IEnumerable<ItemSelectable> SetUp(System.Random rnd)
         {
             _prefab = Object.Instantiate(Module.SliderTemplate, Module.transform);
 
@@ -48,7 +48,7 @@ namespace Variety
             }
             _prefab.transform.localScale = new Vector3(1.2f, 1.2f, 1.2f);
 
-            State = Random.Range(0, NumTicks);
+            State = rnd.Next(0, NumTicks);
             _prefab.Knob.transform.localPosition = new Vector3(XPosition(State), .021f, 0);
 
             for (var tick = 0; tick < NumTicks; tick++)

@@ -42,7 +42,7 @@ namespace Variety
             State = -1;
         }
 
-        public override IEnumerable<ItemSelectable> SetUp()
+        public override IEnumerable<ItemSelectable> SetUp(System.Random rnd)
         {
             var w = Widths[Size];
             var h = Heights[Size];

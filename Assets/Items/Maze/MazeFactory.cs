@@ -23,7 +23,7 @@ namespace Variety
                 _mazes[i] = MazeLayout.Generate(i / NumShapes / NumHeights + MinWidth, (i / NumShapes) % NumHeights + MinHeight, rnd);
         }
 
-        public override Item Generate(VarietyModule module, HashSet<object> taken)
+        public override Item Generate(VarietyModule module, HashSet<object> taken, System.Random rnd)
         {
             var availableConfigs = (
                 from width in Enumerable.Range(MinWidth, MaxWidth - MinWidth + 1)
@@ -36,14 +36,14 @@ namespace Variety
             if (availableConfigs.Length == 0)
                 return null;
 
-            var configIx = Rnd.Range(0, availableConfigs.Length);
+            var configIx = rnd.Next(0, availableConfigs.Length);
             var config = availableConfigs[configIx];
 
             claimRect(taken, config.Cell, config.Width + 1, config.Height + 1);
             taken.Add(string.Format("Maze:{0}:{1}", config.Width, config.Height));
 
-            var shape = Rnd.Range(0, NumShapes);
-            return new Maze(module, config.Cell % W, config.Cell / W, config.Width, config.Height, Rnd.Range(0, config.Width * config.Height), shape,
+            var shape = rnd.Next(0, NumShapes);
+            return new Maze(module, config.Cell % W, config.Cell / W, config.Width, config.Height, rnd.Next(0, config.Width * config.Height), shape,
                 _mazes[shape + NumShapes * (config.Height - MinHeight + NumHeights * (config.Width - MinWidth))]);
         }
 

@@ -33,7 +33,7 @@ namespace Variety
                     _prefab.Segments[slot][sg].sharedMaterial = _segmentMapping[Letters[slot][_curPos[slot]] - 'A'].Contains((char) ('a' + sg)) ? _prefab.SegmentOn : _prefab.SegmentOff;
         }
 
-        public override IEnumerable<ItemSelectable> SetUp()
+        public override IEnumerable<ItemSelectable> SetUp(System.Random rnd)
         {
             _prefab = UnityEngine.Object.Instantiate(Module.LetterDisplayTemplate, Module.transform);
             _prefab.transform.localPosition = new Vector3(GetXOfCellRect(Cells[0], 4), .015f, GetYOfCellRect(Cells[0], 3));

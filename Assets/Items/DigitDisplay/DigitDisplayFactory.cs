@@ -7,7 +7,7 @@ namespace Variety
 {
     public class DigitDisplayFactory : ItemFactory
     {
-        public override Item Generate(VarietyModule module, HashSet<object> taken)
+        public override Item Generate(VarietyModule module, HashSet<object> taken, System.Random rnd)
         {
             if (taken.Contains(this))
                 return null;
@@ -16,11 +16,11 @@ namespace Variety
             if (locations.Length == 0)
                 return null;
 
-            var location = locations[Rnd.Range(0, locations.Length)];
+            var location = locations[rnd.Next(0, locations.Length)];
             claimRect(taken, location, 2, 3);
             taken.Add(this);
 
-            return new DigitDisplay(module, location);
+            return new DigitDisplay(module, location, rnd);
         }
 
         public override IEnumerable<object> Flavors { get { yield return "DigitDisplay"; } }

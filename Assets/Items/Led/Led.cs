@@ -27,7 +27,7 @@ namespace Variety
         private LedColor _curShownColor;
         private KMSelectable _led;
 
-        public override IEnumerable<ItemSelectable> SetUp()
+        public override IEnumerable<ItemSelectable> SetUp(System.Random rnd)
         {
             var prefab = UnityEngine.Object.Instantiate(Module.LedTemplate, Module.transform);
             prefab.transform.localPosition = new Vector3(GetXOfCellRect(Cells[0], 2), .015f, GetYOfCellRect(Cells[0], 2));

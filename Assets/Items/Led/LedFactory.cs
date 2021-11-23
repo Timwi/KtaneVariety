@@ -31,7 +31,7 @@ namespace Variety
             }
         }
 
-        public override Item Generate(VarietyModule module, HashSet<object> taken)
+        public override Item Generate(VarietyModule module, HashSet<object> taken, System.Random rnd)
         {
             if (taken.Contains(this))
                 return null;
@@ -40,10 +40,10 @@ namespace Variety
             if (availableSpots.Length == 0)
                 return null;
 
-            var topLeftCell = availableSpots[Rnd.Range(0, availableSpots.Length)];
+            var topLeftCell = availableSpots[rnd.Next(0, availableSpots.Length)];
             var colors = (LedColor[]) Enum.GetValues(typeof(LedColor));
-            var color1Ix = Rnd.Range(0, colors.Length);
-            var color2Ix = Rnd.Range(0, colors.Length - 1);
+            var color1Ix = rnd.Next(0, colors.Length);
+            var color2Ix = rnd.Next(0, colors.Length - 1);
             if (color2Ix >= color1Ix)
                 color2Ix++;
             var color1 = colors[Math.Min(color1Ix, color2Ix)];

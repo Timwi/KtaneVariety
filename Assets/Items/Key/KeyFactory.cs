@@ -7,7 +7,7 @@ namespace Variety
 {
     public class KeyFactory : ItemFactory
     {
-        public override Item Generate(VarietyModule module, HashSet<object> taken)
+        public override Item Generate(VarietyModule module, HashSet<object> taken, System.Random rnd)
         {
             if (taken.Contains(this))
                 return null;
@@ -16,7 +16,7 @@ namespace Variety
             if (availableCells.Length == 0)
                 return null;
 
-            var cell = availableCells[Rnd.Range(0, availableCells.Length)];
+            var cell = availableCells[rnd.Next(0, availableCells.Length)];
             claimRect(taken, cell, 2, 2);
             taken.Add(this);
 

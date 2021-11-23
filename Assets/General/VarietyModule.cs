@@ -96,11 +96,13 @@ public class VarietyModule : MonoBehaviour
             new ItemFactoryInfo(10, new LetterDisplayFactory()));
 
         _flavorOrder = factories.SelectMany(inf => inf.Factory.Flavors).ToArray();
-        Debug.LogFormat("<Variety #{0}> Flavour order:\n{1}", _moduleId, _flavorOrder.Join("\n"));
         ruleSeedRnd.ShuffleFisherYates(_flavorOrder);
         ruleSeedRnd.ShuffleFisherYates(_flavorOrder);
 
         // Decide what’s going to be on the module
+        var rndSeed = Rnd.Range(0, int.MaxValue);
+        Debug.LogFormat(@"<Variety #{0}> RNG seed: {1}", _moduleId, rndSeed);
+        var rnd = new System.Random(rndSeed);
         var iterations = 0;
         tryAgain:
         iterations++;
@@ -110,9 +112,9 @@ public class VarietyModule : MonoBehaviour
         while (remainingFactories.Count > 0 && items.Count < 10)
         {
             var cumulativeWeight = Ut.NewArray(remainingFactories.Count, i => remainingFactories.Take(i + 1).Sum(fi => fi.Weight));
-            var rnd = Rnd.Range(0, cumulativeWeight.Last());
-            var fIx = cumulativeWeight.Last() == 0 ? 0 : cumulativeWeight.IndexOf(w => rnd < w);
-            var item = remainingFactories[fIx].Factory.Generate(this, takens);
+            var rndNum = rnd.Next(0, cumulativeWeight.Last());
+            var fIx = cumulativeWeight.Last() == 0 ? 0 : cumulativeWeight.IndexOf(w => rndNum < w);
+            var item = remainingFactories[fIx].Factory.Generate(this, takens, rnd);
             if (item == null)
                 remainingFactories.RemoveAt(fIx);
             else
@@ -127,7 +129,7 @@ public class VarietyModule : MonoBehaviour
         // Generate the game objects on the module
         var children = new KMSelectable[W * H];
         for (var i = 0; i < items.Count; i++)
-            foreach (var inf in items[i].SetUp())
+            foreach (var inf in items[i].SetUp(rnd))
             {
                 inf.Selectable.Parent = ModuleSelectable;
                 children[inf.Cell] = inf.Selectable;
@@ -147,13 +149,13 @@ public class VarietyModule : MonoBehaviour
 #endif
 
         items.Sort((a, b) => Array.IndexOf(_flavorOrder, a.Flavor).CompareTo(Array.IndexOf(_flavorOrder, b.Flavor)));
-        StartCoroutine(AfterAwake(items));
+        StartCoroutine(AfterAwake(items, rnd));
     }
 
     public static float GetX(int ix) { return -Width / 2 + (ix % W) * CellWidth; }
     public static float GetY(int ix) { return Height / 2 - (ix / W) * CellHeight + YOffset; }
 
-    private IEnumerator AfterAwake(List<Item> items)
+    private IEnumerator AfterAwake(List<Item> items, System.Random random)
     {
         yield return null;
 
@@ -167,7 +169,7 @@ public class VarietyModule : MonoBehaviour
 
         for (var i = 0; i < 100 || itemsWithFewestZeros == null; i++)
         {
-            ulong state = Enumerable.Range(0, 8).Aggregate(0UL, (p, n) => (p << 8) | (uint) Rnd.Range(0, 256)) % 1000000000000UL;
+            ulong state = Enumerable.Range(0, 8).Aggregate(0UL, (p, n) => (p << 8) | (uint) random.Next(0, 256)) % 1000000000000UL;
             ulong reconstructedState = 0UL;
             ulong mult = 1UL;
 

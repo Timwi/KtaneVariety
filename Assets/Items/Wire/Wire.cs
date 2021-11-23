@@ -34,10 +34,10 @@ namespace Variety
         public override bool IsStuck { get { return _isStuck; } }
         public override void Checked() { _isStuck = _isCut; }
 
-        public override IEnumerable<ItemSelectable> SetUp()
+        public override IEnumerable<ItemSelectable> SetUp(System.Random rnd)
         {
             var prefab = UnityEngine.Object.Instantiate(Module.WireTemplate, Module.transform);
-            var seed = Rnd.Range(0, int.MaxValue);
+            var seed = rnd.Next(0, int.MaxValue);
 
             var x1 = GetX(Cells[0]);
             var x2 = GetX(Cells[1]);

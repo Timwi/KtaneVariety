@@ -15,7 +15,7 @@ namespace Variety
             _buttonValues = rnd.ShuffleFisherYates(Enumerable.Range(0, Enum.GetValues(typeof(ButtonColor)).Length).ToArray());
         }
 
-        public override Item Generate(VarietyModule module, HashSet<object> taken)
+        public override Item Generate(VarietyModule module, HashSet<object> taken, System.Random rnd)
         {
             var availableColors = ((ButtonColor[]) Enum.GetValues(typeof(ButtonColor))).Where(col => !taken.Contains(col)).ToArray();
             if (availableColors.Length == 0)
@@ -25,12 +25,12 @@ namespace Variety
             if (availableSpots.Length == 0)
                 return null;
 
-            var topLeftCell = availableSpots[Rnd.Range(0, availableSpots.Length)];
-            var color = availableColors[Rnd.Range(0, availableColors.Length)];
+            var topLeftCell = availableSpots[rnd.Next(0, availableSpots.Length)];
+            var color = availableColors[rnd.Next(0, availableColors.Length)];
             claimRect(taken, topLeftCell, 3, 3);
             taken.Add(color);
 
-            return new Button(module, topLeftCell, color, _buttonValues[(int) color], Rnd.Range(3, 7));
+            return new Button(module, topLeftCell, color, _buttonValues[(int) color], rnd.Next(3, 7));
         }
 
         public override IEnumerable<object> Flavors { get { return Enum.GetValues(typeof(ButtonColor)).Cast<object>(); } }

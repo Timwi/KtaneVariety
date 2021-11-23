@@ -18,11 +18,11 @@ namespace Variety
         private Coroutine _turning;
         private KMSelectable _knob;
 
-        public Knob(VarietyModule module, int topLeftCell, int numTicks)
+        public Knob(VarietyModule module, int topLeftCell, int numTicks, System.Random rnd)
             : base(module, CellRect(topLeftCell, 4, 4))
         {
             NumTicks = numTicks;
-            State = Rnd.Range(0, NumTicks);
+            State = rnd.Next(0, NumTicks);
         }
 
         private void SetPosition(int pos)
@@ -57,7 +57,7 @@ namespace Variety
             _turning = null;
         }
 
-        public override IEnumerable<ItemSelectable> SetUp()
+        public override IEnumerable<ItemSelectable> SetUp(System.Random rnd)
         {
             var prefab = Object.Instantiate(Module.KnobTemplate, Module.transform);
             prefab.transform.localPosition = new Vector3(GetXOfCellRect(Cells[0], 3), .01501f, GetYOfCellRect(Cells[0], 3));

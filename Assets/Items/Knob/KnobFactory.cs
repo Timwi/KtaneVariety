@@ -8,7 +8,7 @@ namespace Variety
 {
     public class KnobFactory : ItemFactory
     {
-        public override Item Generate(VarietyModule module, HashSet<object> taken)
+        public override Item Generate(VarietyModule module, HashSet<object> taken, System.Random rnd)
         {
             if (taken.Contains(this))
                 return null;
@@ -17,11 +17,11 @@ namespace Variety
             if (availableSpots.Length == 0)
                 return null;
 
-            var spot = availableSpots[Rnd.Range(0, availableSpots.Length)];
+            var spot = availableSpots[rnd.Next(0, availableSpots.Length)];
             claimRect(taken, spot, 3, 3);
             taken.Add(this);
 
-            return new Knob(module, spot, Rnd.Range(5, 11));
+            return new Knob(module, spot, rnd.Next(5, 11), rnd);
         }
 
         public override IEnumerable<object> Flavors { get { yield return "Knob"; } }

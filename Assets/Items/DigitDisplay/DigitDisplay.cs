@@ -20,13 +20,14 @@ namespace Variety
 
         private static readonly string[] _segmentMap = new[] { "0000000", "1111101", "1001000", "0111011", "1011011", "1001110", "1010111", "1110111", "1001001", "1111111", "1011111" };
 
-        public DigitDisplay(VarietyModule module, int topLeftCell)
+        public DigitDisplay(VarietyModule module, int topLeftCell, System.Random rnd)
             : base(module, CellRect(topLeftCell, 2, 3))
         {
             TopLeftCell = topLeftCell;
             State = -1;
             _curDisplay = -1;
             _curYellow = false;
+            _displayedDigitPerState = Enumerable.Range(0, 9).ToArray().Shuffle(rnd);
         }
 
         public override bool DecideStates(int numPriorNonWireItems)
@@ -34,7 +35,6 @@ namespace Variety
             if (numPriorNonWireItems < 2 || numPriorNonWireItems > 10)
                 return false;
             _numStates = numPriorNonWireItems;
-            _displayedDigitPerState = Enumerable.Range(0, 9).ToArray().Shuffle();
             return true;
         }
 
@@ -44,7 +44,7 @@ namespace Variety
         public override string DescribeWhatUserDid() { return "you changed the digit display"; }
         public override string DescribeWhatUserShouldHaveDone(int desiredState) { return string.Format("you should have changed the digit display to {0} (instead of {1})", _displayedDigitPerState[desiredState], State == -1 ? "leaving it unchanged" : _displayedDigitPerState[State].ToString()); }
 
-        public override IEnumerable<ItemSelectable> SetUp()
+        public override IEnumerable<ItemSelectable> SetUp(System.Random rnd)
         {
             _prefab = UnityEngine.Object.Instantiate(Module.DigitDisplayTemplate, Module.transform);
             _prefab.transform.localPosition = new Vector3(GetXOfCellRect(TopLeftCell, 2), .015f, GetYOfCellRect(TopLeftCell, 3));

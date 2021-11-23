@@ -24,7 +24,7 @@ namespace Variety
             ruleSeedRnd.ShuffleFisherYates(_edgeworkConditions);
         }
 
-        public override Item Generate(VarietyModule module, HashSet<object> taken)
+        public override Item Generate(VarietyModule module, HashSet<object> taken, System.Random rnd)
         {
             // Decline to create more wires if there are already two
             if (taken.Count(obj => obj is WireColor) >= 2)
@@ -49,8 +49,8 @@ namespace Variety
             if (availableWires.Count == 0)
                 return null;
 
-            var color = availableColors[Rnd.Range(0, availableColors.Length)];
-            var wire = availableWires[Rnd.Range(0, availableWires.Count)];
+            var color = availableColors[rnd.Next(0, availableColors.Length)];
+            var wire = availableWires[rnd.Next(0, availableWires.Count)];
             var cell1 = wire % (W * H);
             var cell2 = wire / (W * H);
             taken.Add(cell1);

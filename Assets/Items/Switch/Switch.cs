@@ -30,7 +30,7 @@ namespace Variety
             State = 0;
         }
 
-        public override IEnumerable<ItemSelectable> SetUp()
+        public override IEnumerable<ItemSelectable> SetUp(System.Random rnd)
         {
             var prefab = Object.Instantiate(Module.SwitchTemplate, Module.transform);
             prefab.transform.localPosition = new Vector3(GetXOfCellRect(Cells[0], 1), .015f, GetYOfCellRect(Cells[0], 4));

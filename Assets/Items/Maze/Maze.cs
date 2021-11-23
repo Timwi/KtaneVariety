@@ -35,7 +35,7 @@ namespace Variety
             return new Vector3((cell % Width) - (Width - 1) * .5f, dot ? .003f : .004f, (Height - 1) * .5f - (cell / Width));
         }
 
-        public override IEnumerable<ItemSelectable> SetUp()
+        public override IEnumerable<ItemSelectable> SetUp(System.Random rnd)
         {
             var prefab = UnityEngine.Object.Instantiate(Module.MazeTemplate, Module.transform);
 
@@ -112,7 +112,12 @@ namespace Variety
                 if (nx < 0 || nx >= Width || ny < 0 || ny >= Height || !_maze.CanGo(State, btnIx))
                 {
                     Module.Module.HandleStrike();
-                    Debug.LogFormat(@"[Variety #{0}] In the {1}×{2} maze, you tried to go from {3}{4} to {5}{6} but there’s a wall there.",
+                    Debug.LogFormat(
+                        nx < 0 ? @"[Variety #{0}] In the {1}×{2} maze, you tried to go left from {3}{4}, hitting the edge of the maze." :
+                        nx >= Width ? @"[Variety #{0}] In the {1}×{2} maze, you tried to go right from {3}{4}, hitting the edge of the maze." :
+                        ny < 0 ? @"[Variety #{0}] In the {1}×{2} maze, you tried to go up from {3}{4}, hitting the edge of the maze." :
+                        ny >= Height ? @"[Variety #{0}] In the {1}×{2} maze, you tried to go down from {3}{4}, hitting the edge of the maze." :
+                        @"[Variety #{0}] In the {1}×{2} maze, you tried to go from {3}{4} to {5}{6} but there’s a wall there.",
                         Module.ModuleID, Width, Height, (char) ('A' + x), y + 1, (char) ('A' + nx), ny + 1);
                     return false;
                 }

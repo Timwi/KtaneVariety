@@ -35,7 +35,7 @@ namespace Variety
             return true;
         }
 
-        public override IEnumerable<ItemSelectable> SetUp()
+        public override IEnumerable<ItemSelectable> SetUp(System.Random rnd)
         {
             _prefab = UnityEngine.Object.Instantiate(Module.BrailleDisplayTemplate, Module.transform);
             _prefab.transform.localPosition = new Vector3(GetXOfCellRect(TopLeftCell, 2), .015f, GetYOfCellRect(TopLeftCell, 3));

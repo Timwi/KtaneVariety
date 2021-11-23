@@ -25,11 +25,11 @@ namespace Variety
             State = -1;
         }
 
-        public override IEnumerable<ItemSelectable> SetUp()
+        public override IEnumerable<ItemSelectable> SetUp(System.Random rnd)
         {
             var prefab = UnityEngine.Object.Instantiate(Module.ButtonTemplate, Module.transform);
             prefab.transform.localPosition = new Vector3(GetXOfCellRect(Cells[0], 3), .01501f, GetYOfCellRect(Cells[0], 3));
-            prefab.transform.localRotation = Quaternion.Euler(0, Rnd.Range(0, 360), 0);
+            prefab.transform.localRotation = Quaternion.Euler(0, rnd.Next(0, 360), 0);
             prefab.transform.localScale = new Vector3(1f, 1f, 1f);
             prefab.ButtonRenderer.sharedMaterial = prefab.Colors[(int) Color];
             prefab.ButtonMesh.sharedMesh = prefab.Meshes[Vertices - 3];
@@ -48,6 +48,7 @@ namespace Variety
                 Module.MoveButton(prefab.ButtonParent, .005f, ButtonMoveType.Down);
 
                 tapped++;
+                Debug.LogFormat("<Variety #{0}> Held at {1}", Module.ModuleID, Module.TimerTicks);
                 heldAtTicks = Module.TimerTicks;
                 lastTapStarted = Time.time;
                 if (waitForSubmit != null)
@@ -143,10 +144,11 @@ namespace Variety
         private IEnumerable<object> TwitchHold(int amount)
         {
             var startTicks = Module.TimerTicks;
+            var holdStarted = Time.time;
             _button.OnInteract();
             yield return new WaitForSeconds(.05f);
-            while (Module.TimerTicks - startTicks < amount)
-                yield return true;
+            while (Module.TimerTicks - startTicks < amount || Time.time - holdStarted <= .25f)
+                yield return null;
             _button.OnInteractEnded();
             yield return new WaitForSeconds(.1f);
         }

@@ -19,7 +19,7 @@ namespace Variety
 
         private Transform _core;
         private KMSelectable _key;
-        public override IEnumerable<ItemSelectable> SetUp()
+        public override IEnumerable<ItemSelectable> SetUp(System.Random rnd)
         {
             var prefab = Object.Instantiate(Module.KeyTemplate, Module.transform);
             _core = prefab.Core;
