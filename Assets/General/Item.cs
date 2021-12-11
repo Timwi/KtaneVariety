@@ -27,20 +27,17 @@ namespace Variety
         public abstract IEnumerable<object> TwitchHandleForcedSolve(int desiredState);
 
         private int _state;
-        public int State
+        public int State { get { return _state; } }
+        public void SetState(int state, bool automatic = false)
         {
-            get { return _state; }
-            protected set
+            if (_state != state)
             {
-                if (_state != value)
-                {
-                    _state = value;
-                    if (StateSet != null)
-                        StateSet(value);
-                }
+                _state = state;
+                if (StateSet != null)
+                    StateSet(state, automatic);
             }
         }
-        public Action<int> StateSet;
+        public Action<int, bool> StateSet;
 
         protected string coords(int ix) { return string.Format("{0}{1}", (char) (ix % VarietyModule.W + 'A'), ix / VarietyModule.W + 1); }
 

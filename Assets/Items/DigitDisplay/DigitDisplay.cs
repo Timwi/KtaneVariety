@@ -24,7 +24,7 @@ namespace Variety
             : base(module, CellRect(topLeftCell, 2, 3))
         {
             TopLeftCell = topLeftCell;
-            State = -1;
+            SetState(-1, automatic: true);
             _curDisplay = -1;
             _curYellow = false;
             _displayedDigitPerState = Enumerable.Range(0, 9).ToArray().Shuffle(rnd);
@@ -70,7 +70,7 @@ namespace Variety
                 Module.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, button.transform);
                 Module.MoveButton(buttonParent, .001f, ButtonMoveType.DownThenUp);
                 SetDisplay((_curDisplay + offset) % 10, yellow: true);
-                State = Array.IndexOf(_displayedDigitPerState, _curDisplay);
+                SetState(Array.IndexOf(_displayedDigitPerState, _curDisplay));
                 return false;
             };
         }
@@ -86,7 +86,7 @@ namespace Variety
         public override void ReceiveItemChange(int stageItemIndex)
         {
             SetDisplay(_displayedDigitPerState[stageItemIndex], yellow: false);
-            State = -1;
+            SetState(-1, automatic: true);
         }
 
         public override IEnumerator ProcessTwitchCommand(string command)

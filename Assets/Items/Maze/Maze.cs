@@ -16,7 +16,7 @@ namespace Variety
             Width = width;
             Height = height;
             Shape = shape;
-            State = startPos;
+            SetState(startPos, automatic: true);
             _maze = maze;
         }
 
@@ -122,7 +122,7 @@ namespace Variety
                     return false;
                 }
 
-                State = nx + Width * ny;
+                SetState(nx + Width * ny);
                 position.transform.localPosition = Pos(State);
                 foreach (var dot in dots)
                     dot.SetActive(true);

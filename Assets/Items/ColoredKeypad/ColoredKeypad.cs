@@ -79,7 +79,7 @@ namespace Variety
         {
             Color = color;
             Size = size;
-            State = -1;
+            SetState(-1, automatic: true);
             _expectedPresses = expectedPresses;
         }
 
@@ -146,7 +146,7 @@ namespace Variety
                 for (var i = 0; i < numKeys; i++)
                     _leds[i].sharedMaterial = _presses.Contains(i) ? _prefab.LedOn : _prefab.LedOff;
 
-                State = _presses.Count == _expectedPresses ? _combinations.IndexOf(i => _presses.All(p => (i & (1 << (numKeys - 1 - p))) != 0)) : -1;
+                SetState(_presses.Count == _expectedPresses ? _combinations.IndexOf(i => _presses.All(p => (i & (1 << (numKeys - 1 - p))) != 0)) : -1);
                 return false;
             };
         }

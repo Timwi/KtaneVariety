@@ -13,7 +13,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: Variety
   title: Variety
-  author: 
+  author: Timwi
   description: 'Cut wires, press buttons, input passwords, turn keys, flip switches,
     twist knobs and navigate mazes.
 

@@ -39,7 +39,7 @@ namespace Variety
             : base(module, CellRect(topLeftCell, 2 * Widths[size], 2 * Heights[size]))
         {
             Size = size;
-            State = -1;
+            SetState(-1, automatic: true);
         }
 
         public override IEnumerable<ItemSelectable> SetUp(System.Random rnd)
@@ -104,10 +104,10 @@ namespace Variety
                         m *= list.Count;
                         list.RemoveAt(lIx);
                     }
-                    State = newState;
+                    SetState(newState);
                 }
                 else
-                    State = -1;
+                    SetState(-1);
                 return false;
             };
         }

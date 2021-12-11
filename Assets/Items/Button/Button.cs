@@ -22,7 +22,7 @@ namespace Variety
             Color = color;
             ColorValue = colorValue;
             Vertices = vertices;
-            State = -1;
+            SetState(-1, automatic: true);
         }
 
         public override IEnumerable<ItemSelectable> SetUp(System.Random rnd)
@@ -67,14 +67,14 @@ namespace Variety
                 if (Module.TimerTicks != heldAtTicks && Time.time - lastTapStarted > .25f)
                 {
                     var numTicksHeld = Module.TimerTicks - heldAtTicks;
-                    State = numTicksHeld >= ColorValue ? -1 : numTicksHeld;
+                    SetState(numTicksHeld >= ColorValue ? -1 : numTicksHeld);
                     tapped = 0;
                 }
                 else
                 {
                     waitForSubmit = Module.StartCoroutine(WaitForSubmit(() =>
                     {
-                        State = tapped == 1 ? 0 : tapped + ColorValue - 2;
+                        SetState(tapped == 1 ? 0 : tapped + ColorValue - 2);
                         tapped = 0;
                     }));
                 }

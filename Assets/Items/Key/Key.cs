@@ -11,7 +11,7 @@ namespace Variety
         {
             TopLeftCell = cell;
             Turned = false;
-            State = -1;
+            SetState(-1, automatic: true);
         }
 
         public int TopLeftCell { get; private set; }
@@ -35,7 +35,7 @@ namespace Variety
             Module.Audio.PlaySoundAtTransform(Turned ? "KeySound2" : "KeySound1", _key.transform);
 
             Turned = !Turned;
-            State = Turned ? (int) Module.Bomb.GetTime() % 10 : -1;
+            SetState(Turned ? (int) Module.Bomb.GetTime() % 10 : -1);
             Module.StartCoroutine(KeyTurnAnimation(Turned));
             return false;
         }

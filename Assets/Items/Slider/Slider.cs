@@ -48,7 +48,7 @@ namespace Variety
             }
             _prefab.transform.localScale = new Vector3(1.2f, 1.2f, 1.2f);
 
-            State = rnd.Next(0, NumTicks);
+            SetState(rnd.Next(0, NumTicks), automatic: true);
             _prefab.Knob.transform.localPosition = new Vector3(XPosition(State), .021f, 0);
 
             for (var tick = 0; tick < NumTicks; tick++)
@@ -66,7 +66,7 @@ namespace Variety
                 _prefab.Knob.AddInteractionPunch(.5f);
                 Module.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, _prefab.Knob.transform);
 
-                State += movingRight ? 1 : -1;
+                SetState(State + (movingRight ? 1 : -1));
                 if (State == 0)
                     movingRight = true;
                 else if (State == NumTicks - 1)

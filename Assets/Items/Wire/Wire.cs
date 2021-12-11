@@ -19,7 +19,7 @@ namespace Variety
         public override bool DecideStates(int numPriorNonWireItems)
         {
             _conditionFlipped = EdgeworkCondition(Module.Bomb);
-            State = _conditionFlipped ? 1 : 0;
+            SetState(_conditionFlipped ? 1 : 0, automatic: true);
             return true;
         }
 
@@ -74,7 +74,7 @@ namespace Variety
                 prefab.WireCopperMeshFilter.sharedMesh = WireMeshGenerator.GenerateWire(length, numSegments, WireMeshGenerator.WirePiece.Copper, highlight: false, seed: seed);
                 var highlightMesh = WireMeshGenerator.GenerateWire(length, numSegments, WireMeshGenerator.WirePiece.Cut, highlight: true, seed: seed);
                 SetHighlightMesh(prefab.WireHighlightMeshFilter, highlightMesh);
-                State = _conditionFlipped ? 0 : 1;
+                SetState(_conditionFlipped ? 0 : 1);
                 return false;
             };
         }

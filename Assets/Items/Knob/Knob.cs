@@ -1,12 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Text.RegularExpressions;
 using KModkit;
 using UnityEngine;
-
-using Rnd = UnityEngine.Random;
 
 namespace Variety
 {
@@ -22,12 +18,12 @@ namespace Variety
             : base(module, CellRect(topLeftCell, 4, 4))
         {
             NumTicks = numTicks;
-            State = rnd.Next(0, NumTicks);
+            SetState(rnd.Next(0, NumTicks), automatic: true);
         }
 
         private void SetPosition(int pos)
         {
-            State = pos;
+            SetState(pos);
             if (_turning != null)
                 Module.StopCoroutine(_turning);
             _turning = Module.StartCoroutine(turnTo(pos));

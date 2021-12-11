@@ -23,7 +23,7 @@ namespace Variety
             Location = location;
             Letters = letters;
             FormableWords = formableWords;
-            State = Array.IndexOf(FormableWords, letters.Select(slot => slot[0]).Join(""));
+            SetState(Array.IndexOf(FormableWords, letters.Select(slot => slot[0]).Join("")), automatic: true);
         }
 
         private void ShowLetters()
@@ -55,7 +55,7 @@ namespace Variety
 
                 _curPos[btn] = (_curPos[btn] + 1) % Letters[btn].Length;
                 ShowLetters();
-                State = Array.IndexOf(FormableWords, Enumerable.Range(0, 3).Select(slot => Letters[slot][_curPos[slot]]).Join(""));
+                SetState(Array.IndexOf(FormableWords, Enumerable.Range(0, 3).Select(slot => Letters[slot][_curPos[slot]]).Join("")));
                 return false;
             };
         }

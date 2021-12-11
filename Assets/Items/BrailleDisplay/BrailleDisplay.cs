@@ -26,7 +26,7 @@ namespace Variety
         {
             TopLeftCell = topLeftCell;
             _curDisplay = 0;
-            State = -1;
+            SetState(-1, automatic: true);
         }
 
         public override bool DecideStates(int numPriorNonWireItems)
@@ -60,7 +60,7 @@ namespace Variety
                 for (var i = 0; i < 6; i++)
                     _prefab.Dots[i].sharedMaterial = (_curDisplay & (1 << i)) != 0 ? _prefab.DotOn : _prefab.DotOff;
                 var charEntered = Array.IndexOf(_braille, _curDisplay);
-                State = charEntered == -1 ? -1 : Array.IndexOf(_snChars, charEntered);
+                SetState(charEntered == -1 ? -1 : Array.IndexOf(_snChars, charEntered));
                 return false;
             };
         }

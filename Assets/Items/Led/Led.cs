@@ -20,7 +20,7 @@ namespace Variety
             Color1 = color1;
             Color2 = color2;
             Answers = answers;
-            State = -1;
+            SetState(-1, automatic: true);
         }
 
         private LedCyclingState _cyclingState = LedCyclingState.TableColors;
@@ -45,17 +45,17 @@ namespace Variety
                 {
                     case LedCyclingState.TableColors:
                         _cyclingState = LedCyclingState.PossibleColors;
-                        State = -1;
+                        SetState(-1);
                         break;
 
                     case LedCyclingState.PossibleColors:
                         _cyclingState = LedCyclingState.SetColor;
-                        State = Array.IndexOf(Answers, _curShownColor);
+                        SetState(Array.IndexOf(Answers, _curShownColor));
                         break;
 
                     case LedCyclingState.SetColor:
                         _cyclingState = LedCyclingState.TableColors;
-                        State = -1;
+                        SetState(-1);
                         break;
                 }
                 coroutine = _cyclingState == LedCyclingState.SetColor ? null : Module.StartCoroutine(CycleLed(prefab.Led, prefab.LedColors));

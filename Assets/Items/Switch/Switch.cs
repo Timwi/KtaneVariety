@@ -27,7 +27,7 @@ namespace Variety
             Cell = cell;
             Color = color;
             NumPositions = numPositions;
-            State = 0;
+            SetState(0, automatic: true);
         }
 
         public override IEnumerable<ItemSelectable> SetUp(System.Random rnd)
@@ -52,7 +52,7 @@ namespace Variety
                     _currentDirectionDown = false;
                 if (State == NumPositions - 1)
                     _currentDirectionDown = true;
-                State += _currentDirectionDown ? -1 : 1;
+                SetState(State + (_currentDirectionDown ? -1 : 1));
 
                 if (_switchToggling != null)
                     Module.StopCoroutine(_switchToggling);
