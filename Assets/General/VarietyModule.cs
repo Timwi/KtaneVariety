@@ -149,6 +149,9 @@ public class VarietyModule : MonoBehaviour
 #endif
 
         items.Sort((a, b) => Array.IndexOf(_flavorOrder, a.Flavor).CompareTo(Array.IndexOf(_flavorOrder, b.Flavor)));
+
+        TwitchHelpMessage = items.Select(item => item.TwitchHelpMessage).Distinct().OrderBy(x => x).Join(" | ");
+
         StartCoroutine(AfterAwake(items, rnd));
     }
 

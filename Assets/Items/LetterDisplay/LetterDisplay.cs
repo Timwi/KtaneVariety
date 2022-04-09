@@ -9,6 +9,8 @@ namespace Variety
 {
     public class LetterDisplay : Item
     {
+        public override string TwitchHelpMessage { get { return "!{0} letters cycle [cycle each letter slot] | !{0} letters PIN [set letter display]"; } }
+
         public int Location { get; private set; }
         public char[][] Letters { get; private set; }
         public string[] FormableWords { get; private set; }

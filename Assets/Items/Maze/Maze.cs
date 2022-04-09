@@ -9,6 +9,8 @@ namespace Variety
 {
     public class Maze : Item
     {
+        public override string TwitchHelpMessage { get { return "!{0} 3x3 maze UDLR [make moves in the 3×3 maze]"; } }
+
         public Maze(VarietyModule module, int x, int y, int width, int height, int startPos, int shape, MazeLayout maze) : base(module, Enumerable.Range(0, width * height).Select(ix => x + ix % width + W * (y + ix / width)).ToArray())
         {
             X = x;

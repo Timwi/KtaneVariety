@@ -7,6 +7,8 @@ namespace Variety
 {
     public class Switch : Item
     {
+        public override string TwitchHelpMessage { get { return "!{0} red switch 0 [toggle red switch to up]"; } }
+
         public int Cell { get; private set; }
         public SwitchColor Color { get; private set; }
         public int NumPositions { get; private set; }

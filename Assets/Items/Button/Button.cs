@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-using Rnd = UnityEngine.Random;
-
 namespace Variety
 {
     public class Button : Item
@@ -13,6 +11,8 @@ namespace Variety
         public ButtonColor Color { get; private set; }
         public int ColorValue { get; private set; }
         public int Vertices { get; private set; }
+
+        public override string TwitchHelpMessage { get { return "!{0} red button hold 2 [hold the red button over that many timer ticks] | !{0} red button mash 3 [mash the red button that many times]"; } }
 
         private KMSelectable _button;
 

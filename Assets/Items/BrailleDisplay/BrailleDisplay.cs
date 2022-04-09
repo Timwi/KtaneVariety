@@ -13,6 +13,8 @@ namespace Variety
         public int TopLeftCell { get; private set; }
         public override int NumStates { get { return _snChars.Length; } }
 
+        public override string TwitchHelpMessage { get { return "!{0} braille 125 [set Braille display]"; } }
+
         private int[] _snChars;
         private int _curDisplay;
         private BrailleDisplayPrefab _prefab;

@@ -8,6 +8,8 @@ namespace Variety
 {
     public class ColoredKeypad : Item
     {
+        public override string TwitchHelpMessage { get { return "!{0} red keys 01 [press those keys on the red keypad]"; } }
+
         public static readonly Dictionary<ColoredKeypadSize, int> Widths = new Dictionary<ColoredKeypadSize, int>
         {
             { ColoredKeypadSize.ColoredKeypad1x4, 1 },
@@ -71,7 +73,7 @@ namespace Variety
         private ColoredKeypadPrefab _prefab;
         private KMSelectable[] _buttons;
         private Transform[] _buttonParents;
-        private int _expectedPresses;
+        private readonly int _expectedPresses;
         private int[] _combinations;
 
         public ColoredKeypad(VarietyModule module, ColoredKeypadColor color, ColoredKeypadSize size, int topLeftCell, int expectedPresses)

@@ -8,6 +8,8 @@ namespace Variety
 {
     public class Knob : Item
     {
+        public override string TwitchHelpMessage { get { return "!{0} knob 0 [turn knob to that many tickmarks from north]"; } }
+
         public int NumTicks { get; private set; }
         public int Offset { get; private set; }
 

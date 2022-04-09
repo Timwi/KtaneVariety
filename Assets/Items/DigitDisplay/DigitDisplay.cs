@@ -9,6 +9,8 @@ namespace Variety
 {
     public class DigitDisplay : Item
     {
+        public override string TwitchHelpMessage { get { return "!{0} digit 0 [set the digit display]"; } }
+
         public int TopLeftCell { get; private set; }
         public override int NumStates { get { return _numStates; } }
 

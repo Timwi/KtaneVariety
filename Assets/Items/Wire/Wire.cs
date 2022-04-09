@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-using Rnd = UnityEngine.Random;
-
 namespace Variety
 {
     public class Wire : Item
     {
+        public override string TwitchHelpMessage { get { return "!{0} cut blue [cut a wire]"; } }
+
         public Wire(VarietyModule module, WireColor color, int[] cells, Func<KMBombInfo, bool> edgeworkCondition) : base(module, cells)
         {
             Color = color;

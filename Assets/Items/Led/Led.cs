@@ -8,6 +8,8 @@ namespace Variety
 {
     public class Led : Item
     {
+        public override string TwitchHelpMessage { get { return "!{0} led white [set the LED to white] | !{0} led reset [show flashing colors again]"; } }
+
         public int TopLeftCell { get; private set; }
         public LedColor Color1 { get; private set; }
         public LedColor Color2 { get; private set; }

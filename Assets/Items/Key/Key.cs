@@ -7,6 +7,8 @@ namespace Variety
 {
     public class Key : Item
     {
+        public override string TwitchHelpMessage { get { return "!{0} key 0 [turn the key-in-lock at last timer digit]"; } }
+
         public Key(VarietyModule module, int cell) : base(module, new[] { cell, cell + 1, cell + W, cell + W + 1 })
         {
             TopLeftCell = cell;
