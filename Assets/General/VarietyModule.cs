@@ -338,7 +338,7 @@ public class VarietyModule : MonoBehaviour
     }
 
 #pragma warning disable 414
-    private readonly string TwitchHelpMessage = new[]
+    private string TwitchHelpMessage = new[]
     {
         "!{0} horiz/vert 0 [set horizontal/vertical slider]",
         "!{0} key 0 [turn the key-in-lock at last timer digit]",
