@@ -10,6 +10,11 @@ namespace Variety
     {
         public override string TwitchHelpMessage { get { return "!{0} cut blue [cut a wire]"; } }
 
+        public override void SetColorblind(bool on)
+        {
+            _wire.GetComponent<Renderer>().material.mainTexture = on ? _prefab.ColorblindTextures[(int) Color] : _prefab.ColorblindTextures[0];
+        }
+
         public Wire(VarietyModule module, WireColor color, int[] cells, Func<KMBombInfo, bool> edgeworkCondition) : base(module, cells)
         {
             Color = color;
@@ -30,13 +35,14 @@ namespace Variety
         private bool _isCut = false;
         private bool _conditionFlipped;
         private KMSelectable _wire;
+        private WirePrefab _prefab;
 
         public override bool IsStuck { get { return _isStuck; } }
         public override void Checked() { _isStuck = _isCut; }
 
         public override IEnumerable<ItemSelectable> SetUp(System.Random rnd)
         {
-            var prefab = UnityEngine.Object.Instantiate(Module.WireTemplate, Module.transform);
+            _prefab = UnityEngine.Object.Instantiate(Module.WireTemplate, Module.transform);
             var seed = rnd.Next(0, int.MaxValue);
 
             var x1 = GetX(Cells[0]);
@@ -47,15 +53,15 @@ namespace Variety
             var length = Math.Sqrt(Math.Pow(x2 - x1, 2) + Math.Pow(y2 - y1, 2));
             var numSegments = Math.Max(2, (int) Math.Floor(Math.Sqrt(Math.Pow((Cells[1] % W) - (Cells[0] % W), 2) + Math.Pow((Cells[1] / W) - (Cells[0] / W), 2))));
 
-            prefab.WireMeshFilter.sharedMesh = WireMeshGenerator.GenerateWire(length, numSegments, WireMeshGenerator.WirePiece.Uncut, highlight: false, seed: seed);
+            _prefab.WireMeshFilter.sharedMesh = WireMeshGenerator.GenerateWire(length, numSegments, WireMeshGenerator.WirePiece.Uncut, highlight: false, seed: seed);
             var hl = WireMeshGenerator.GenerateWire(length, numSegments, WireMeshGenerator.WirePiece.Uncut, highlight: true, seed: seed);
-            SetHighlightMesh(prefab.WireHighlightMeshFilter, hl);
-            prefab.WireCollider.sharedMesh = hl;
-            prefab.WireMeshRenderer.sharedMaterial = prefab.WireMaterials[(int) Color];
+            SetHighlightMesh(_prefab.WireHighlightMeshFilter, hl);
+            _prefab.WireCollider.sharedMesh = hl;
+            _prefab.WireMeshRenderer.sharedMaterial = _prefab.WireMaterials[(int) Color];
 
-            prefab.Base1.transform.localPosition = new Vector3(x1, 0.015f, y1);
-            prefab.Base2.transform.localPosition = new Vector3(x2, 0.015f, y2);
-            _wire = prefab.Wire;
+            _prefab.Base1.transform.localPosition = new Vector3(x1, 0.015f, y1);
+            _prefab.Base2.transform.localPosition = new Vector3(x2, 0.015f, y2);
+            _wire = _prefab.Wire;
             _wire.transform.localPosition = new Vector3(x1, 0.035f, y1);
             _wire.transform.localEulerAngles = new Vector3(0, Mathf.Atan2(y1 - y2, x2 - x1) / Mathf.PI * 180, 0);
 
@@ -70,10 +76,10 @@ namespace Variety
                 _wire.AddInteractionPunch(.5f);
                 Module.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.WireSnip, _wire.transform);
 
-                prefab.WireMeshFilter.sharedMesh = WireMeshGenerator.GenerateWire(length, numSegments, WireMeshGenerator.WirePiece.Cut, highlight: false, seed: seed);
-                prefab.WireCopperMeshFilter.sharedMesh = WireMeshGenerator.GenerateWire(length, numSegments, WireMeshGenerator.WirePiece.Copper, highlight: false, seed: seed);
+                _prefab.WireMeshFilter.sharedMesh = WireMeshGenerator.GenerateWire(length, numSegments, WireMeshGenerator.WirePiece.Cut, highlight: false, seed: seed);
+                _prefab.WireCopperMeshFilter.sharedMesh = WireMeshGenerator.GenerateWire(length, numSegments, WireMeshGenerator.WirePiece.Copper, highlight: false, seed: seed);
                 var highlightMesh = WireMeshGenerator.GenerateWire(length, numSegments, WireMeshGenerator.WirePiece.Cut, highlight: true, seed: seed);
-                SetHighlightMesh(prefab.WireHighlightMeshFilter, highlightMesh);
+                SetHighlightMesh(_prefab.WireHighlightMeshFilter, highlightMesh);
                 SetState(_conditionFlipped ? 0 : 1);
                 return false;
             };

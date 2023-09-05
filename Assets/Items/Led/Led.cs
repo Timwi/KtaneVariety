@@ -10,6 +10,24 @@ namespace Variety
     {
         public override string TwitchHelpMessage { get { return "!{0} led white [set the LED to white] | !{0} led reset [show flashing colors again]"; } }
 
+        private bool _colorblind;
+        public override void SetColorblind(bool on)
+        {
+            _colorblind = on;
+            ColorblindText.gameObject.SetActive(on);
+            ColorblindText.text = _colorblindNames[(int) _curShownColor];
+        }
+        private TextMesh _colorblindText;
+        private TextMesh ColorblindText
+        {
+            get
+            {
+                if (_colorblindText == null)
+                    _colorblindText = _prefab.GetComponentInChildren<TextMesh>(true);
+                return _colorblindText;
+            }
+        }
+
         public int TopLeftCell { get; private set; }
         public LedColor Color1 { get; private set; }
         public LedColor Color2 { get; private set; }
@@ -28,16 +46,17 @@ namespace Variety
         private LedCyclingState _cyclingState = LedCyclingState.TableColors;
         private LedColor _curShownColor;
         private KMSelectable _led;
+        private LedPrefab _prefab;
 
         public override IEnumerable<ItemSelectable> SetUp(System.Random rnd)
         {
-            var prefab = UnityEngine.Object.Instantiate(Module.LedTemplate, Module.transform);
-            prefab.transform.localPosition = new Vector3(GetXOfCellRect(Cells[0], 2), .015f, GetYOfCellRect(Cells[0], 2));
-            prefab.transform.localRotation = Quaternion.identity;
-            prefab.transform.localScale = new Vector3(2, 2, 2);
+            _prefab = UnityEngine.Object.Instantiate(Module.LedTemplate, Module.transform);
+            _prefab.transform.localPosition = new Vector3(GetXOfCellRect(Cells[0], 2), .015f, GetYOfCellRect(Cells[0], 2));
+            _prefab.transform.localRotation = Quaternion.identity;
+            _prefab.transform.localScale = new Vector3(2, 2, 2);
 
-            var coroutine = Module.StartCoroutine(CycleLed(prefab.Led, prefab.LedColors));
-            _led = prefab.Selectable;
+            var coroutine = Module.StartCoroutine(CycleLed(_prefab.Led, _prefab.LedColors));
+            _led = _prefab.Selectable;
 
             _led.OnInteract = delegate
             {
@@ -60,7 +79,7 @@ namespace Variety
                         SetState(-1);
                         break;
                 }
-                coroutine = _cyclingState == LedCyclingState.SetColor ? null : Module.StartCoroutine(CycleLed(prefab.Led, prefab.LedColors));
+                coroutine = _cyclingState == LedCyclingState.SetColor ? null : Module.StartCoroutine(CycleLed(_prefab.Led, _prefab.LedColors));
                 return false;
             };
             yield return new ItemSelectable(_led, Cells[0]);
@@ -75,11 +94,14 @@ namespace Variety
                 i = (i + 1) % n;
                 _curShownColor = _cyclingState == LedCyclingState.TableColors ? (i == 0 ? Color1 : Color2) : (LedColor) i;
                 led.sharedMaterial = ledColors[(int) _curShownColor];
+                if (_colorblind)
+                    ColorblindText.text = _colorblindNames[(int) _curShownColor];
                 yield return new WaitForSeconds(.7f);
             }
         }
 
         private static readonly string[] _colorNames = { "black", "red", "yellow", "blue", "white" };
+        private static readonly string[] _colorblindNames = { "", "R", "Y", "B", "W" };
 
         public override string ToString() { return string.Format("LED flashing {0} and {1}", _colorNames[(int) Color1], _colorNames[(int) Color2]); }
         public override int NumStates { get { return Answers.Length; } }

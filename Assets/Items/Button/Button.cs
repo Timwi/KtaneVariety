@@ -14,6 +14,11 @@ namespace Variety
 
         public override string TwitchHelpMessage { get { return "!{0} red button hold 2 [hold the red button over that many timer ticks] | !{0} red button mash 3 [mash the red button that many times]"; } }
 
+        public override void SetColorblind(bool on)
+        {
+            _button.GetComponentInChildren<TextMesh>(true).gameObject.SetActive(on);
+        }
+
         private KMSelectable _button;
 
         public Button(VarietyModule module, int topLeftCell, ButtonColor color, int colorValue, int vertices)
@@ -29,7 +34,8 @@ namespace Variety
         {
             var prefab = UnityEngine.Object.Instantiate(Module.ButtonTemplate, Module.transform);
             prefab.transform.localPosition = new Vector3(GetXOfCellRect(Cells[0], 3), .01501f, GetYOfCellRect(Cells[0], 3));
-            prefab.transform.localRotation = Quaternion.Euler(0, rnd.Next(0, 360), 0);
+            var rotation = rnd.Next(0, 360);
+            prefab.transform.localRotation = Quaternion.Euler(0, rotation, 0);
             prefab.transform.localScale = new Vector3(1f, 1f, 1f);
             prefab.ButtonRenderer.sharedMaterial = prefab.Colors[(int) Color];
             prefab.ButtonMesh.sharedMesh = prefab.Meshes[Vertices - 3];
@@ -79,6 +85,9 @@ namespace Variety
                     }));
                 }
             };
+
+            _button.GetComponentInChildren<TextMesh>(true).text = _colorNames[(int) Color][0].ToString().ToUpperInvariant();
+            _button.GetComponentInChildren<TextMesh>(true).transform.localRotation = Quaternion.Euler(90f, 0f, rotation);
 
             yield return new ItemSelectable(_button, Cells[0] + W + 1);
         }

@@ -10,6 +10,12 @@ namespace Variety
     {
         public override string TwitchHelpMessage { get { return "!{0} red keys 01 [press those keys on the red keypad]"; } }
 
+        public override void SetColorblind(bool on)
+        {
+            foreach (var text in _prefab.GetComponentsInChildren<TextMesh>(true))
+                text.gameObject.SetActive(on);
+        }
+
         public static readonly Dictionary<ColoredKeypadSize, int> Widths = new Dictionary<ColoredKeypadSize, int>
         {
             { ColoredKeypadSize.ColoredKeypad1x4, 1 },
@@ -116,6 +122,7 @@ namespace Variety
                 _buttonParents[keyIx] = _buttons[keyIx].transform.Find("KeyCapParent");
                 _leds[keyIx] = _buttonParents[keyIx].Find("Led").GetComponent<MeshRenderer>();
                 _buttonParents[keyIx].Find("KeyCap").GetComponent<MeshRenderer>().sharedMaterial = _prefab.KeycapColors[(int) Color];
+                _buttonParents[keyIx].GetComponentInChildren<TextMesh>(true).text = _colorNames[(int) Color][0].ToString().ToUpperInvariant();
 
                 yield return new ItemSelectable(_buttons[keyIx], Cells[0] + (keyIx % w) + W * (keyIx / w));
             }

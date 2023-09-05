@@ -10,6 +10,12 @@ namespace Variety
     {
         public override string TwitchHelpMessage { get { return "!{0} 1x3 keys 012 [press keys on the 1×3 white keypad in that order]"; } }
 
+        public override void SetColorblind(bool on)
+        {
+            foreach (var text in _prefab.GetComponentsInChildren<TextMesh>(true))
+                text.gameObject.SetActive(on);
+        }
+
         public static readonly Dictionary<KeypadSize, int> Widths = new Dictionary<KeypadSize, int>
         {
             { KeypadSize.Keypad2x2, 2 },

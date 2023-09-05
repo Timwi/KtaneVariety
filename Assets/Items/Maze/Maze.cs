@@ -11,6 +11,12 @@ namespace Variety
     {
         public override string TwitchHelpMessage { get { return "!{0} 3x3 maze UDLR [make moves in the 3×3 maze]"; } }
 
+        private GameObject _colorblindText;
+        public override void SetColorblind(bool on)
+        {
+            _colorblindText.SetActive(on);
+        }
+
         public Maze(VarietyModule module, int x, int y, int width, int height, int startPos, int shape, MazeLayout maze) : base(module, Enumerable.Range(0, width * height).Select(ix => x + ix % width + W * (y + ix / width)).ToArray())
         {
             X = x;
@@ -40,6 +46,9 @@ namespace Variety
         public override IEnumerable<ItemSelectable> SetUp(System.Random rnd)
         {
             var prefab = UnityEngine.Object.Instantiate(Module.MazeTemplate, Module.transform);
+            var cbtext = prefab.GetComponentInChildren<TextMesh>();
+            cbtext.text = _symbolColors[Shape % 3][0].ToString().ToUpperInvariant();
+            _colorblindText = cbtext.gameObject;
 
             var cx = -VarietyModule.Width / 2 + (X + Width * .5f) * VarietyModule.CellWidth;
             var cy = VarietyModule.Height / 2 - (Y + Height * .5f) * VarietyModule.CellHeight + VarietyModule.YOffset;

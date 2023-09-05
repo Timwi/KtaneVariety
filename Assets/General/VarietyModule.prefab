@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 11496072}
   - component: {fileID: 11489182}
   - component: {fileID: 114687933291929008}
+  - component: {fileID: 114860871392820466}
   m_Layer: 0
   m_Name: VarietyModule
   m_TagString: Untagged
@@ -8021,6 +8022,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShaderNames:
   - Unlit/Color
+--- !u!114 &114860871392820466
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 127088}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1cfb889a07d5fd4e9baed7960bb397f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _colorblindMode: 0
 --- !u!114 &114882687283486170
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -9,6 +9,12 @@ namespace Variety
     {
         public override string TwitchHelpMessage { get { return "!{0} red switch 0 [toggle red switch to up]"; } }
 
+        public override void SetColorblind(bool on)
+        {
+            foreach (var cb in _switch.GetComponentsInChildren<TextMesh>(true))
+                cb.gameObject.SetActive(on);
+        }
+
         public int Cell { get; private set; }
         public SwitchColor Color { get; private set; }
         public int NumPositions { get; private set; }
@@ -40,6 +46,8 @@ namespace Variety
             _switch = prefab.Selectable;
             _switch.OnInteract = ToggleSwitch();
             prefab.MeshRenderer.sharedMaterial = prefab.SwitchMaterials[(int) Color];
+            foreach (var cb in _switch.GetComponentsInChildren<TextMesh>(true))
+                cb.text = _colorNames[(int) Color][0].ToString().ToUpperInvariant();
             yield return new ItemSelectable(_switch, Cells[0] + W);
         }
 

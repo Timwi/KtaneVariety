@@ -474,6 +474,12 @@ MonoBehaviour:
   WireCopperMeshFilter: {fileID: 33829740163945828}
   WireMeshRenderer: {fileID: 23071691026591862}
   WireCollider: {fileID: 64601313379384502}
+  ColorblindTextures:
+  - {fileID: 2800000, guid: d544122dca505ae44b5dc031e2b0f229, type: 3}
+  - {fileID: 2800000, guid: 0d77e59ea493eb04a93b3df2ae1fe04c, type: 3}
+  - {fileID: 2800000, guid: 6f027338eff7aad40a9986d9138c0cf4, type: 3}
+  - {fileID: 2800000, guid: 9a8ea64e4553c624086421595f920748, type: 3}
+  - {fileID: 2800000, guid: 4a0856b65b45ad2479165880c148c108, type: 3}
 --- !u!114 &114845592532812052
 MonoBehaviour:
   m_ObjectHideFlags: 1

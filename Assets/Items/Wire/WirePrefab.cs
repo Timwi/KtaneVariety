@@ -13,4 +13,5 @@ public class WirePrefab : MonoBehaviour
     public MeshFilter WireCopperMeshFilter;
     public MeshRenderer WireMeshRenderer;
     public MeshCollider WireCollider;
+    public Texture[] ColorblindTextures;
 }
