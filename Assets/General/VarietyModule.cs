@@ -49,6 +49,10 @@ public class VarietyModule : MonoBehaviour
     public BrailleDisplayPrefab BrailleDisplayTemplate;
     public ButtonPrefab ButtonTemplate;
     public LedPrefab LedTemplate;
+    public DiePrefab DieTemplate;
+    public TimerPrefab TimerTemplate;
+    public BulbPrefab BulbTemplate;
+    public ColoredKnobPrefab ColoredKnobTemplate;
 
     private static int _moduleIdCounter = 1;
     private int _moduleId;
@@ -92,9 +96,13 @@ public class VarietyModule : MonoBehaviour
 
         var factories = Ut.NewArray(
             new ItemFactoryInfo(1, new WireFactory(ruleSeedRnd)),
+            new ItemFactoryInfo(1, new DieFactory()),
             new ItemFactoryInfo(2, new KeyFactory()),
             new ItemFactoryInfo(2, new LedFactory(ruleSeedRnd)),
             new ItemFactoryInfo(2, new SwitchFactory()),
+            new ItemFactoryInfo(2, new TimerFactory()),
+            new ItemFactoryInfo(2, new BulbFactory(ruleSeedRnd)),
+            new ItemFactoryInfo(2, new ColoredKnobFactory(ruleSeedRnd)),
             new ItemFactoryInfo(3, new KnobFactory()),
             new ItemFactoryInfo(4, new ButtonFactory(ruleSeedRnd)),
             new ItemFactoryInfo(5, new BrailleDisplayFactory()),
@@ -148,14 +156,17 @@ public class VarietyModule : MonoBehaviour
         ModuleSelectable.ChildRowLength = W;
         ModuleSelectable.UpdateChildren();
 
+        foreach (var item in items)
+            Module.OnActivate += item.OnActivate;
+
 #if UNITY_EDITOR
-        //for (var cell = 0; cell < W * H; cell++)
-        //{
-        //    var dummy = Instantiate(DummyTemplate, transform);
-        //    dummy.transform.localPosition = new Vector3(GetX(cell), .01501f, GetY(cell));
-        //    dummy.transform.localEulerAngles = new Vector3(90, 0, 0);
-        //    dummy.Renderer.sharedMaterial = takens.Contains(cell) ? dummy.Black : dummy.White;
-        //}
+        for (var cell = 0; cell < W * H; cell++)
+        {
+            var dummy = Instantiate(DummyTemplate, transform);
+            dummy.transform.localPosition = new Vector3(GetX(cell), .01501f, GetY(cell));
+            dummy.transform.localEulerAngles = new Vector3(90, 0, 0);
+            dummy.Renderer.sharedMaterial = takens.Contains(cell) ? dummy.Black : dummy.White;
+        }
 #endif
 
         items.Sort((a, b) => Array.IndexOf(_flavorOrder, a.Flavor).CompareTo(Array.IndexOf(_flavorOrder, b.Flavor)));
@@ -362,7 +373,7 @@ public class VarietyModule : MonoBehaviour
         "!{0} key 0 [turn the key-in-lock at last timer digit]",
         "!{0} 1x3 keys 012 [press keys on the 1×3 white keypad in that order]",
         "!{0} red keys 01 [press those keys on the red keypad]",
-        "!{0} knob 0 [turn knob to that many tickmarks from north]",
+        "!{0} knob 0 [turn the white knob to that many tickmarks from north]",
         "!{0} red button mash 3 [mash the red button that many times]",
         "!{0} red button hold 2 [hold the red button over that many timer ticks]",
         "!{0} digit 0 [set the digit display]",
@@ -374,6 +385,10 @@ public class VarietyModule : MonoBehaviour
         "!{0} letters ACE [set letter display]",
         "!{0} braille 125 [set Braille display]",
         "!{0} 3x3 maze UDLR [make moves in the 3×3 maze]",
+        "!{0} die 1234 [press the rotation buttons; buttons are numbered from the one pointing towards the status light going clockwise]",
+        "!{0} ascending timer 02 [stops the timer at that value] | !{0} ascending timer reset [restarts the timer running]",
+        "!{0} red bulb ..- [transmit ..- on the red bulb] | !{0} red bulb reset [show flashing code again]",
+        "!{0} red knob 0 [turn knob that many times] !{0} red knob cycle [turn the knob slowly]",
         "!{0} colorblind"
     }.Join(" | ");
 #pragma warning restore 414

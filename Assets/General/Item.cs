@@ -20,6 +20,7 @@ namespace Variety
         public abstract string DescribeWhatUserDid();
         public abstract string DescribeWhatUserShouldHaveDone(int desiredState);
         public virtual void SetColorblind(bool on) { }
+        public virtual void OnActivate() { }
         public virtual void Checked() { }
         public virtual bool IsStuck => false;
         public virtual bool DecideStates(int numPriorNonWireItems) => true;

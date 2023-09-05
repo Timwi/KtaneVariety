@@ -8,7 +8,7 @@ namespace Variety
 {
     public class Knob : Item
     {
-        public override string TwitchHelpMessage { get { return "!{0} knob 0 [turn knob to that many tickmarks from north]"; } }
+        public override string TwitchHelpMessage => "!{0} knob 0 [turn the white knob to that many tickmarks from north]";
 
         public int NumTicks { get; private set; }
         public int Offset { get; private set; }
@@ -81,12 +81,12 @@ namespace Variety
             yield return new ItemSelectable(prefab.Knob, Cells[0] + W + 1);
         }
 
-        public override string ToString() { return string.Format("knob (north is {0})", (NumTicks - Offset) % NumTicks); }
-        public override int NumStates { get { return NumTicks; } }
-        public override object Flavor { get { return "Knob"; } }
-        public override string DescribeSolutionState(int state) { return string.Format("set the knob to {0}", state, NumTicks, (NumTicks - Offset) % NumTicks); }
-        public override string DescribeWhatUserDid() { return "you twisted the knob"; }
-        public override string DescribeWhatUserShouldHaveDone(int desiredState) { return string.Format("you should have set the knob to {0} (instead of {1})", desiredState, State); }
+        public override string ToString() => $"white knob (north is {(NumTicks - Offset) % NumTicks})";
+        public override int NumStates => NumTicks;
+        public override object Flavor => "Knob";
+        public override string DescribeSolutionState(int state) => $"set the white knob to {state}";
+        public override string DescribeWhatUserDid() => "you twisted the white knob";
+        public override string DescribeWhatUserShouldHaveDone(int desiredState) => $"you should have set the white knob to {desiredState} (instead of {State})";
 
         public override IEnumerator ProcessTwitchCommand(string command)
         {
