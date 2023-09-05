@@ -9,15 +9,15 @@ namespace Variety
 {
     public class DigitDisplay : Item
     {
-        public override string TwitchHelpMessage { get { return "!{0} digit 0 [set the digit display]"; } }
+        public override string TwitchHelpMessage => "!{0} digit 0 [set the digit display]";
 
         public int TopLeftCell { get; private set; }
-        public override int NumStates { get { return _numStates; } }
+        public override int NumStates => _numStates;
 
         private int _numStates;
         private int _curDisplay;
         private bool _curYellow;
-        private int[] _displayedDigitPerState;
+        private readonly int[] _displayedDigitPerState;
         private DigitDisplayPrefab _prefab;
 
         private static readonly string[] _segmentMap = new[] { "0000000", "1111101", "1001000", "0111011", "1011011", "1001110", "1010111", "1110111", "1001001", "1111111", "1011111" };
@@ -40,11 +40,11 @@ namespace Variety
             return true;
         }
 
-        public override object Flavor { get { return "DigitDisplay"; } }
-        public override string ToString() { return "digit display"; }
-        public override string DescribeSolutionState(int state) { return string.Format("set the digit display to {0} (the digit at stage {1})", _displayedDigitPerState[state], state); }
-        public override string DescribeWhatUserDid() { return "you changed the digit display"; }
-        public override string DescribeWhatUserShouldHaveDone(int desiredState) { return string.Format("you should have changed the digit display to {0} (instead of {1})", _displayedDigitPerState[desiredState], State == -1 ? "leaving it unchanged" : _displayedDigitPerState[State].ToString()); }
+        public override object Flavor => "DigitDisplay";
+        public override string ToString() => "digit display";
+        public override string DescribeSolutionState(int state) => $"set the digit display to {_displayedDigitPerState[state]} (the digit at stage {state})";
+        public override string DescribeWhatUserDid() => "you changed the digit display";
+        public override string DescribeWhatUserShouldHaveDone(int desiredState) => $"you should have changed the digit display to {_displayedDigitPerState[desiredState]} (instead of {(State == -1 ? "leaving it unchanged" : _displayedDigitPerState[State].ToString())})";
 
         public override IEnumerable<ItemSelectable> SetUp(System.Random rnd)
         {
@@ -64,18 +64,15 @@ namespace Variety
             SetDisplay(-1, yellow: false);
         }
 
-        private KMSelectable.OnInteractHandler ButtonPressHandler(Transform buttonParent, KMSelectable button, int offset)
+        private KMSelectable.OnInteractHandler ButtonPressHandler(Transform buttonParent, KMSelectable button, int offset) => delegate
         {
-            return delegate
-            {
-                button.AddInteractionPunch(.25f);
-                Module.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, button.transform);
-                Module.MoveButton(buttonParent, .001f, ButtonMoveType.DownThenUp);
-                SetDisplay((_curDisplay + offset) % 10, yellow: true);
-                SetState(Array.IndexOf(_displayedDigitPerState, _curDisplay));
-                return false;
-            };
-        }
+            button.AddInteractionPunch(.25f);
+            Module.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, button.transform);
+            Module.MoveButton(buttonParent, .001f, ButtonMoveType.DownThenUp);
+            SetDisplay((_curDisplay + offset) % 10, yellow: true);
+            SetState(Array.IndexOf(_displayedDigitPerState, _curDisplay));
+            return false;
+        };
 
         private void SetDisplay(int value, bool yellow)
         {
@@ -109,9 +106,6 @@ namespace Variety
             }
         }
 
-        public override IEnumerable<object> TwitchHandleForcedSolve(int desiredState)
-        {
-            return TwitchSet(_displayedDigitPerState[desiredState]);
-        }
+        public override IEnumerable<object> TwitchHandleForcedSolve(int desiredState) => TwitchSet(_displayedDigitPerState[desiredState]);
     }
 }

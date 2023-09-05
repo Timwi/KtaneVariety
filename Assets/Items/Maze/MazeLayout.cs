@@ -10,14 +10,14 @@ namespace Variety
         private bool[] _canGoRightData;
         private bool[] _canGoDownData;
 
-        public bool CanGoRight(int cell) { return CanGoRight(cell % _w, cell / _w); }
-        public bool CanGoRight(int x, int y) { return x < _w - 1 && _canGoRightData[x + (_w - 1) * y]; }
-        public bool CanGoDown(int cell) { return CanGoDown(cell % _w, cell / _w); }
-        public bool CanGoDown(int x, int y) { return y < _h - 1 && _canGoDownData[x + _w * y]; }
-        public bool CanGoLeft(int cell) { return CanGoLeft(cell % _w, cell / _w); }
-        public bool CanGoLeft(int x, int y) { return x > 0 && _canGoRightData[x - 1 + (_w - 1) * y]; }
-        public bool CanGoUp(int cell) { return CanGoUp(cell % _w, cell / _w); }
-        public bool CanGoUp(int x, int y) { return y > 0 && _canGoDownData[x + _w * (y - 1)]; }
+        public bool CanGoRight(int cell) => CanGoRight(cell % _w, cell / _w);
+        public bool CanGoRight(int x, int y) => x < _w - 1 && _canGoRightData[x + (_w - 1) * y];
+        public bool CanGoDown(int cell) => CanGoDown(cell % _w, cell / _w);
+        public bool CanGoDown(int x, int y) => y < _h - 1 && _canGoDownData[x + _w * y];
+        public bool CanGoLeft(int cell) => CanGoLeft(cell % _w, cell / _w);
+        public bool CanGoLeft(int x, int y) => x > 0 && _canGoRightData[x - 1 + (_w - 1) * y];
+        public bool CanGoUp(int cell) => CanGoUp(cell % _w, cell / _w);
+        public bool CanGoUp(int x, int y) => y > 0 && _canGoDownData[x + _w * (y - 1)];
 
         public bool CanGo(int cell, int direction)
         {

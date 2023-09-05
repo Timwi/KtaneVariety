@@ -7,7 +7,7 @@ namespace Variety
 {
     public class Slider : Item
     {
-        public override string TwitchHelpMessage { get { return "!{0} horiz/vert 0 [set horizontal/vertical slider]"; } }
+        public override string TwitchHelpMessage => "!{0} horiz/vert 0 [set horizontal/vertical slider]";
 
         public const int LongSlots = 5;
         public const int ShortSlots = 2;
@@ -16,8 +16,8 @@ namespace Variety
         public SliderOrientation Orientation { get; private set; }
         public int NumTicks { get; private set; }
 
-        public static int SW(SliderOrientation orientation) { return orientation == SliderOrientation.HorizontalSlider ? LongSlots : ShortSlots; }
-        public static int SH(SliderOrientation orientation) { return orientation == SliderOrientation.HorizontalSlider ? ShortSlots : LongSlots; }
+        public static int SW(SliderOrientation orientation) => orientation == SliderOrientation.HorizontalSlider ? LongSlots : ShortSlots;
+        public static int SH(SliderOrientation orientation) => orientation == SliderOrientation.HorizontalSlider ? ShortSlots : LongSlots;
 
         private static readonly string[] _orientationNames = { "horizontal", "vertical" };
         private SliderPrefab _prefab;
@@ -98,32 +98,26 @@ namespace Variety
             _sliderMoving = null;
         }
 
-        private float XPosition(int state)
-        {
-            return Mathf.Lerp(-0.028f, 0.028f, state * 1f / (NumTicks - 1));
-        }
+        private float XPosition(int state) => Mathf.Lerp(-0.028f, 0.028f, state * 1f / (NumTicks - 1));
 
-        public override string ToString() { return string.Format("{0} slider", _orientationNames[(int) Orientation]); }
-        public override int NumStates { get { return NumTicks; } }
-        public override object Flavor { get { return Orientation; } }
+        public override string ToString() => $"{_orientationNames[(int) Orientation]} slider";
+        public override int NumStates => NumTicks;
+        public override object Flavor => Orientation;
 
-        public override string DescribeSolutionState(int state) { return string.Format("set the {0} slider to {1}", _orientationNames[(int) Orientation], state); }
-        public override string DescribeWhatUserDid() { return string.Format("you changed the {0} slider", _orientationNames[(int) Orientation]); }
-        public override string DescribeWhatUserShouldHaveDone(int desiredState) { return string.Format("you should have set the {0} slider to {1} (instead of {2})", _orientationNames[(int) Orientation], desiredState, State); }
+        public override string DescribeSolutionState(int state) => $"set the {_orientationNames[(int) Orientation]} slider to {state}";
+        public override string DescribeWhatUserDid() => $"you changed the {_orientationNames[(int) Orientation]} slider";
+        public override string DescribeWhatUserShouldHaveDone(int desiredState) => $"you should have set the {_orientationNames[(int) Orientation]} slider to {desiredState} (instead of {State})";
 
         public override IEnumerator ProcessTwitchCommand(string command)
         {
-            var m = Regex.Match(command, string.Format(@"^\s*{0}\s+(\d+)\s*$", Orientation == SliderOrientation.HorizontalSlider ? "horiz" : "vert"), RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+            var m = Regex.Match(command, $@"^\s*{(Orientation == SliderOrientation.HorizontalSlider ? "horiz" : "vert")}\s+(\d+)\s*$", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
             int val;
             if (m.Success && int.TryParse(m.Groups[1].Value, out val) && val >= 0 && val < NumTicks)
                 return TwitchSetTo(val).GetEnumerator();
             return null;
         }
 
-        public override IEnumerable<object> TwitchHandleForcedSolve(int desiredState)
-        {
-            return TwitchSetTo(desiredState);
-        }
+        public override IEnumerable<object> TwitchHandleForcedSolve(int desiredState) => TwitchSetTo(desiredState);
 
         private IEnumerable<object> TwitchSetTo(int val)
         {

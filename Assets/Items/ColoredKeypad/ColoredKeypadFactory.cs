@@ -39,6 +39,6 @@ namespace Variety
             return new ColoredKeypad(module, config.Color, config.Size, config.TopLeftCell, _numExpectedPresses[config.Color]);
         }
 
-        public override IEnumerable<object> Flavors { get { return Enum.GetValues(typeof(ColoredKeypadColor)).Cast<object>(); } }
+        public override IEnumerable<object> Flavors => Enum.GetValues(typeof(ColoredKeypadColor)).Cast<object>();
     }
 }

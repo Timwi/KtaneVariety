@@ -8,7 +8,7 @@ namespace Variety
 {
     public class Wire : Item
     {
-        public override string TwitchHelpMessage { get { return "!{0} cut blue [cut a wire]"; } }
+        public override string TwitchHelpMessage => "!{0} cut blue [cut a wire]";
 
         public override void SetColorblind(bool on)
         {
@@ -37,7 +37,7 @@ namespace Variety
         private KMSelectable _wire;
         private WirePrefab _prefab;
 
-        public override bool IsStuck { get { return _isStuck; } }
+        public override bool IsStuck => _isStuck;
         public override void Checked() { _isStuck = _isCut; }
 
         public override IEnumerable<ItemSelectable> SetUp(System.Random rnd)
@@ -89,31 +89,24 @@ namespace Variety
         {
             mf.sharedMesh = highlightMesh;
             var child = mf.transform.Find("Highlight(Clone)");
-            var filter = child == null ? null : child.GetComponent<MeshFilter>();
+            var filter = child?.GetComponent<MeshFilter>();
             if (filter != null)
                 filter.sharedMesh = highlightMesh;
         }
 
         private static readonly string[] _colorNames = { "black", "blue", "red", "yellow", "white" };
 
-        public override string ToString() { return string.Format("{0} wire", _colorNames[(int) Color]); }
-        public override bool CanProvideStage { get { return false; } }
-        public override int NumStates { get { return 2; } }
-        public override object Flavor { get { return Color; } }
-        public override string DescribeSolutionState(int state) { return string.Format((state == 0) ^ _conditionFlipped ? "don’t cut the {0} wire" : "cut the {0} wire", _colorNames[(int) Color]); }
-        public override string DescribeWhatUserDid() { return string.Format("you cut the {0} wire", _colorNames[(int) Color]); }
-        public override string DescribeWhatUserShouldHaveDone(int desiredState)
-        {
-            return string.Format(
-                (State == 0 && desiredState == 1) ^ _conditionFlipped ? "you should have cut the {0} wire" :
-                (State == 1 && desiredState == 0) ^ _conditionFlipped ? "you should not have cut the {0} wire" :
-                "[ERROR]",
-                _colorNames[(int) Color]);
-        }
+        public override string ToString() => $"{_colorNames[(int) Color]} wire";
+        public override bool CanProvideStage => false;
+        public override int NumStates => 2;
+        public override object Flavor => Color;
+        public override string DescribeSolutionState(int state) => $"{((state == 0) ^ _conditionFlipped ? "don’t cut" : "cut")} the {_colorNames[(int) Color]} wire";
+        public override string DescribeWhatUserDid() => $"you cut the {_colorNames[(int) Color]} wire";
+        public override string DescribeWhatUserShouldHaveDone(int desiredState) => $"you {((State == 0) ^ _conditionFlipped ? "should" : "should not")} have cut the {_colorNames[(int) Color]} wire";
 
         public override IEnumerator ProcessTwitchCommand(string command)
         {
-            var m = Regex.Match(command, string.Format(@"^\s*cut\s+{0}\s*$", _colorNames[(int) Color]), RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+            var m = Regex.Match(command, $@"^\s*cut\s+{_colorNames[(int) Color]}\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
             if (!m.Success || _isCut)
                 return null;
             return TwitchCut().GetEnumerator();
@@ -125,9 +118,6 @@ namespace Variety
             yield return new WaitForSeconds(.1f);
         }
 
-        public override IEnumerable<object> TwitchHandleForcedSolve(int desiredState)
-        {
-            return State != (_conditionFlipped ? 0 : 1) ? TwitchCut() : null;
-        }
+        public override IEnumerable<object> TwitchHandleForcedSolve(int desiredState) => State != (_conditionFlipped ? 0 : 1) ? TwitchCut() : null;
     }
 }

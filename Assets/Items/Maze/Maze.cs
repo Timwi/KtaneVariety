@@ -9,7 +9,7 @@ namespace Variety
 {
     public class Maze : Item
     {
-        public override string TwitchHelpMessage { get { return "!{0} 3x3 maze UDLR [make moves in the 3×3 maze]"; } }
+        public override string TwitchHelpMessage => "!{0} 3x3 maze UDLR [make moves in the 3×3 maze]";
 
         private GameObject _colorblindText;
         public override void SetColorblind(bool on)
@@ -33,15 +33,12 @@ namespace Variety
         public int Width { get; private set; }
         public int Height { get; private set; }
         public int Shape { get; private set; }
-        public override int NumStates { get { return Width * Height; } }
+        public override int NumStates => Width * Height;
 
         private readonly MazeLayout _maze;
         private KMSelectable[] _buttons;    // up, right, down, left
 
-        private Vector3 Pos(int cell, bool dot = false)
-        {
-            return new Vector3((cell % Width) - (Width - 1) * .5f, dot ? .003f : .004f, (Height - 1) * .5f - (cell / Width));
-        }
+        private Vector3 Pos(int cell, bool dot = false) => new Vector3((cell % Width) - (Width - 1) * .5f, dot ? .003f : .004f, (Height - 1) * .5f - (cell / Width));
 
         public override IEnumerable<ItemSelectable> SetUp(System.Random rnd)
         {
@@ -72,9 +69,9 @@ namespace Variety
             prefab.Position.transform.localScale = new Vector3(1, 1, 1);
             prefab.PositionRenderer.material.mainTexture = prefab.PositionTextures[Shape];
 
-            var frameMeshName = string.Format("Frame{0}x{1}", Width, Height);
+            var frameMeshName = $"Frame{Width}x{Height}";
             prefab.Frame.sharedMesh = prefab.FrameMeshes.First(m => m.name == frameMeshName);
-            var backMeshName = string.Format("Back{0}x{1}", Width, Height);
+            var backMeshName = $"Back{Width}x{Height}";
             prefab.Back.sharedMesh = prefab.BackMeshes.First(m => m.name == backMeshName);
 
             prefab.ButtonPos[0].localPosition = new Vector3(0, .0001f, .5f + .5f * Height);
@@ -107,53 +104,50 @@ namespace Variety
         private static readonly int[] _dxs = { 0, 1, 0, -1 };
         private static readonly int[] _dys = { -1, 0, 1, 0 };
 
-        private KMSelectable.OnInteractHandler ButtonPress(KMSelectable button, int btnIx, GameObject position, GameObject[] dots)
+        private KMSelectable.OnInteractHandler ButtonPress(KMSelectable button, int btnIx, GameObject position, GameObject[] dots) => delegate
         {
-            return delegate
+            button.AddInteractionPunch(.25f);
+            Module.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, button.transform);
+            Module.MoveButton(button.transform, .1f, ButtonMoveType.DownThenUp);
+
+            var x = State % Width;
+            var y = State / Width;
+            var nx = x + _dxs[btnIx];
+            var ny = y + _dys[btnIx];
+
+            if (nx < 0 || nx >= Width || ny < 0 || ny >= Height || !_maze.CanGo(State, btnIx))
             {
-                button.AddInteractionPunch(.25f);
-                Module.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, button.transform);
-                Module.MoveButton(button.transform, .1f, ButtonMoveType.DownThenUp);
-
-                var x = State % Width;
-                var y = State / Width;
-                var nx = x + _dxs[btnIx];
-                var ny = y + _dys[btnIx];
-
-                if (nx < 0 || nx >= Width || ny < 0 || ny >= Height || !_maze.CanGo(State, btnIx))
-                {
-                    Module.Module.HandleStrike();
-                    Debug.LogFormat(
-                        nx < 0 ? @"[Variety #{0}] In the {1}×{2} maze, you tried to go left from {3}{4}, hitting the edge of the maze." :
-                        nx >= Width ? @"[Variety #{0}] In the {1}×{2} maze, you tried to go right from {3}{4}, hitting the edge of the maze." :
-                        ny < 0 ? @"[Variety #{0}] In the {1}×{2} maze, you tried to go up from {3}{4}, hitting the edge of the maze." :
-                        ny >= Height ? @"[Variety #{0}] In the {1}×{2} maze, you tried to go down from {3}{4}, hitting the edge of the maze." :
-                        @"[Variety #{0}] In the {1}×{2} maze, you tried to go from {3}{4} to {5}{6} but there’s a wall there.",
-                        Module.ModuleID, Width, Height, (char) ('A' + x), y + 1, (char) ('A' + nx), ny + 1);
-                    return false;
-                }
-
-                SetState(nx + Width * ny);
-                position.transform.localPosition = Pos(State);
-                foreach (var dot in dots)
-                    dot.SetActive(true);
-                dots[State].SetActive(false);
+                Module.Module.HandleStrike();
+                Debug.LogFormat(
+                    nx < 0 ? @"[Variety #{0}] In the {1}×{2} maze, you tried to go left from {3}{4}, hitting the edge of the maze." :
+                    nx >= Width ? @"[Variety #{0}] In the {1}×{2} maze, you tried to go right from {3}{4}, hitting the edge of the maze." :
+                    ny < 0 ? @"[Variety #{0}] In the {1}×{2} maze, you tried to go up from {3}{4}, hitting the edge of the maze." :
+                    ny >= Height ? @"[Variety #{0}] In the {1}×{2} maze, you tried to go down from {3}{4}, hitting the edge of the maze." :
+                    @"[Variety #{0}] In the {1}×{2} maze, you tried to go from {3}{4} to {5}{6} but there’s a wall there.",
+                    Module.ModuleID, Width, Height, (char) ('A' + x), y + 1, (char) ('A' + nx), ny + 1);
                 return false;
-            };
-        }
+            }
+
+            SetState(nx + Width * ny);
+            position.transform.localPosition = Pos(State);
+            foreach (var dot in dots)
+                dot.SetActive(true);
+            dots[State].SetActive(false);
+            return false;
+        };
 
         private static readonly string[] _symbolColors = { "red", "yellow", "blue" };
         private static readonly string[] _symbolNames = { "plus", "star", "triangle" };
 
-        public override string ToString() { return string.Format("{0}×{1} maze with a {2} {3}", Width, Height, _symbolColors[Shape % 3], _symbolNames[Shape / 3]); }
-        public override object Flavor { get { return string.Format("Maze:{0}:{1}", Width, Height); } }
-        public override string DescribeSolutionState(int state) { return string.Format("go to {0}{1} in the {2}×{3} maze", (char) (state % Width + 'A'), state / Width + 1, Width, Height); }
-        public override string DescribeWhatUserDid() { return string.Format("you moved in the {0}×{1} maze", Width, Height); }
-        public override string DescribeWhatUserShouldHaveDone(int desiredState) { return string.Format("you should have moved to {0}{1} in the {2}×{3} maze (instead of {4}{5})", (char) (desiredState % Width + 'A'), desiredState / Width + 1, Width, Height, (char) (State % Width + 'A'), State / Width + 1); }
+        public override string ToString() => $"{Width}×{Height} maze with a {_symbolColors[Shape % 3]} {_symbolNames[Shape / 3]}";
+        public override object Flavor => $"Maze:{Width}:{Height}";
+        public override string DescribeSolutionState(int state) => $"go to {(char) (state % Width + 'A')}{state / Width + 1} in the {Width}×{Height} maze";
+        public override string DescribeWhatUserDid() => $"you moved in the {Width}×{Height} maze";
+        public override string DescribeWhatUserShouldHaveDone(int desiredState) => $"you should have moved to {(char) (desiredState % Width + 'A')}{desiredState / Width + 1} in the {Width}×{Height} maze (instead of {(char) (State % Width + 'A')}{State / Width + 1})";
 
         public override IEnumerator ProcessTwitchCommand(string command)
         {
-            var m = Regex.Match(command, string.Format(@"^\s*{0}[x×]{1}\s+maze\s+([udlr]+)\s*$", Width, Height), RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+            var m = Regex.Match(command, $@"^\s*{Width}[x×]{Height}\s+maze\s+([udlr]+)\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
             if (m.Success)
                 return TwitchMove(m.Groups[1].Value.ToLowerInvariant()).GetEnumerator();
             return null;
@@ -203,7 +197,7 @@ namespace Variety
                     Debug.LogFormat("<> State = {0}", State);
                     Debug.LogFormat("<> desiredState = {0}", desiredState);
                     Debug.LogFormat("<> moves = {0}", moves.Join(","));
-                    Debug.LogFormat("<> visited:\n{0}", visited.Select(kvp => string.Format("{0} <= {1}", kvp.Key, kvp.Value)).Join("\n"));
+                    Debug.LogFormat("<> visited:\n{0}", visited.Select(kvp => $"{kvp.Key} <= {kvp.Value}").Join("\n"));
                     throw new InvalidOperationException();
                 }
 

@@ -11,5 +11,5 @@ public class LetterDisplayPrefab : MonoBehaviour
     public Material SegmentOff;
 
     private MeshRenderer[][] _segmentsCache;
-    public MeshRenderer[][] Segments { get { return _segmentsCache ?? (_segmentsCache = new[] { Segments1, Segments2, Segments3 }); } }
+    public MeshRenderer[][] Segments => _segmentsCache ?? (_segmentsCache = new[] { Segments1, Segments2, Segments3 });
 }

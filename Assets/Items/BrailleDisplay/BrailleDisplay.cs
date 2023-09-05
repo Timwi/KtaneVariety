@@ -11,9 +11,9 @@ namespace Variety
     public class BrailleDisplay : Item
     {
         public int TopLeftCell { get; private set; }
-        public override int NumStates { get { return _snChars.Length; } }
+        public override int NumStates => _snChars.Length;
 
-        public override string TwitchHelpMessage { get { return "!{0} braille 125 [set Braille display; Braille is numbered in vertical columns]"; } }
+        public override string TwitchHelpMessage => "!{0} braille 125 [set Braille display; Braille is numbered in vertical columns]";
 
         private int[] _snChars;
         private int _curDisplay;
@@ -54,33 +54,29 @@ namespace Variety
             }
         }
 
-        private KMSelectable.OnInteractHandler DotPressed(int dotIx)
+        private KMSelectable.OnInteractHandler DotPressed(int dotIx) => delegate
         {
-            return delegate
-            {
-                _curDisplay ^= 1 << dotIx;
-                for (var i = 0; i < 6; i++)
-                    _prefab.Dots[i].sharedMaterial = (_curDisplay & (1 << i)) != 0 ? _prefab.DotOn : _prefab.DotOff;
-                var charEntered = Array.IndexOf(_braille, _curDisplay);
-                SetState(charEntered == -1 ? -1 : Array.IndexOf(_snChars, charEntered));
-                return false;
-            };
-        }
+            _curDisplay ^= 1 << dotIx;
+            for (var i = 0; i < 6; i++)
+                _prefab.Dots[i].sharedMaterial = (_curDisplay & (1 << i)) != 0 ? _prefab.DotOn : _prefab.DotOff;
+            var charEntered = Array.IndexOf(_braille, _curDisplay);
+            SetState(charEntered == -1 ? -1 : Array.IndexOf(_snChars, charEntered));
+            return false;
+        };
 
-        public override object Flavor { get { return "BrailleDisplay"; } }
-        public override string ToString() { return "Braille display"; }
-        public override string DescribeSolutionState(int state) { return string.Format("set the Braille display to {0}, i.e., {1}", _chars[_snChars[state]], Enumerable.Range(1, 6).Where(i => (_braille[_snChars[state]] & (1 << (i - 1))) != 0).Join("")); }
-        public override string DescribeWhatUserDid() { return "you changed the Braille display"; }
+        public override object Flavor => "BrailleDisplay";
+        public override string ToString() => "Braille display";
+        public override string DescribeSolutionState(int state) => $"set the Braille display to {_chars[_snChars[state]]}, i.e., {Enumerable.Range(1, 6).Where(i => (_braille[_snChars[state]] & (1 << (i - 1))) != 0).Join("")}";
+        public override string DescribeWhatUserDid() => "you changed the Braille display";
         public override string DescribeWhatUserShouldHaveDone(int desiredState)
         {
+            var shouldCharacter = _chars[_snChars[desiredState]];
+            var shouldBrailleCode = Enumerable.Range(1, 6).Where(i => (_braille[_snChars[desiredState]] & (1 << (i - 1))) != 0).Join("");
+
             var curChar = Array.IndexOf(_braille, _curDisplay);
-            return string.Format("you should have changed the Braille display to {0}, i.e., {1} ({2})",
-                _chars[_snChars[desiredState]],
-                Enumerable.Range(1, 6).Where(i => (_braille[_snChars[desiredState]] & (1 << (i - 1))) != 0).Join(""),
-                _curDisplay == 0 ? "you left it blank" : string.Format(
-                    "you set it to {0}, which is {1}",
-                    Enumerable.Range(1, 6).Where(i => (_curDisplay & (1 << (i - 1))) != 0).Join(""),
-                    curChar == -1 ? "invalid" : _chars.Substring(curChar, 1)));
+            var whatUserDid = _curDisplay == 0 ? "you left it blank" : $"you set it to {Enumerable.Range(1, 6).Where(i => (_curDisplay & (1 << (i - 1))) != 0).Join("")}, which is {(curChar == -1 ? "invalid" : _chars.Substring(curChar, 1))}";
+
+            return $"you should have changed the Braille display to {shouldCharacter}, i.e., {shouldBrailleCode} ({whatUserDid})";
         }
 
         public override IEnumerator ProcessTwitchCommand(string command)
@@ -91,10 +87,7 @@ namespace Variety
             return null;
         }
 
-        public override IEnumerable<object> TwitchHandleForcedSolve(int desiredState)
-        {
-            return TwitchSet(_braille[_snChars[desiredState]]);
-        }
+        public override IEnumerable<object> TwitchHandleForcedSolve(int desiredState) => TwitchSet(_braille[_snChars[desiredState]]);
 
         private IEnumerable<object> TwitchSet(int dots)
         {

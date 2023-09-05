@@ -33,6 +33,6 @@ namespace Variety
             return new Button(module, topLeftCell, color, _buttonValues[(int) color], rnd.Next(3, 7));
         }
 
-        public override IEnumerable<object> Flavors { get { return Enum.GetValues(typeof(ButtonColor)).Cast<object>(); } }
+        public override IEnumerable<object> Flavors => Enum.GetValues(typeof(ButtonColor)).Cast<object>();
     }
 }

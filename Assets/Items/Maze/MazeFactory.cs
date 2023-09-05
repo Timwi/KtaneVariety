@@ -28,7 +28,7 @@ namespace Variety
             var availableConfigs = (
                 from width in Enumerable.Range(MinWidth, MaxWidth - MinWidth + 1)
                 from height in Enumerable.Range(MinHeight, MaxHeight - MinHeight + 1)
-                where !taken.Contains(string.Format("Maze:{0}:{1}", width, height))
+                where !taken.Contains($"Maze:{width}:{height}")
                 from cell in Enumerable.Range(0, W * H)
                 where isRectAvailable(taken, cell, width + 1, height + 1)
                 select new { Cell = cell, Width = width, Height = height }).ToArray();
@@ -40,7 +40,7 @@ namespace Variety
             var config = availableConfigs[configIx];
 
             claimRect(taken, config.Cell, config.Width + 1, config.Height + 1);
-            taken.Add(string.Format("Maze:{0}:{1}", config.Width, config.Height));
+            taken.Add($"Maze:{config.Width}:{config.Height}");
 
             var shape = rnd.Next(0, NumShapes);
             return new Maze(module, config.Cell % W, config.Cell / W, config.Width, config.Height, rnd.Next(0, config.Width * config.Height), shape,
@@ -53,7 +53,7 @@ namespace Variety
             {
                 for (var w = MinWidth; w <= MaxWidth; w++)
                     for (var h = MinHeight; h <= MaxHeight; h++)
-                        yield return string.Format("Maze:{0}:{1}", w, h);
+                        yield return $"Maze:{w}:{h}";
             }
         }
     }

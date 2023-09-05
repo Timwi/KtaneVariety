@@ -15,36 +15,35 @@ namespace Variety
         public abstract override string ToString();
         public abstract int NumStates { get; }
         public abstract object Flavor { get; }
-        public virtual bool CanProvideStage { get { return true; } }
+        public virtual bool CanProvideStage => true;
         public abstract string DescribeSolutionState(int state);
         public abstract string DescribeWhatUserDid();
         public abstract string DescribeWhatUserShouldHaveDone(int desiredState);
         public virtual void SetColorblind(bool on) { }
         public virtual void Checked() { }
-        public virtual bool IsStuck { get { return false; } }
-        public virtual bool DecideStates(int numPriorNonWireItems) { return true; }
+        public virtual bool IsStuck => false;
+        public virtual bool DecideStates(int numPriorNonWireItems) => true;
         public virtual void ReceiveItemChange(int stageItemIndex) { }
         public abstract IEnumerator ProcessTwitchCommand(string command);
         public abstract IEnumerable<object> TwitchHandleForcedSolve(int desiredState);
         public abstract string TwitchHelpMessage { get; }
 
         private int _state;
-        public int State { get { return _state; } }
+        public int State => _state;
         public void SetState(int state, bool automatic = false)
         {
             if (_state != state)
             {
                 _state = state;
-                if (StateSet != null)
-                    StateSet(state, automatic);
+                StateSet?.Invoke(state, automatic);
             }
         }
         public Action<int, bool> StateSet;
 
-        protected string coords(int ix) { return string.Format("{0}{1}", (char) (ix % VarietyModule.W + 'A'), ix / VarietyModule.W + 1); }
+        protected string coords(int ix) { return $"{(char) (ix % VarietyModule.W + 'A')}{ix / VarietyModule.W + 1}"; }
 
-        protected static int W { get { return VarietyModule.W; } }
-        protected static int H { get { return VarietyModule.H; } }
+        protected static int W => VarietyModule.W;
+        protected static int H => VarietyModule.H;
 
         protected static float GetX(int ix) { return VarietyModule.GetX(ix); }
         protected static float GetY(int ix) { return VarietyModule.GetY(ix); }

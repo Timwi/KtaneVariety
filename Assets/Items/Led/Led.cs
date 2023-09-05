@@ -8,7 +8,7 @@ namespace Variety
 {
     public class Led : Item
     {
-        public override string TwitchHelpMessage { get { return "!{0} led white [set the LED to white] | !{0} led reset [show flashing colors again]"; } }
+        public override string TwitchHelpMessage => "!{0} led white [set the LED to white] | !{0} led reset [show flashing colors again]";
 
         private bool _colorblind;
         public override void SetColorblind(bool on)
@@ -103,12 +103,12 @@ namespace Variety
         private static readonly string[] _colorNames = { "black", "red", "yellow", "blue", "white" };
         private static readonly string[] _colorblindNames = { "", "R", "Y", "B", "W" };
 
-        public override string ToString() { return string.Format("LED flashing {0} and {1}", _colorNames[(int) Color1], _colorNames[(int) Color2]); }
-        public override int NumStates { get { return Answers.Length; } }
-        public override object Flavor { get { return "LED"; } }
-        public override string DescribeSolutionState(int state) { return string.Format("set the LED to {0}", _colorNames[(int) Answers[state]]); }
-        public override string DescribeWhatUserDid() { return "you set the LED to a color"; }
-        public override string DescribeWhatUserShouldHaveDone(int desiredState) { return string.Format("you should have set the LED to {0} ({1})", _colorNames[(int) Answers[desiredState]], State == -1 ? "you left it cycling" : "instead of " + _colorNames[(int) _curShownColor]); }
+        public override string ToString() => $"LED flashing {_colorNames[(int) Color1]} and {_colorNames[(int) Color2]}";
+        public override int NumStates => Answers.Length;
+        public override object Flavor => "LED";
+        public override string DescribeSolutionState(int state) => $"set the LED to {_colorNames[(int) Answers[state]]}";
+        public override string DescribeWhatUserDid() => "you set the LED to a color";
+        public override string DescribeWhatUserShouldHaveDone(int desiredState) => $"you should have set the LED to {_colorNames[(int) Answers[desiredState]]} ({(State == -1 ? "you left it cycling" : $"instead of {_colorNames[(int) _curShownColor]}")})";
 
         public override IEnumerator ProcessTwitchCommand(string command)
         {
@@ -116,17 +116,14 @@ namespace Variety
             if (m.Success)
                 return TwitchReset().GetEnumerator();
 
-            m = Regex.Match(command, string.Format(@"^\s*led\s+({0})\s*$", _colorNames.Join("|")), RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+            m = Regex.Match(command, $@"^\s*led\s+({_colorNames.Join("|")})\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
             if (m.Success)
                 return TwitchSet((LedColor) _colorNames.IndexOf(str => str.Equals(m.Groups[1].Value, StringComparison.InvariantCultureIgnoreCase))).GetEnumerator();
 
             return null;
         }
 
-        public override IEnumerable<object> TwitchHandleForcedSolve(int desiredState)
-        {
-            return TwitchSet(Answers[desiredState]);
-        }
+        public override IEnumerable<object> TwitchHandleForcedSolve(int desiredState) => TwitchSet(Answers[desiredState]);
 
         private IEnumerable<object> TwitchSet(LedColor ledColor)
         {

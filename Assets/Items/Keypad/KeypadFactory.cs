@@ -26,6 +26,6 @@ namespace Variety
             return new Keypad(module, slot.Size, slot.TopLeft);
         }
 
-        public override IEnumerable<object> Flavors { get { return Enum.GetValues(typeof(KeypadSize)).Cast<object>(); } }
+        public override IEnumerable<object> Flavors => Enum.GetValues(typeof(KeypadSize)).Cast<object>();
     }
 }

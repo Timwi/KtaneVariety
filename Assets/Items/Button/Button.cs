@@ -12,7 +12,7 @@ namespace Variety
         public int ColorValue { get; private set; }
         public int Vertices { get; private set; }
 
-        public override string TwitchHelpMessage { get { return "!{0} red button hold 2 [hold the red button over that many timer ticks] | !{0} red button mash 3 [mash the red button that many times]"; } }
+        public override string TwitchHelpMessage => "!{0} red button hold 2 [hold the red button over that many timer ticks] | !{0} red button mash 3 [mash the red button that many times]";
 
         public override void SetColorblind(bool on)
         {
@@ -111,39 +111,36 @@ namespace Variety
 
         private static readonly string[] _colorNames = { "red", "yellow", "blue", "white" };
 
-        public override string ToString() { return string.Format("{0} button", _colorNames[(int) Color]); }
-        public override bool CanProvideStage { get { return true; } }
-        public override int NumStates { get { return ColorValue + Vertices; } }
-        public override object Flavor { get { return Color; } }
-        public override string DescribeWhatUserDid() { return string.Format("you interacted with the {0} button", _colorNames[(int) Color]); }
+        public override string ToString() => $"{_colorNames[(int) Color]} button";
+        public override bool CanProvideStage => true;
+        public override int NumStates => ColorValue + Vertices;
+        public override object Flavor => Color;
+        public override string DescribeWhatUserDid() => $"you interacted with the {_colorNames[(int) Color]} button";
 
-        public override string DescribeSolutionState(int state)
-        {
-            return state < ColorValue
-                ? string.Format("hold the {0} button across {1} timer ticks", _colorNames[(int) Color], state)
-                : string.Format("mash the {0} button {1} times", _colorNames[(int) Color], state - (ColorValue - 2));
-        }
+        public override string DescribeSolutionState(int state) => state < ColorValue
+            ? $"hold the {_colorNames[(int) Color]} button across {state} timer ticks"
+            : $"mash the {_colorNames[(int) Color]} button {state - (ColorValue - 2)} times";
 
         public override string DescribeWhatUserShouldHaveDone(int desiredState)
         {
             var insteadOf = State == -1
                 ? "you left it untouched, held it for too long, or moved on too quickly"
                 : State < ColorValue
-                    ? string.Format("you held it across {0} timer ticks", State)
-                    : string.Format("you mashed it {0} times", State - (ColorValue - 2));
+                    ? $"you held it across {State} timer ticks"
+                    : $"you mashed it {State - (ColorValue - 2)} times";
             return desiredState < ColorValue
-                ? string.Format("you should have held the {0} button across {1} timer ticks{3} ({2})", _colorNames[(int) Color], desiredState, insteadOf, desiredState == 0 ? " and then waited two timer ticks" : "")
-                : string.Format("you should have mashed the {0} button {1} times and then waited two timer ticks ({2})", _colorNames[(int) Color], desiredState - (ColorValue - 2), insteadOf);
+                ? $"you should have held the {_colorNames[(int) Color]} button across {desiredState} timer ticks{(desiredState == 0 ? " and then waited two timer ticks" : "")} ({insteadOf})"
+                : $"you should have mashed the {_colorNames[(int) Color]} button {desiredState - (ColorValue - 2)} times and then waited two timer ticks ({insteadOf})";
         }
 
         public override IEnumerator ProcessTwitchCommand(string command)
         {
-            var m = Regex.Match(command, string.Format(@"^\s*{0}\s+button\s+mash\s+(\d+)\s*$", _colorNames[(int) Color]), RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+            var m = Regex.Match(command, $@"^\s*{_colorNames[(int) Color]}\s+button\s+mash\s+(\d+)\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
             int amount;
             if (m.Success && int.TryParse(m.Groups[1].Value, out amount) && amount > 0 && amount <= 10)
                 return TwitchMash(amount).GetEnumerator();
 
-            m = Regex.Match(command, string.Format(@"^\s*{0}\s+button\s+hold\s+(\d+)\s*$", _colorNames[(int) Color]), RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+            m = Regex.Match(command, $@"^\s*{_colorNames[(int) Color]}\s+button\s+hold\s+(\d+)\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
             if (m.Success && int.TryParse(m.Groups[1].Value, out amount) && amount >= 0 && amount <= 10)
                 return (amount == 0 ? TwitchMash(1) : TwitchHold(amount)).GetEnumerator();
 
@@ -177,9 +174,10 @@ namespace Variety
             yield return new WaitForSeconds(.1f);
         }
 
-        public override IEnumerable<object> TwitchHandleForcedSolve(int desiredState)
-        {
-            return desiredState == 0 && ColorValue != 0 ? TwitchMash(1) : desiredState < ColorValue ? TwitchHold(desiredState) : TwitchMash(desiredState - (ColorValue - 2));
-        }
+        public override IEnumerable<object> TwitchHandleForcedSolve(int desiredState) => desiredState == 0 && ColorValue != 0
+            ? TwitchMash(1)
+            : desiredState < ColorValue
+                ? TwitchHold(desiredState)
+                : TwitchMash(desiredState - (ColorValue - 2));
     }
 }

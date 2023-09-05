@@ -27,6 +27,6 @@ namespace Variety
             return new Switch(module, cell, color, rnd.Next(2, 5));
         }
 
-        public override IEnumerable<object> Flavors { get { return Enum.GetValues(typeof(SwitchColor)).Cast<object>(); } }
+        public override IEnumerable<object> Flavors => Enum.GetValues(typeof(SwitchColor)).Cast<object>();
     }
 }

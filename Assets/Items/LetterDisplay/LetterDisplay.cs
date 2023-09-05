@@ -9,7 +9,7 @@ namespace Variety
 {
     public class LetterDisplay : Item
     {
-        public override string TwitchHelpMessage { get { return "!{0} letters cycle [cycle each letter slot] | !{0} letters PIN [set letter display]"; } }
+        public override string TwitchHelpMessage => "!{0} letters cycle [cycle each letter slot] | !{0} letters PIN [set letter display]";
 
         public int Location { get; private set; }
         public char[][] Letters { get; private set; }
@@ -47,27 +47,24 @@ namespace Variety
             ShowLetters();
         }
 
-        private KMSelectable.OnInteractHandler ButtonPress(int btn)
+        private KMSelectable.OnInteractHandler ButtonPress(int btn) => delegate
         {
-            return delegate
-            {
-                _prefab.DownButtons[btn].AddInteractionPunch(.25f);
-                Module.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, _prefab.DownButtons[btn].transform);
-                Module.MoveButton(_prefab.DownButtonParents[btn], .001f, ButtonMoveType.DownThenUp);
+            _prefab.DownButtons[btn].AddInteractionPunch(.25f);
+            Module.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, _prefab.DownButtons[btn].transform);
+            Module.MoveButton(_prefab.DownButtonParents[btn], .001f, ButtonMoveType.DownThenUp);
 
-                _curPos[btn] = (_curPos[btn] + 1) % Letters[btn].Length;
-                ShowLetters();
-                SetState(Array.IndexOf(FormableWords, Enumerable.Range(0, 3).Select(slot => Letters[slot][_curPos[slot]]).Join("")));
-                return false;
-            };
-        }
+            _curPos[btn] = (_curPos[btn] + 1) % Letters[btn].Length;
+            ShowLetters();
+            SetState(Array.IndexOf(FormableWords, Enumerable.Range(0, 3).Select(slot => Letters[slot][_curPos[slot]]).Join("")));
+            return false;
+        };
 
-        public override string ToString() { return string.Format("letter display which can spell {0}", FormableWords.Join(", ")); }
-        public override int NumStates { get { return FormableWords.Length; } }
-        public override object Flavor { get { return "LetterDisplay"; } }
-        public override string DescribeSolutionState(int state) { return string.Format("set the letter display to {0}", FormableWords[state]); }
-        public override string DescribeWhatUserDid() { return "you changed the letter display"; }
-        public override string DescribeWhatUserShouldHaveDone(int desiredState) { return string.Format("you should have set the letter display to {0} (you set it to {1})", FormableWords[desiredState], State == -1 ? "an invalid word" : FormableWords[State]); }
+        public override string ToString() => $"letter display which can spell {FormableWords.Join(", ")}";
+        public override int NumStates => FormableWords.Length;
+        public override object Flavor => "LetterDisplay";
+        public override string DescribeSolutionState(int state) => $"set the letter display to {FormableWords[state]}";
+        public override string DescribeWhatUserDid() => "you changed the letter display";
+        public override string DescribeWhatUserShouldHaveDone(int desiredState) => $"you should have set the letter display to {FormableWords[desiredState]} (you set it to {(State == -1 ? "an invalid word" : FormableWords[State])})";
 
         public override IEnumerator ProcessTwitchCommand(string command)
         {
@@ -82,10 +79,7 @@ namespace Variety
             return null;
         }
 
-        public override IEnumerable<object> TwitchHandleForcedSolve(int desiredState)
-        {
-            return TwitchSetLetters(FormableWords[desiredState]);
-        }
+        public override IEnumerable<object> TwitchHandleForcedSolve(int desiredState) => TwitchSetLetters(FormableWords[desiredState]);
 
         private IEnumerable<object> TwitchCycle()
         {

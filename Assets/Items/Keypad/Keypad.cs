@@ -8,7 +8,7 @@ namespace Variety
 {
     public class Keypad : Item
     {
-        public override string TwitchHelpMessage { get { return "!{0} 1x3 keys 012 [press keys on the 1×3 white keypad in that order]"; } }
+        public override string TwitchHelpMessage => "!{0} 1x3 keys 012 [press keys on the 1×3 white keypad in that order]";
 
         public override void SetColorblind(bool on)
         {
@@ -35,7 +35,7 @@ namespace Variety
         };
 
         public KeypadSize Size { get; private set; }
-        private int numKeys { get { return Widths[Size] * Heights[Size]; } }
+        private int numKeys => Widths[Size] * Heights[Size];
 
         private readonly List<int> _presses = new List<int>();
         private MeshRenderer[] _leds;
@@ -71,7 +71,7 @@ namespace Variety
             for (var keyIx = 0; keyIx < w * h; keyIx++)
             {
                 _buttons[keyIx] = keyIx == 0 ? _prefab.KeyTemplate : Object.Instantiate(_prefab.KeyTemplate, _prefab.transform);
-                _buttons[keyIx].name = string.Format("Key {0}", keyIx + 1);
+                _buttons[keyIx].name = $"Key {keyIx + 1}";
                 _buttons[keyIx].transform.localPosition = new Vector3(d * (keyIx % w - (w - 1) * .5f), 0, d * ((h - 1 - keyIx / w) - (h - 1) * .5f));
                 _buttons[keyIx].transform.localRotation = Quaternion.identity;
                 _buttons[keyIx].transform.localScale = new Vector3(s, s, s);
@@ -83,52 +83,49 @@ namespace Variety
             }
         }
 
-        private KMSelectable.OnInteractHandler pressed(int keyIx)
+        private KMSelectable.OnInteractHandler pressed(int keyIx) => delegate
         {
-            return delegate
+            _buttons[keyIx].AddInteractionPunch(.25f);
+            Module.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, _buttons[keyIx].transform);
+            Module.MoveButton(_buttonParents[keyIx], .1f, ButtonMoveType.DownThenUp);
+
+            if (_presses.Contains(keyIx))
+                _presses.Clear();
+            else
+                _presses.Add(keyIx);
+
+            for (var i = 0; i < numKeys; i++)
+                _leds[i].sharedMaterial = _prefab.LedColors[_presses.IndexOf(i) + 1];
+
+            if (_presses.Count == numKeys)
             {
-                _buttons[keyIx].AddInteractionPunch(.25f);
-                Module.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, _buttons[keyIx].transform);
-                Module.MoveButton(_buttonParents[keyIx], .1f, ButtonMoveType.DownThenUp);
-
-                if (_presses.Contains(keyIx))
-                    _presses.Clear();
-                else
-                    _presses.Add(keyIx);
-
-                for (var i = 0; i < numKeys; i++)
-                    _leds[i].sharedMaterial = _prefab.LedColors[_presses.IndexOf(i) + 1];
-
-                if (_presses.Count == numKeys)
+                var newState = 0;
+                var m = 1;
+                var list = Enumerable.Range(0, numKeys).ToList();
+                var ix = 0;
+                while (list.Count > 0)
                 {
-                    var newState = 0;
-                    var m = 1;
-                    var list = Enumerable.Range(0, numKeys).ToList();
-                    var ix = 0;
-                    while (list.Count > 0)
-                    {
-                        var lIx = list.IndexOf(_presses[ix++]);
-                        newState += m * lIx;
-                        m *= list.Count;
-                        list.RemoveAt(lIx);
-                    }
-                    SetState(newState);
+                    var lIx = list.IndexOf(_presses[ix++]);
+                    newState += m * lIx;
+                    m *= list.Count;
+                    list.RemoveAt(lIx);
                 }
-                else
-                    SetState(-1);
-                return false;
-            };
-        }
+                SetState(newState);
+            }
+            else
+                SetState(-1);
+            return false;
+        };
 
-        public override string ToString() { return string.Format("{0}×{1} white keypad", Widths[Size], Heights[Size]); }
-        public override int NumStates { get { return factorial(numKeys); } }
-        public override object Flavor { get { return Size; } }
+        public override string ToString() => $"{Widths[Size]}×{Heights[Size]} white keypad";
+        public override int NumStates => factorial(numKeys);
+        public override object Flavor => Size;
 
-        private int factorial(int n) { return n < 2 ? 1 : n * factorial(n - 1); }
+        private int factorial(int n) => n < 2 ? 1 : n * factorial(n - 1);
 
-        public override string DescribeSolutionState(int state) { return string.Format("press the keys on the {0}×{1}{2} white keypad in the order {3}", Widths[Size], Heights[Size], Widths[Size] > Heights[Size] ? " (wide)" : Widths[Size] < Heights[Size] ? " (tall)" : "", getSequence(state).Join(", ")); }
-        public override string DescribeWhatUserDid() { return string.Format("you pressed keys on the {0}×{1}{2} white keypad", Widths[Size], Heights[Size], Widths[Size] > Heights[Size] ? " (wide)" : Widths[Size] < Heights[Size] ? " (tall)" : ""); }
-        public override string DescribeWhatUserShouldHaveDone(int desiredState) { return string.Format("you should have pressed the keys on the {0}×{1} white keypad in the order {2} ({3})", Widths[Size], Heights[Size], getSequence(desiredState).Join(", "), State == -1 ? "you left it unfinished" : string.Format("instead of {0}", getSequence(State).Join(", "))); }
+        public override string DescribeSolutionState(int state) => $"press the keys on the {Widths[Size]}×{Heights[Size]}{(Widths[Size] > Heights[Size] ? " (wide)" : Widths[Size] < Heights[Size] ? " (tall)" : "")} white keypad in the order {getSequence(state).Join(", ")}";
+        public override string DescribeWhatUserDid() => $"you pressed keys on the {Widths[Size]}×{Heights[Size]}{(Widths[Size] > Heights[Size] ? " (wide)" : Widths[Size] < Heights[Size] ? " (tall)" : "")} white keypad";
+        public override string DescribeWhatUserShouldHaveDone(int desiredState) => $"you should have pressed the keys on the {Widths[Size]}×{Heights[Size]} white keypad in the order {getSequence(desiredState).Join(", ")} ({(State == -1 ? "you left it unfinished" : $"instead of {getSequence(State).Join(", ")}")})";
 
         private int[] getSequence(int state)
         {
@@ -147,17 +144,14 @@ namespace Variety
 
         public override IEnumerator ProcessTwitchCommand(string command)
         {
-            var m = Regex.Match(command, string.Format(@"^\s*{0}[x×]{1}\s+keys\s+(\d+)\s*$", Widths[Size], Heights[Size]), RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+            var m = Regex.Match(command, $@"^\s*{Widths[Size]}[x×]{Heights[Size]}\s+keys\s+(\d+)\s*$", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
             if (!m.Success || m.Groups[1].Value.Any(ch => ch < '0' || ch >= '0' + numKeys))
                 return null;
             var numbers = m.Groups[1].Value.Select(ch => ch - '0').ToArray();
             return TwitchPress(numbers).GetEnumerator();
         }
 
-        public override IEnumerable<object> TwitchHandleForcedSolve(int desiredState)
-        {
-            return TwitchPress(getSequence(desiredState));
-        }
+        public override IEnumerable<object> TwitchHandleForcedSolve(int desiredState) => TwitchPress(getSequence(desiredState));
 
         private IEnumerable<object> TwitchPress(int[] indexes)
         {

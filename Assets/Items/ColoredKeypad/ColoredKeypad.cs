@@ -8,7 +8,7 @@ namespace Variety
 {
     public class ColoredKeypad : Item
     {
-        public override string TwitchHelpMessage { get { return "!{0} red keys 01 [press those keys on the red keypad]"; } }
+        public override string TwitchHelpMessage => "!{0} red keys 01 [press those keys on the red keypad]";
 
         public override void SetColorblind(bool on)
         {
@@ -72,7 +72,7 @@ namespace Variety
 
         public ColoredKeypadSize Size { get; private set; }
         public ColoredKeypadColor Color { get; private set; }
-        private int numKeys { get { return Widths[Size] * Heights[Size]; } }
+        private int numKeys => Widths[Size] * Heights[Size];
 
         private readonly HashSet<int> _presses = new HashSet<int>();
         private MeshRenderer[] _leds;
@@ -114,7 +114,7 @@ namespace Variety
             for (var keyIx = 0; keyIx < w * h; keyIx++)
             {
                 _buttons[keyIx] = keyIx == 0 ? _prefab.KeyTemplate : Object.Instantiate(_prefab.KeyTemplate, _prefab.transform);
-                _buttons[keyIx].name = string.Format("Key {0}", keyIx + 1);
+                _buttons[keyIx].name = $"Key {keyIx + 1}";
                 _buttons[keyIx].transform.localPosition = new Vector3(d * (keyIx % w - (w - 1) * .5f), 0, d * ((h - 1 - keyIx / w) - (h - 1) * .5f));
                 _buttons[keyIx].transform.localRotation = Quaternion.identity;
                 _buttons[keyIx].transform.localScale = new Vector3(s, s, s);
@@ -139,58 +139,44 @@ namespace Variety
             return num;
         }
 
-        private KMSelectable.OnInteractHandler pressed(KMSelectable key, int keyIx)
+        private KMSelectable.OnInteractHandler pressed(KMSelectable key, int keyIx) => delegate
         {
-            return delegate
-            {
-                key.AddInteractionPunch(.25f);
-                Module.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, key.transform);
-                Module.MoveButton(_buttonParents[keyIx], .1f, ButtonMoveType.DownThenUp);
+            key.AddInteractionPunch(.25f);
+            Module.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, key.transform);
+            Module.MoveButton(_buttonParents[keyIx], .1f, ButtonMoveType.DownThenUp);
 
-                if (_presses.Contains(keyIx))
-                    _presses.Clear();
-                else
-                    _presses.Add(keyIx);
+            if (_presses.Contains(keyIx))
+                _presses.Clear();
+            else
+                _presses.Add(keyIx);
 
-                for (var i = 0; i < numKeys; i++)
-                    _leds[i].sharedMaterial = _presses.Contains(i) ? _prefab.LedOn : _prefab.LedOff;
+            for (var i = 0; i < numKeys; i++)
+                _leds[i].sharedMaterial = _presses.Contains(i) ? _prefab.LedOn : _prefab.LedOff;
 
-                SetState(_presses.Count == _expectedPresses ? _combinations.IndexOf(i => _presses.All(p => (i & (1 << (numKeys - 1 - p))) != 0)) : -1);
-                return false;
-            };
-        }
+            SetState(_presses.Count == _expectedPresses ? _combinations.IndexOf(i => _presses.All(p => (i & (1 << (numKeys - 1 - p))) != 0)) : -1);
+            return false;
+        };
 
-        public override string ToString() { return string.Format("{0} keypad with {1} keys", _colorNames[(int) Color], numKeys); }
-        public override int NumStates { get { return _combinations.Length; } }
-        public override object Flavor { get { return Color; } }
+        public override string ToString() => $"{_colorNames[(int) Color]} keypad with {numKeys} keys";
+        public override int NumStates => _combinations.Length;
+        public override object Flavor => Color;
 
-        public override string DescribeSolutionState(int state) { return string.Format("press keys {0} on the {1} keypad", getSequence(state).Join(", "), _colorNames[(int) Color]); }
-        public override string DescribeWhatUserDid() { return string.Format("you pressed keys on the {0} keypad", _colorNames[(int) Color]); }
-        public override string DescribeWhatUserShouldHaveDone(int desiredState)
-        {
-            return string.Format("you should have pressed keys {0} on the {1} keypad ({2})",
-                getSequence(desiredState).Join(", "), Color,
-                _presses.Count == 0 ? "you didn’t press any" : string.Format("instead of {0}", _presses.Join(", ")));
-        }
+        public override string DescribeSolutionState(int state) => $"press keys {getSequence(state).Join(", ")} on the {_colorNames[(int) Color]} keypad";
+        public override string DescribeWhatUserDid() => $"you pressed keys on the {_colorNames[(int) Color]} keypad";
+        public override string DescribeWhatUserShouldHaveDone(int desiredState) => $"you should have pressed keys {getSequence(desiredState).Join(", ")} on the {Color} keypad ({(_presses.Count == 0 ? "you didn’t press any" : $"instead of {_presses.Join(", ")}")})";
 
-        private int[] getSequence(int state)
-        {
-            return Enumerable.Range(0, numKeys).Where(key => (_combinations[state] & (1 << (numKeys - 1 - key))) != 0).ToArray();
-        }
+        private int[] getSequence(int state) => Enumerable.Range(0, numKeys).Where(key => (_combinations[state] & (1 << (numKeys - 1 - key))) != 0).ToArray();
 
         public override IEnumerator ProcessTwitchCommand(string command)
         {
-            var m = Regex.Match(command, string.Format(@"^\s*{0}\s+keys\s+(\d+)\s*$", _colorNames[(int) Color]), RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+            var m = Regex.Match(command, $@"^\s*{_colorNames[(int) Color]}\s+keys\s+(\d+)\s*$", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
             if (!m.Success || m.Groups[1].Value.Any(ch => ch < '0' || ch >= '0' + numKeys))
                 return null;
             var numbers = m.Groups[1].Value.Select(ch => ch - '0').ToArray();
             return TwitchPress(numbers).GetEnumerator();
         }
 
-        public override IEnumerable<object> TwitchHandleForcedSolve(int desiredState)
-        {
-            return TwitchPress(getSequence(desiredState));
-        }
+        public override IEnumerable<object> TwitchHandleForcedSolve(int desiredState) => TwitchPress(getSequence(desiredState));
 
         private IEnumerable<object> TwitchPress(int[] indexes)
         {

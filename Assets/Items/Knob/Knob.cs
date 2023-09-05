@@ -97,10 +97,7 @@ namespace Variety
             return TwitchPress((NumTicks - Offset + val) % NumTicks).GetEnumerator();
         }
 
-        public override IEnumerable<object> TwitchHandleForcedSolve(int desiredState)
-        {
-            return TwitchPress(desiredState);
-        }
+        public override IEnumerable<object> TwitchHandleForcedSolve(int desiredState) => TwitchPress(desiredState);
 
         private IEnumerable<object> TwitchPress(int val)
         {
