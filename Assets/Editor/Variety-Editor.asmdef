@@ -1,0 +1,10 @@
+{
+  "name": "Variety-Editor",
+  "references": [
+    "Variety"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": []
+}
