@@ -163,7 +163,7 @@ namespace Variety
 
         public override string DescribeSolutionState(int state) => $"press keys {getSequence(state).Join(", ")} on the {_colorNames[(int) Color]} keypad";
         public override string DescribeWhatUserDid() => $"you pressed keys on the {_colorNames[(int) Color]} keypad";
-        public override string DescribeWhatUserShouldHaveDone(int desiredState) => $"you should have pressed keys {getSequence(desiredState).Join(", ")} on the {Color} keypad ({(_presses.Count == 0 ? "you didn’t press any" : $"instead of {_presses.Join(", ")}")})";
+        public override string DescribeWhatUserShouldHaveDone(int desiredState) => $"you should have pressed keys {getSequence(desiredState).Join(", ")} on the {_colorNames[(int) Color]} keypad ({(_presses.Count == 0 ? "you didn’t press any" : $"instead of {_presses.Join(", ")}")})";
 
         private int[] getSequence(int state) => Enumerable.Range(0, numKeys).Where(key => (_combinations[state] & (1 << (numKeys - 1 - key))) != 0).ToArray();
 
