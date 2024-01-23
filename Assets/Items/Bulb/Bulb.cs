@@ -222,7 +222,7 @@ namespace Variety
                 yield return new WaitForSeconds(.3f);
                 i = (i + 1) % morse.Length;
                 if (i == 0)
-                    yield return new WaitForSeconds(1.2f);
+                    yield return new WaitForSeconds(1.8f);
             }
         }
 
