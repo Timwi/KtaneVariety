@@ -257,11 +257,14 @@ public class VarietyModule : MonoBehaviour
         for (var i = 0; i < _items.Length; i++)
         {
             var remainingItemsCount = _items.Length - i;
+            var stageItemIndex = _items.Take(i).Count(priorItem => priorItem.CanProvideStage);
+            var visualChanges = _items[i].CanProvideStage ? _items.Skip(i + 1).Select(laterItem => laterItem.DescribeVisualChange(stageItemIndex)).Where(changes => changes != null) : Enumerable.Empty<string>();
+            _items[i].DecideStates(stageItemIndex);
+
             Debug.LogFormat(@"[Variety #{0}] {1} % {2} = {3} = {4} ({5} states)", _moduleId, finalState, remainingItemsCount, (int) (finalState % (ulong) remainingItemsCount), _items[i], _items[i].NumStates);
             finalState /= (ulong) remainingItemsCount;
 
-            _items[i].DecideStates(_items.Take(i).Count(priorItem => priorItem.CanProvideStage));
-            Debug.LogFormat(@"[Variety #{0}] {1} % {2} = {3} = {4}", _moduleId, finalState, _items[i].NumStates, _expectedStates[i], _items[i].DescribeSolutionState(_expectedStates[i]));
+            Debug.LogFormat(@"[Variety #{0}] {1} % {2} = {3} = {4}{5}", _moduleId, finalState, _items[i].NumStates, _expectedStates[i], _items[i].DescribeSolutionState(_expectedStates[i]), visualChanges.Select(v => $"; {v}").Join(""));
             finalState /= (ulong) _items[i].NumStates;
 
             _items[i].StateSet = StateSet(i);

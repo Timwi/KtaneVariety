@@ -28,6 +28,7 @@ namespace Variety
         public abstract IEnumerator ProcessTwitchCommand(string command);
         public abstract IEnumerable<object> TwitchHandleForcedSolve(int desiredState);
         public abstract string TwitchHelpMessage { get; }
+        public virtual string DescribeVisualChange(int stageItemIndex) => null;
 
         private int _state;
         public int State => _state;

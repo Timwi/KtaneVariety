@@ -45,6 +45,7 @@ namespace Variety
         public override string DescribeSolutionState(int state) => $"set the digit display to {_displayedDigitPerState[state]} (the digit at stage {state})";
         public override string DescribeWhatUserDid() => "you changed the digit display";
         public override string DescribeWhatUserShouldHaveDone(int desiredState) => $"you should have changed the digit display to {_displayedDigitPerState[desiredState]} (instead of {(State == -1 ? "leaving it unchanged" : _displayedDigitPerState[State].ToString())})";
+        public override string DescribeVisualChange(int stageItemIndex) => $"digit display shows {_displayedDigitPerState[stageItemIndex]}";
 
         public override IEnumerable<ItemSelectable> SetUp(System.Random rnd)
         {
