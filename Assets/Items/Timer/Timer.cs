@@ -108,7 +108,7 @@ namespace Variety
             : $"you set the {FlavorType.ToString().ToLowerInvariant()} timer to {FormatTime(State)}";
         public override string DescribeWhatUserShouldHaveDone(int desiredState) => $"you should have set the {FlavorType.ToString().ToLowerInvariant()} timer to {FormatTime(desiredState)} ({(_running ? "you left it running" : "instead of " + FormatTime(State))})";
 
-        public override string ToString() => $"{FlavorType} timer ({_a}×{_b})";
+        public override string ToString() => $"{FlavorType.ToString().ToLowerInvariant()} timer ({_a}×{_b})";
 
         public override string TwitchHelpMessage => "!{0} ascending timer 02 [stops the timer at that value] | !{0} ascending timer reset [restarts the timer running]";
 
