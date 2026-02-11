@@ -75,7 +75,7 @@ namespace Variety
             {
                 _coloredKnob.AddInteractionPunch(.25f);
                 Rotation = (Rotation + 1) % 8;
-                Module.Audio.PlayGameSoundAtTransform(RealTicks[Rotation] ? KMSoundOverride.SoundEffect.ButtonPress : KMSoundOverride.SoundEffect.ButtonRelease, _coloredKnob.transform);
+                Module.Audio.PlayGameSoundAtTransform(RealTicks[Rotation] && !Module.IsSolved ? KMSoundOverride.SoundEffect.ButtonPress : KMSoundOverride.SoundEffect.ButtonRelease, _coloredKnob.transform);
 #if UNITY_EDITOR
                 Debug.Log(RealTicks[Rotation] ? "Click" : "No click");
 #endif

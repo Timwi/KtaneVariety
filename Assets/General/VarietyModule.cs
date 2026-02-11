@@ -88,6 +88,8 @@ public class VarietyModule : MonoBehaviour
     private bool _isSolved;
     private bool _colorblindEnabled;
 
+    public bool IsSolved => _isSolved;
+
     void Awake()
     {
         _moduleId = _moduleIdCounter++;
@@ -276,7 +278,7 @@ public class VarietyModule : MonoBehaviour
     {
         return delegate (int newState, bool automatic)
         {
-            if (_items[itemIx].CanProvideStage)
+            if (_items[itemIx].CanProvideStage && !_isSolved)
             {
                 var stageItemIndex = _items.Where(item => item.CanProvideStage).IndexOf(item => item == _items[itemIx]);
                 for (var ix = itemIx + 1; ix < _items.Length; ix++)

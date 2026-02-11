@@ -53,9 +53,12 @@ namespace Variety
             Module.Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, _prefab.DownButtons[btn].transform);
             Module.MoveButton(_prefab.DownButtonParents[btn], .001f, ButtonMoveType.DownThenUp);
 
-            _curPos[btn] = (_curPos[btn] + 1) % Letters[btn].Length;
-            ShowLetters();
-            SetState(Array.IndexOf(FormableWords, Enumerable.Range(0, 3).Select(slot => Letters[slot][_curPos[slot]]).Join("")));
+            if (!Module.IsSolved)
+            {
+                _curPos[btn] = (_curPos[btn] + 1) % Letters[btn].Length;
+                ShowLetters();
+                SetState(Array.IndexOf(FormableWords, Enumerable.Range(0, 3).Select(slot => Letters[slot][_curPos[slot]]).Join("")));
+            }
             return false;
         };
 

@@ -75,8 +75,11 @@ namespace Variety
                         break;
 
                     case LedCyclingState.SetColor:
-                        _cyclingState = LedCyclingState.TableColors;
-                        SetState(-1);
+                        if (!Module.IsSolved)
+                        {
+                            _cyclingState = LedCyclingState.TableColors;
+                            SetState(-1);
+                        }
                         break;
                 }
                 coroutine = _cyclingState == LedCyclingState.SetColor ? null : Module.StartCoroutine(CycleLed(_prefab.Led, _prefab.LedColors));

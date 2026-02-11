@@ -59,17 +59,17 @@ namespace Variety
             if (!_active)
                 return false;
 
-            if (!_running)
-            {
-                _running = true;
-                SetState(-1);
-                _timer = _prefab.StartCoroutine(RunTimer());
-            }
-            else
+            if (_running)
             {
                 _running = false;
                 SetState(_displayedTime);
                 _prefab.StopCoroutine(_timer);
+            }
+            else if (!Module.IsSolved)
+            {
+                _running = true;
+                SetState(-1);
+                _timer = _prefab.StartCoroutine(RunTimer());
             }
             return false;
         }

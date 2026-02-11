@@ -74,6 +74,8 @@ namespace Variety
             Coroutine wait = null;
             _button.OnInteract = delegate
             {
+                if (Module.IsSolved)
+                    return false;
                 if (_morseCycle != null)
                     Module.StopCoroutine(_morseCycle);
                 switch (_cyclingState)
