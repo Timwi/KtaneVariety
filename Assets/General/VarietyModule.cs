@@ -224,6 +224,9 @@ public class VarietyModule : MonoBehaviour
                 reconstructedState += mult * (ulong) itemState;
                 mult *= (ulong) item.NumStates;
 
+                if (remainingItems.Count == 0 && itemState == item.State)
+                    goto busted;
+
                 expectedStates[itemProcessingOrder.Count] = itemState;
                 itemProcessingOrder.Add(item);
             }
