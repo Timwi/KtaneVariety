@@ -42,16 +42,16 @@ namespace Variety
         }
         public Action<int, bool> StateSet;
 
-        protected string coords(int ix) { return $"{(char) (ix % VarietyModule.W + 'A')}{ix / VarietyModule.W + 1}"; }
+        protected string coords(int ix) => $"{(char) (ix % VarietyModule.W + 'A')}{ix / VarietyModule.W + 1}";
 
         protected static int W => VarietyModule.W;
         protected static int H => VarietyModule.H;
 
-        protected static float GetX(int ix) { return VarietyModule.GetX(ix); }
-        protected static float GetY(int ix) { return VarietyModule.GetY(ix); }
+        protected static float GetX(int ix) => VarietyModule.GetX(ix);
+        protected static float GetY(int ix) => VarietyModule.GetY(ix);
 
-        protected static int[] CellRect(int cell, int width, int height) { return Enumerable.Range(0, width * height).Select(i => i % width + cell % W + W * (i / width + cell / W)).ToArray(); }
-        protected static float GetXOfCellRect(int cell, int width) { return -VarietyModule.Width / 2 + (cell % W + (width - 1) * .5f) * VarietyModule.CellWidth; }
-        protected static float GetYOfCellRect(int cell, int height) { return VarietyModule.Height / 2 - (cell / W + (height - 1) * .5f) * VarietyModule.CellHeight + VarietyModule.YOffset; }
+        protected static int[] CellRect(int cell, int width, int height) => Enumerable.Range(0, width * height).Select(i => i % width + cell % W + W * (i / width + cell / W)).ToArray();
+        protected static float GetXOfCellRect(int cell, int width) => -VarietyModule.Width / 2 + (cell % W + (width - 1) * .5f) * VarietyModule.CellWidth;
+        protected static float GetYOfCellRect(int cell, int height) => VarietyModule.Height / 2 - (cell / W + (height - 1) * .5f) * VarietyModule.CellHeight + VarietyModule.YOffset;
     }
 }

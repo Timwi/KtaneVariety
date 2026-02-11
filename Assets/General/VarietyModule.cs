@@ -61,8 +61,8 @@ public class VarietyModule : MonoBehaviour
     private int _lastTimerSeconds;
     private int _timerTicks;
 
-    public int ModuleID { get { return _moduleId; } }
-    public int TimerTicks { get { return _timerTicks; } }
+    public int ModuleID => _moduleId;
+    public int TimerTicks => _timerTicks;
 
     public const int W = 10;                // Number of slots in X direction
     public const int H = 8;                // Number of slots in Y direction
@@ -183,8 +183,8 @@ public class VarietyModule : MonoBehaviour
         StartCoroutine(AfterAwake(items, rnd));
     }
 
-    public static float GetX(int ix) { return -Width / 2 + (ix % W) * CellWidth; }
-    public static float GetY(int ix) { return Height / 2 - (ix / W) * CellHeight + YOffset; }
+    public static float GetX(int ix) => -Width / 2 + (ix % W) * CellWidth;
+    public static float GetY(int ix) => Height / 2 - (ix / W) * CellHeight + YOffset;
 
     private IEnumerator AfterAwake(List<Item> items, System.Random random)
     {
@@ -200,9 +200,9 @@ public class VarietyModule : MonoBehaviour
 
         for (var i = 0; i < 100 || itemsWithFewestZeros == null; i++)
         {
-            ulong state = Enumerable.Range(0, 8).Aggregate(0UL, (p, n) => (p << 8) | (uint) random.Next(0, 256)) % 1000000000000UL;
-            ulong reconstructedState = 0UL;
-            ulong mult = 1UL;
+            var state = Enumerable.Range(0, 8).Aggregate(0UL, (p, n) => (p << 8) | (uint) random.Next(0, 256)) % 1000000000000UL;
+            var reconstructedState = 0UL;
+            var mult = 1UL;
 
             var remainingItems = items.ToList();
             var itemProcessingOrder = new List<Item>();
@@ -274,44 +274,41 @@ public class VarietyModule : MonoBehaviour
         }
     }
 
-    private Action<int, bool> StateSet(int itemIx)
+    private Action<int, bool> StateSet(int itemIx) => (newState, automatic) =>
     {
-        return delegate (int newState, bool automatic)
+        if (_items[itemIx].CanProvideStage && !_isSolved)
         {
-            if (_items[itemIx].CanProvideStage && !_isSolved)
-            {
-                var stageItemIndex = _items.Where(item => item.CanProvideStage).IndexOf(item => item == _items[itemIx]);
-                for (var ix = itemIx + 1; ix < _items.Length; ix++)
-                    _items[ix].ReceiveItemChange(stageItemIndex);
-            }
+            var stageItemIndex = _items.Where(item => item.CanProvideStage).IndexOf(item => item == _items[itemIx]);
+            for (var ix = itemIx + 1; ix < _items.Length; ix++)
+                _items[ix].ReceiveItemChange(stageItemIndex);
+        }
 
-            if (_isSolved || automatic)
+        if (_isSolved || automatic)
+            return;
+
+        var i = 0;
+        for (; i < itemIx; i++)
+        {
+            if (!_items[i].IsStuck && _items[i].State != _expectedStates[i])
+            {
+                Debug.LogFormat(@"[Variety #{0}] You received a strike when {1} because {2}.",
+                    _moduleId,
+                    _items[itemIx].DescribeWhatUserDid(),
+                    _items[i].DescribeWhatUserShouldHaveDone(_expectedStates[i]));
+                _items[i].Checked();
+                Module.HandleStrike();
+                return;
+            }
+        }
+
+        for (; i < _items.Length; i++)
+            if (_items[i].State != _expectedStates[i] && !_items[i].IsStuck)
                 return;
 
-            var i = 0;
-            for (; i < itemIx; i++)
-            {
-                if (!_items[i].IsStuck && _items[i].State != _expectedStates[i])
-                {
-                    Debug.LogFormat(@"[Variety #{0}] You received a strike when {1} because {2}.",
-                        _moduleId,
-                        _items[itemIx].DescribeWhatUserDid(),
-                        _items[i].DescribeWhatUserShouldHaveDone(_expectedStates[i]));
-                    _items[i].Checked();
-                    Module.HandleStrike();
-                    return;
-                }
-            }
-
-            for (; i < _items.Length; i++)
-                if (_items[i].State != _expectedStates[i] && !_items[i].IsStuck)
-                    return;
-
-            Debug.LogFormat(@"[Variety #{0}] Module solved.", _moduleId);
-            Module.HandlePass();
-            _isSolved = true;
-        };
-    }
+        Debug.LogFormat(@"[Variety #{0}] Module solved.", _moduleId);
+        Module.HandlePass();
+        _isSolved = true;
+    };
 
     private Coroutine _movingButton = null;
     private Transform _movingButtonBtn = null;

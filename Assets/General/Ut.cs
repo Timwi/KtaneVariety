@@ -8,7 +8,7 @@ namespace Variety
 {
     static class Ut
     {
-        public static T[] NewArray<T>(params T[] array) { return array; }
+        public static T[] NewArray<T>(params T[] array) => array;
         public static T[] NewArray<T>(int length, Func<int, T> initializer)
         {
             var array = new T[length];
@@ -40,11 +40,11 @@ namespace Variety
         {
             using (var enumer = source.GetEnumerator())
             {
-                bool any = enumer.MoveNext();
+                var any = enumer.MoveNext();
                 if (!any)
                     yield break;
-                T first = enumer.Current;
-                T last = enumer.Current;
+                var first = enumer.Current;
+                var last = enumer.Current;
                 while (enumer.MoveNext())
                 {
                     yield return selector(last, enumer.Current);
@@ -89,8 +89,8 @@ namespace Variety
         private static IEnumerable<T> skipLastIterator<T>(IEnumerable<T> source, int count, bool throwIfNotEnough)
         {
             var queue = new T[count];
-            int headtail = 0; // tail while we're still collecting, both head & tail afterwards because the queue becomes completely full
-            int collected = 0;
+            var headtail = 0; // tail while we're still collecting, both head & tail afterwards because the queue becomes completely full
+            var collected = 0;
 
             foreach (var item in source)
             {
@@ -114,19 +114,10 @@ namespace Variety
                 throw new InvalidOperationException("The collection does not contain enough elements.");
         }
 
-        public static IEnumerable<TResult> SelectManyConsecutivePairs<T, TResult>(this IEnumerable<T> source, bool closed, Func<T, T, IEnumerable<TResult>> selector)
-        {
-            return source.SelectConsecutivePairs(closed, selector).SelectMany(x => x);
-        }
+        public static IEnumerable<TResult> SelectManyConsecutivePairs<T, TResult>(this IEnumerable<T> source, bool closed, Func<T, T, IEnumerable<TResult>> selector) => source.SelectConsecutivePairs(closed, selector).SelectMany(x => x);
 
-        public static Type FindType(string fullName)
-        {
-            return AppDomain.CurrentDomain.GetAssemblies().SelectMany(GetSafeTypes).FirstOrDefault(t => fullName.Equals(t.FullName));
-        }
-        public static Type FindType(string fullName, string assemblyName)
-        {
-            return AppDomain.CurrentDomain.GetAssemblies().SelectMany(GetSafeTypes).FirstOrDefault(t => fullName.Equals(t.FullName) && t.Assembly.GetName().Name.Equals(assemblyName));
-        }
+        public static Type FindType(string fullName) => AppDomain.CurrentDomain.GetAssemblies().SelectMany(GetSafeTypes).FirstOrDefault(t => fullName.Equals(t.FullName));
+        public static Type FindType(string fullName, string assemblyName) => AppDomain.CurrentDomain.GetAssemblies().SelectMany(GetSafeTypes).FirstOrDefault(t => fullName.Equals(t.FullName) && t.Assembly.GetName().Name.Equals(assemblyName));
         public static IEnumerable<Type> GetSafeTypes(this Assembly assembly)
         {
             try
@@ -175,9 +166,9 @@ namespace Variety
         {
             if (list == null)
                 throw new ArgumentNullException("list");
-            for (int j = list.Count; j >= 1; j--)
+            for (var j = list.Count; j >= 1; j--)
             {
-                int item = rnd.Next(0, j);
+                var item = rnd.Next(0, j);
                 if (item < j - 1)
                 {
                     var t = list[item];

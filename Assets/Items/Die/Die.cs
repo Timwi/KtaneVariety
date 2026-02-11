@@ -47,7 +47,7 @@ namespace Variety
             var rends = _prefab.Model.GetComponentsInChildren<MeshRenderer>();
             if (!_flavor)
             {
-                Color tmp = c2;
+                var tmp = c2;
                 c2 = c1;
                 c1 = tmp;
             }
@@ -123,25 +123,25 @@ namespace Variety
             {
                 case 0:
                     _prefab.StartCoroutine(Animate(_prefab.Model, _trueRot = Quaternion.Euler(0f, 0f, -90f) * _trueRot));
-                    int p = _top;
+                    var p = _top;
                     _top = _turns[_top][(_turn + 3) % 4];
                     _turn = Array.IndexOf(_turns[_top], _turns[p][_turn]);
                     break;
                 case 1:
                     _prefab.StartCoroutine(Animate(_prefab.Model, _trueRot = Quaternion.Euler(-90f, 0f, 0f) * _trueRot));
-                    int t = _top;
+                    var t = _top;
                     _top = _turns[_top][(_turn + 2) % 4];
                     _turn = Array.IndexOf(_turns[_top], t);
                     break;
                 case 2:
                     _prefab.StartCoroutine(Animate(_prefab.Model, _trueRot = Quaternion.Euler(90f, 0f, 0f) * _trueRot));
-                    int q = _top;
+                    var q = _top;
                     _top = _turns[_top][_turn];
                     _turn = Array.IndexOf(_turns[_top], Flip(q));
                     break;
                 case 3:
                     _prefab.StartCoroutine(Animate(_prefab.Model, _trueRot = Quaternion.Euler(0f, 0f, 90f) * _trueRot));
-                    int top = _top;
+                    var top = _top;
                     _top = _turns[_top][(_turn + 1) % 4];
                     _turn = Array.IndexOf(_turns[_top], _turns[top][_turn]);
                     break;
@@ -155,8 +155,8 @@ namespace Variety
 
         private IEnumerator Animate(Transform tr, Quaternion end)
         {
-            float startTime = Time.time;
-            Quaternion start = tr.localRotation;
+            var startTime = Time.time;
+            var start = tr.localRotation;
             while (Time.time - startTime < 0.25f)
             {
                 tr.localRotation = Quaternion.Slerp(start, end, (Time.time - startTime) * 4f);
@@ -184,8 +184,8 @@ namespace Variety
 
         public override string DescribeWhatUserShouldHaveDone(int desiredState)
         {
-            int top = desiredState % 6;
-            int sl = new int[] { 0, 1, 2, 3, 4, 5 }.Where(i => i != top && i != Flip(top)).ToArray()[desiredState / 6];
+            var top = desiredState % 6;
+            var sl = new int[] { 0, 1, 2, 3, 4, 5 }.Where(i => i != top && i != Flip(top)).ToArray()[desiredState / 6];
             return $"you should have rotated the {(_flavor ? "dark-on-light" : "light-on-dark")} die so you can see the {top} side and the {sl} side is facing the status light (you can see the {_top} side and the {_turns[_top][_turn]} side is facing the status light)";
         }
 
@@ -279,7 +279,7 @@ namespace Variety
 
         private IEnumerable<object> TwitchMove(List<int> moves)
         {
-            for (int i = 0; i < moves.Count; i++)
+            for (var i = 0; i < moves.Count; i++)
             {
                 _prefab.Selectables[moves[i]].OnInteract();
                 yield return new WaitForSeconds(0.3f);

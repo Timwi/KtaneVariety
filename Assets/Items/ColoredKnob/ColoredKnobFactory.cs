@@ -27,7 +27,7 @@ namespace Variety
             claimRect(taken, spot, 2, 2);
             var color = available[rnd.Next(0, available.Length)];
             taken.Add(color);
-            int n = rnd.Next(3, 7);
+            var n = rnd.Next(3, 7);
 
             return new ColoredKnob(module, spot, color, _baseRotations[(int) color], n, rnd);
         }

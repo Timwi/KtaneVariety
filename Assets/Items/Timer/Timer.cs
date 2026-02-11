@@ -76,7 +76,7 @@ namespace Variety
 
         private IEnumerator RunTimer()
         {
-            float startTime = Time.time - _displayedTime;
+            var startTime = Time.time - _displayedTime;
             while (true)
             {
                 var t = (int) (Time.time - startTime) % NumPositions;

@@ -149,7 +149,7 @@ namespace Variety
         {
             var normals = new Pt[pts.Length];
             normals[0] = ((pts[1] - pts[0]) * pt(0, 1, 0)).Normalize() * radius;
-            for (int i = 1; i < pts.Length - 1; i++)
+            for (var i = 1; i < pts.Length - 1; i++)
                 normals[i] = normals[i - 1].ProjectOntoPlane((pts[i + 1] - pts[i]) + (pts[i] - pts[i - 1])).Normalize() * radius;
             normals[pts.Length - 1] = normals[pts.Length - 2].ProjectOntoPlane(pts[pts.Length - 1] - pts[pts.Length - 2]).Normalize() * radius;
 

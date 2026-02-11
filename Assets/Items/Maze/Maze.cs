@@ -12,10 +12,7 @@ namespace Variety
         public override string TwitchHelpMessage => "!{0} 3x3 maze UDLR [make moves in the 3×3 maze]";
 
         private GameObject _colorblindText;
-        public override void SetColorblind(bool on)
-        {
-            _colorblindText.SetActive(on);
-        }
+        public override void SetColorblind(bool on) => _colorblindText.SetActive(on);
 
         public Maze(VarietyModule module, int x, int y, int width, int height, int startPos, int shape, MazeLayout maze) : base(module, Enumerable.Range(0, width * height).Select(ix => x + ix % width + W * (y + ix / width)).ToArray())
         {

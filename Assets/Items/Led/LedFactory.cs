@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using Rnd = UnityEngine.Random;
-
 namespace Variety
 {
     public class LedFactory : ItemFactory
     {
         // Lower-valued LedColor first
-        private Dictionary<LedColor, Dictionary<LedColor, LedColor[]>> _answers;
+        private readonly Dictionary<LedColor, Dictionary<LedColor, LedColor[]>> _answers;
 
         public LedFactory(MonoRandom rnd)
         {

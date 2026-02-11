@@ -10,10 +10,7 @@ namespace Variety
     {
         public override string TwitchHelpMessage => "!{0} red knob 0 [turn knob that many times] !{0} red knob cycle [turn the knob slowly]";
 
-        public override void SetColorblind(bool on)
-        {
-            _coloredKnob.GetComponentInChildren<TextMesh>(true).gameObject.SetActive(on);
-        }
+        public override void SetColorblind(bool on) => _coloredKnob.GetComponentInChildren<TextMesh>(true).gameObject.SetActive(on);
 
         public bool[] RealTicks { get; private set; }
         public int[] States { get; private set; }
@@ -22,7 +19,7 @@ namespace Variety
 
         private Coroutine _turning;
         private KMSelectable _coloredKnob;
-        private int _baseRotation;
+        private readonly int _baseRotation;
 
         public ColoredKnob(VarietyModule module, int topLeftCell, ColoredKnobColor color, int baseRotation, int n, System.Random rnd)
             : base(module, CellRect(topLeftCell, 2, 2))
@@ -110,7 +107,7 @@ namespace Variety
 
         private IEnumerable<object> TwitchCycle(bool fast)
         {
-            for (int i = 0; i < 8; i++)
+            for (var i = 0; i < 8; i++)
             {
                 _coloredKnob.OnInteract();
                 yield return new WaitForSeconds(fast ? .3f : .9f);
@@ -119,7 +116,7 @@ namespace Variety
 
         private IEnumerable<object> TwitchPress(int val)
         {
-            for (int i = 0; i < val; i++)
+            for (var i = 0; i < val; i++)
             {
                 _coloredKnob.OnInteract();
                 yield return new WaitForSeconds(.1f);

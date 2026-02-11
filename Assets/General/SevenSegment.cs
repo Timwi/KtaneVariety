@@ -6,7 +6,7 @@ using UnityEngine;
 public class SevenSegment : MonoBehaviour
 {
     [SerializeField]
-    private Renderer[] _segments;
+    private readonly Renderer[] _segments;
     public Material OnMaterial, OffMaterial;
 
     private static readonly Dictionary<int, bool[]> _segmentMappings = "0:1110111|1:0010010|2:1011101|3:1011011|4:0111010|5:1101011|6:1101111|7:1010010|8:1111111|9:1111011"
@@ -33,7 +33,7 @@ public class SevenSegment : MonoBehaviour
         if (OffMaterial == null)
             throw new UnassignedReferenceException(nameof(OffMaterial));
 
-        for (int ix = 0; ix < 7; ix++)
+        for (var ix = 0; ix < 7; ix++)
             _segments[ix].sharedMaterial = _segmentMappings[i][ix] ? OnMaterial : OffMaterial;
     }
 }

@@ -64,10 +64,7 @@ namespace Variety
             return this - Dot(planeNormal) * planeNormal;
         }
 
-        public double Dot(Pt other)
-        {
-            return X * other.X + Y * other.Y + Z * other.Z;
-        }
+        public double Dot(Pt other) => X * other.X + Y * other.Y + Z * other.Z;
 
         public double Distance(Pt other)
         {

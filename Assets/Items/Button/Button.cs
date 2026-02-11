@@ -14,10 +14,7 @@ namespace Variety
 
         public override string TwitchHelpMessage => "!{0} red button hold 2 [hold the red button over that many timer ticks] | !{0} red button mash 3 [mash the red button that many times]";
 
-        public override void SetColorblind(bool on)
-        {
-            _button.GetComponentInChildren<TextMesh>(true).gameObject.SetActive(on);
-        }
+        public override void SetColorblind(bool on) => _button.GetComponentInChildren<TextMesh>(true).gameObject.SetActive(on);
 
         private KMSelectable _button;
 
@@ -96,7 +93,7 @@ namespace Variety
         {
             mf.sharedMesh = highlightMesh;
             var child = mf.transform.Find("Highlight(Clone)");
-            var filter = child == null ? null : child.GetComponent<MeshFilter>();
+            var filter = child?.GetComponent<MeshFilter>();
             if (filter != null)
                 filter.sharedMesh = highlightMesh;
         }

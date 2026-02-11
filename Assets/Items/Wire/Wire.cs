@@ -10,10 +10,7 @@ namespace Variety
     {
         public override string TwitchHelpMessage => "!{0} cut blue [cut a wire]";
 
-        public override void SetColorblind(bool on)
-        {
-            _wire.GetComponent<Renderer>().material.mainTexture = on ? _prefab.ColorblindTextures[(int) Color] : _prefab.ColorblindTextures[0];
-        }
+        public override void SetColorblind(bool on) => _wire.GetComponent<Renderer>().material.mainTexture = on ? _prefab.ColorblindTextures[(int) Color] : _prefab.ColorblindTextures[0];
 
         public Wire(VarietyModule module, WireColor color, int[] cells, Func<KMBombInfo, bool> edgeworkCondition) : base(module, cells)
         {
@@ -38,7 +35,7 @@ namespace Variety
         private WirePrefab _prefab;
 
         public override bool IsStuck => _isStuck;
-        public override void Checked() { _isStuck = _isCut; }
+        public override void Checked() => _isStuck = _isCut;
 
         public override IEnumerable<ItemSelectable> SetUp(System.Random rnd)
         {

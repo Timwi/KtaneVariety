@@ -1,8 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using KModkit;
-
-using Rnd = UnityEngine.Random;
 
 namespace Variety
 {

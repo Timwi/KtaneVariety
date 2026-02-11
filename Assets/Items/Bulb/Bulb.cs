@@ -53,7 +53,7 @@ namespace Variety
         private BulbPrefab _prefab;
         private Coroutine _morseCycle = null;
         private string _inputs;
-        private char _baseLetter;
+        private readonly char _baseLetter;
 
         public override IEnumerable<ItemSelectable> SetUp(System.Random rnd)
         {
