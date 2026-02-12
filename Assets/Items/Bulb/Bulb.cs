@@ -10,6 +10,7 @@ namespace Variety
     public class Bulb : Item
     {
         public override string TwitchHelpMessage => "!{0} red bulb ..- [transmit ..- on the red bulb] | !{0} red bulb reset [show flashing code again]";
+        public override bool CanBeLast => true;
 
         public override void SetColorblind(bool on)
         {

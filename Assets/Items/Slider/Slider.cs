@@ -8,6 +8,7 @@ namespace Variety
     public class Slider : Item
     {
         public override string TwitchHelpMessage => "!{0} horiz/vert 0 [set horizontal/vertical slider]";
+        public override bool CanBeLast => true;
 
         public const int LongSlots = 5;
         public const int ShortSlots = 2;

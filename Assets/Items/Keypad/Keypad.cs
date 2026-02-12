@@ -9,6 +9,7 @@ namespace Variety
     public class Keypad : Item
     {
         public override string TwitchHelpMessage => "!{0} 2x2 keys 012 [press keys on the 2×2 white keypad in that order]";
+        public override bool CanBeLast => true;
 
         public override void SetColorblind(bool on)
         {

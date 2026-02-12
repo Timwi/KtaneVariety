@@ -10,6 +10,10 @@ namespace Variety
     {
         public override string TwitchHelpMessage => "!{0} red knob 0 [turn knob that many times] !{0} red knob cycle [turn the knob slowly]";
 
+        // Colored knobs can’t be last because then the module could solve while the defuser is turning the knob
+        // and then it could be impossible to determine the number of loud clicks which may be required for Souvenir.
+        public override bool CanBeLast => false;
+
         public override void SetColorblind(bool on) => _coloredKnob.GetComponentInChildren<TextMesh>(true).gameObject.SetActive(on);
 
         public bool[] RealTicks { get; private set; }

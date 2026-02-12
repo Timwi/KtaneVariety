@@ -17,6 +17,7 @@ namespace Variety
         private int _top, _turn;
         private Quaternion _trueRot = Quaternion.identity;
         private readonly bool _flavor;
+        public override bool CanBeLast => true;
 
         public Die(VarietyModule module, int tlc, bool flavor) : base(module, CellRect(tlc, 2, 2))
         {

@@ -11,6 +11,10 @@ namespace Variety
     {
         public override string TwitchHelpMessage => "!{0} letters cycle [cycle each letter slot] | !{0} letters PIN [set letter display]";
 
+        // Letter displays can’t be last because then the module could solve while the defuser is changing the letters
+        // and then it could be impossible to determine which words were possible which may be required for Souvenir.
+        public override bool CanBeLast => false;
+
         public int Location { get; private set; }
         public char[][] Letters { get; private set; }
         public string[] FormableWords { get; private set; }

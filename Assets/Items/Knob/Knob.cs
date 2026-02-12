@@ -9,6 +9,7 @@ namespace Variety
     public class Knob : Item
     {
         public override string TwitchHelpMessage => "!{0} knob 0 [turn the white knob to that many tickmarks from north]";
+        public override bool CanBeLast => true;
 
         public int NumTicks { get; private set; }
         public int Offset { get; private set; }

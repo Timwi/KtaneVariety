@@ -13,6 +13,7 @@ namespace Variety
         public int Vertices { get; private set; }
 
         public override string TwitchHelpMessage => "!{0} red button hold 2 [hold the red button over that many timer ticks] | !{0} red button mash 3 [mash the red button that many times]";
+        public override bool CanBeLast => true;
 
         public override void SetColorblind(bool on) => _button.GetComponentInChildren<TextMesh>(true).gameObject.SetActive(on);
 

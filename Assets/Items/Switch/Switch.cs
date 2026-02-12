@@ -8,6 +8,7 @@ namespace Variety
     public class Switch : Item
     {
         public override string TwitchHelpMessage => "!{0} red switch 0 [toggle red switch to up]";
+        public override bool CanBeLast => true;
 
         public override void SetColorblind(bool on)
         {

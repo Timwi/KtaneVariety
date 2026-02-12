@@ -11,6 +11,8 @@ namespace Variety
     {
         public override string TwitchHelpMessage => "!{0} digit 0 [set the digit display]";
 
+        public override bool CanBeLast => true;
+
         public int TopLeftCell { get; private set; }
         public override int NumStates => _numStates;
 

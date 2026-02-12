@@ -10,6 +10,10 @@ namespace Variety
     {
         public override string TwitchHelpMessage => "!{0} cut blue [cut a wire]";
 
+        // Let’s not allow wires to be last because if the solution is to NOT cut, then the second-to-last item
+        // is now effectively the last item, which complicates matters for Souvenir.
+        public override bool CanBeLast => false;
+
         public override void SetColorblind(bool on) => _wire.GetComponent<Renderer>().material.mainTexture = on ? _prefab.ColorblindTextures[(int) Color] : _prefab.ColorblindTextures[0];
 
         public Wire(VarietyModule module, WireColor color, int[] cells, Func<KMBombInfo, bool> edgeworkCondition) : base(module, cells)

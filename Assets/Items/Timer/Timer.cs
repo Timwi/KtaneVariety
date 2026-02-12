@@ -12,6 +12,7 @@ namespace Variety
         public int Cell { get; private set; }
         public TimerType FlavorType { get; private set; }
         public int NumPositions { get; private set; }
+        public override bool CanBeLast => true;
 
         private static readonly int[] Primes = new int[] { 2, 3, 5, 7 };
 

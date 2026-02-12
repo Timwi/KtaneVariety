@@ -9,6 +9,7 @@ namespace Variety
     public class Led : Item
     {
         public override string TwitchHelpMessage => "!{0} led white [set the LED to white] | !{0} led reset [show flashing colors again]";
+        public override bool CanBeLast => true;
 
         private bool _colorblind;
         public override void SetColorblind(bool on)

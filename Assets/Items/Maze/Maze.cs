@@ -10,6 +10,7 @@ namespace Variety
     public class Maze : Item
     {
         public override string TwitchHelpMessage => "!{0} 3x3 maze UDLR [make moves in the 3×3 maze]";
+        public override bool CanBeLast => true;
 
         private GameObject _colorblindText;
         public override void SetColorblind(bool on) => _colorblindText.SetActive(on);

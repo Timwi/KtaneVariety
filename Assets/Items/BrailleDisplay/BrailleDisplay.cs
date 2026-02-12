@@ -12,6 +12,7 @@ namespace Variety
     {
         public int TopLeftCell { get; private set; }
         public override int NumStates => _snChars.Length;
+        public override bool CanBeLast => true;
 
         public override string TwitchHelpMessage => "!{0} braille 125 [set Braille display; Braille is numbered in vertical columns]";
 
